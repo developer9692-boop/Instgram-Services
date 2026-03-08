@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astropulse - Professional SMM Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #ccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 140px 0 80px;
+            text-align: center;
+            background: radial-gradient(circle at center, #111 0%, #000 70%);
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #ccc 50%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: #ccc;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            background: #fff;
+            color: #000;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(255,255,255,0.3);
+        }
+
+        /* Sections */
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 4rem;
+            color: #fff;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #fff, #ccc);
+            border-radius: 2px;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .card:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(255,255,255,0.1);
+        }
+
+        /* Platform Selection */
+        .platform-section {
+            background: #000;
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .platform-option {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .platform-option:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .platform-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.8;
+        }
+
+        .platform-option h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .platform-option p {
+            color: #ccc;
+            font-size: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #fff;
+            color: #000;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255,255,255,0.3);
+        }
+
+        /* Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        /* Footer */
+        .footer {
+            background: #111;
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Telegram - OFFICIAL TELEGRAM STYLE */
+        .telegram-float {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            background: #0088cc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 4px 12px rgba(0,136,204,0.4),
+                0 0 0 1px rgba(255,255,255,0.2) inset;
+            font-size: 1.8rem;
+            text-decoration: none;
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Official Telegram hover effect */
+        .telegram-float::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00b5ff, #0088cc, #006699);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .telegram-float:hover {
+            transform: scale(1.1) translateY(-3px);
+            box-shadow: 
+                0 8px 25px rgba(0,136,204,0.5),
+                0 0 0 1px rgba(255,255,255,0.3) inset;
+        }
+
+        .telegram-float:hover::before {
+            opacity: 1;
+        }
+
+        .telegram-float:active {
+            transform: scale(0.98);
+        }
+
+        /* Pulse animation matching Telegram */
+        @keyframes telegramPulse {
+            0% {
+                box-shadow: 
+                    0 4px 12px rgba(0,136,204,0.4),
+                    0 0 0 0 rgba(0,136,204,0.7);
+            }
+            70% {
+                box-shadow: 
+                    0 8px 25px rgba(0,136,204,0.5),
+                    0 0 0 12px rgba(0,136,204,0);
+            }
+            100% {
+                box-shadow: 
+                    0 8px 25px rgba(0,136,204,0.5),
+                    0 0 0 0 rgba(0,136,204,0);
+            }
+        }
+
+        .telegram-float {
+            animation: telegramPulse 2s infinite;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            section { padding: 60px 0; }
+            .platform-grid, .features-grid { 
+                grid-template-columns: 1fr; 
+                gap: 1.5rem;
+            }
+            .hero { padding: 120px 0 60px; }
+            .nav-container { padding: 0 16px; }
+            .telegram-float { 
+                bottom: 20px; 
+                right: 20px; 
+                width: 56px; 
+                height: 56px; 
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 2rem 1.5rem; }
+            .telegram-float { 
+                bottom: 15px; 
+                right: 15px; 
+                width: 52px; 
+                height: 52px; 
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <h1>Astropulse</h1>
+            <p class="hero-subtitle">Professional SMM Panel – Fast, Secure & Affordable</p>
+            <a href="panel.html" class="cta-button">Start Ordering</a>
+        </div>
+    </section>
+
+    <!-- Platform Selection -->
+    <section class="platform-section">
+        <div class="container">
+            <h2 class="section-title">Our Platforms</h2>
+            <div class="platform-grid">
+                <a href="panel.html" class="platform-option" data-platform="instagram">
+                    <div class="platform-icon"><i class="fab fa-instagram"></i></div>
+                    <h3>Instagram</h3>
+                    <p>Likes • Followers • Views</p>
+                </a>
+                <a href="panel.html" class="platform-option" data-platform="facebook">
+                    <div class="platform-icon"><i class="fab fa-facebook-f"></i></div>
+                    <h3>Facebook</h3>
+                    <p>Views • Followers • Likes</p>
+                </a>
+                <a href="panel.html" class="platform-option" data-platform="twitter">
+                    <div class="platform-icon"><i class="fab fa-twitter"></i></div>
+                    <h3>Twitter</h3>
+                    <p>Likes • Retweets • Followers</p>
+                </a>
+                <a href="panel.html" class="platform-option" data-platform="telegram">
+                    <div class="platform-icon"><i class="fab fa-telegram-plane"></i></div>
+                    <h3>Telegram</h3>
+                    <p>Members • Views • Engagement</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us - styled like "Our Platforms" -->
+    <section class="platform-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us</h2>
+            <div class="features-grid">
+                <div class="feature-card card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Delivery</h3>
+                    <p>Orders processed in minutes</p>
+                </div>
+                <div class="feature-card card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Best Prices</h3>
+                    <p>From ₹5 per 1K</p>
+                </div>
+                <div class="feature-card card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>100% Safe</h3>
+                    <p>Drop protection included</p>
+                </div>
+                <div class="feature-card card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Easy Payments</h3>
+                    <p>UPI QR code payments</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Astropulse. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- OFFICIAL TELEGRAM FLOATING BUTTON -->
+    <a href="https://t.me/aastropulsesupport_bot" class="telegram-float" target="_blank">
+        <i class="fab fa-telegram-plane"></i>
+    </a>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(0,0,0,0.95)';
+            } else {
+                navbar.style.background = 'rgba(0,0,0,0.9)';
+            }
+        });
+    </script>
+</body>
+</html>
