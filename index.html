@@ -624,4 +624,245 @@
             50% { width: 120px; opacity: 1; }
         }
 
-        
+        @keyframes spinBorder {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes telegramFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        @keyframes telegramSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .reveal.reveal-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scroll reveal script will handle the rest */
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">Astropulse</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Astropulse</h1>
+            <p class="hero-subtitle">Professional SMM Panel – Lightning Fast, Ultra Secure & Unbeatable Prices</p>
+            <a href="panel.html" class="cta-button">
+                <i class="fas fa-rocket"></i>
+                Start Ordering Now
+            </a>
+        </div>
+    </section>
+
+    <section class="platform-section">
+        <div class="container">
+            <h2 class="section-title reveal">Our Platforms</h2>
+            <div class="platform-grid">
+                <a href="panel.html" class="platform-option reveal" data-platform="instagram">
+                    <div class="platform-icon"><i class="fab fa-instagram"></i></div>
+                    <h3>Instagram</h3>
+                    <p>Likes • Followers • Views • Stories</p>
+                </a>
+                <a href="panel.html" class="platform-option reveal" data-platform="facebook">
+                    <div class="platform-icon"><i class="fab fa-facebook-f"></i></div>
+                    <h3>Facebook</h3>
+                    <p>Views • Followers • Likes • Reactions</p>
+                </a>
+                <a href="panel.html" class="platform-option reveal" data-platform="twitter">
+                    <div class="platform-icon"><i class="fab fa-twitter"></i></div>
+                    <h3>Twitter</h3>
+                    <p>Likes • Retweets • Followers • Impressions</p>
+                </a>
+                <a href="panel.html" class="platform-option reveal" data-platform="telegram">
+                    <div class="platform-icon"><i class="fab fa-telegram-plane"></i></div>
+                    <h3>Telegram</h3>
+                    <p>Members • Views • Engagement • Subs</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="platform-section">
+        <div class="container">
+            <h2 class="section-title reveal">Why Elite Creators Choose Us</h2>
+            <div class="features-grid">
+                <div class="feature-card card reveal">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Delivery</h3>
+                    <p>Orders start in 60 seconds or less</p>
+                </div>
+                <div class="feature-card card reveal">
+                    <div class="feature-icon">💎</div>
+                    <h3>Premium Quality</h3>
+                    <p>Real active users from ₹5/1K</p>
+                </div>
+                <div class="feature-card card reveal">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Guaranteed Safe</h3>
+                    <p>Lifetime drop protection + warranty</p>
+                </div>
+                <div class="feature-card card reveal">
+                    <div class="feature-icon">💳</div>
+                    <h3>Instant Payments</h3>
+                    <p>UPI, Cards, Crypto - 100% secure</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="platform-section">
+        <div class="container">
+            <h2 class="section-title reveal">Transparent Pricing</h2>
+            <div class="pricing-table-container reveal">
+                <table class="prize-table">
+                    <thead>
+                        <tr>
+                            <th>Platform</th>
+                            <th>Service</th>
+                            <th>Min Price</th>
+                            <th>Speed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div class="platform-badge"><i class="fab fa-instagram"></i> Instagram</div></td>
+                            <td>Premium Likes</td>
+                            <td><span class="price-tag">₹5 / 1k</span></td>
+                            <td>Instant</td>
+                        </tr>
+                        <tr>
+                            <td><div class="platform-badge"><i class="fab fa-instagram"></i> Instagram</div></td>
+                            <td>Real Followers</td>
+                            <td><span class="price-tag">₹45 / 1k</span></td>
+                            <td>1-2 Hours</td>
+                        </tr>
+                        <tr>
+                            <td><div class="platform-badge"><i class="fab fa-telegram-plane"></i> Telegram</div></td>
+                            <td>Active Members</td>
+                            <td><span class="price-tag">₹30 / 1k</span></td>
+                            <td>Fast</td>
+                        </tr>
+                        <tr>
+                            <td><div class="platform-badge"><i class="fab fa-facebook-f"></i> Facebook</div></td>
+                            <td>Post Likes</td>
+                            <td><span class="price-tag">₹12 / 1k</span></td>
+                            <td>Instant</td>
+                        </tr>
+                        <tr>
+                            <td><div class="platform-badge"><i class="fab fa-twitter"></i> Twitter</div></td>
+                            <td>Verified Followers</td>
+                            <td><span class="price-tag">₹150 / 1k</span></td>
+                            <td>Safe Speed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Astropulse. Engineered for excellence. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <a href="https://t.me/aastropulsesupport_bot" class="telegram-float" target="_blank" rel="noopener">
+        <i class="fab fa-telegram-plane"></i>
+    </a>
+
+    <script>
+        // Enhanced scroll effects
+        const navbar = document.querySelector('.navbar');
+        let ticking = false;
+
+        function updateNavbar() {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(updateNavbar);
+                ticking = true;
+                setTimeout(() => ticking = false, 16);
+            }
+        });
+
+        // Advanced scroll reveal with stagger
+        const revealElements = document.querySelectorAll('.reveal');
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('reveal-in');
+                    }, index * 100);
+                }
+            });
+        }, observerOptions);
+
+        revealElements.forEach(el => observer.observe(el));
+
+        // Parallax floating elements
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroBefore = document.querySelector('.hero::before');
+            const heroAfter = document.querySelector('.hero::after');
+            
+            if (heroBefore) {
+                heroBefore.style.transform = `translate(${scrolled * -0.05}px, ${scrolled * -0.03}px) scale(1)`;
+            }
+            if (heroAfter) {
+                heroAfter.style.transform = `translate(${scrolled * 0.04}px, ${scrolled * -0.02}px) scale(1)`;
+            }
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Initial animations
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                navbar.classList.add('scrolled');
+            }, 100);
+            setTimeout(() => {
+                navbar.classList.remove('scrolled');
+            }, 800);
+        });
+    </script>
+</body>
+</html>
