@@ -510,47 +510,56 @@
         }
 
         /* Super Enhanced Telegram Float */
-        .telegram-float {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #0088cc 0%, #00aaff 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 
-                0 12px 36px rgba(0,136,204,0.4),
-                0 0 0 1px rgba(255,255,255,0.3) inset,
-                0 0 40px rgba(0,136,204,0.3);
-            font-size: 2rem;
-            text-decoration: none;
-            z-index: 1001;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            animation: telegramFloat 3s ease-in-out infinite;
-            position: relative;
-            overflow: hidden;
-        }
+.telegram-float {
+    position: fixed; /* Keep this as fixed to stay on screen */
+    bottom: 30px;    /* Distance from bottom */
+    right: 30px;     /* Distance from right */
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #0088cc 0%, #00aaff 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 12px 36px rgba(0,136,204,0.4),
+        0 0 0 1px rgba(255,255,255,0.3) inset,
+        0 0 40px rgba(0,136,204,0.3);
+    font-size: 2rem;
+    text-decoration: none;
+    z-index: 1001;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Animation removed from here to prevent layout jumps, 
+       but you can keep it if 'telegramFloat' is defined */
+    overflow: visible; /* Changed from hidden so the pseudo-element glow can show */
+}
 
-        .telegram-float::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            background: conic-gradient(from 0deg, #00b5ff, #0088cc, #006699, #00b5ff);
-            border-radius: 50%;
-            z-index: -1;
-            animation: telegramSpin 2s linear infinite;
-            opacity: 0.7;
-        }
+/* The spinning outer ring */
+.telegram-float::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: conic-gradient(from 0deg, #00b5ff, #0088cc, #006699, #00b5ff);
+    border-radius: 50%;
+    z-index: -1;
+    animation: telegramSpin 2s linear infinite;
+    opacity: 0.7;
+}
 
-        .telegram-float:hover {
-            transform: scale(1.15) translateY(-8px) rotate(360deg);
-            box-shadow: 
-                0 20px 60px rgba(0,136,204,0.6),
-                0 0 0 1px rgba(255,255,255,0.5) inset,
-                0 0 60px rgba(0,136,204,0.5);
+.telegram-float:hover {
+    transform: scale(1.15) translateY(-8px) rotate(360deg);
+    box-shadow: 
+        0 20px 60px rgba(0,136,204,0.6),
+        0 0 0 1px rgba(255,255,255,0.5) inset,
+        0 0 60px rgba(0,136,204,0.5);
+}
+
+/* Necessary Animations */
+@keyframes telegramSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+        
             animation: none;
         }
 
