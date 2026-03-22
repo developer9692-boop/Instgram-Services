@@ -832,7 +832,7 @@
                 const quantityInput = document.getElementById('quantityInput');
                 const quantity = parseInt(quantityInput.value);
                 
-                if (!quantityInput.value || quantity <= 100) {
+                if (!quantityInput.value || quantity <= 99 ) {
                     alert('Please enter a valid quantity (minimum 100)!');
                     return;
                 }
