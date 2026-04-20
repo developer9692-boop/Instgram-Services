@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTROPULSE | PANEL DASHBOARD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #020202;
+            --surface: rgba(255,255,255,0.03);
+            --surface-hover: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.08);
+            --border-active: rgba(255,255,255,0.9);
+            --text: #f0f0f0;
+            --muted: #666;
+            --green: #22c55e;
+            --green-dim: rgba(34,197,94,0.15);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* STARFIELD */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+                radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+                radial-gradient(1px 1px at 85% 35%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 15% 75%, rgba(255,255,255,0.2) 0%, transparent 100%),
+                radial-gradient(1px 1px at 60% 50%, rgba(255,255,255,0.3) 0%, transparent 100%),
+                radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,0.4) 0%, transparent 100%),
+                radial-gradient(1px 1px at 45% 90%, rgba(255,255,255,0.2) 0%, transparent 100%),
+                radial-gradient(1px 1px at 25% 40%, rgba(255,255,255,0.3) 0%, transparent 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 40% at 0% 100%, rgba(255,255,255,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 100% 0%, rgba(255,255,255,0.04) 0%, transparent 60%);
+            z-index: 0;
+            pointer-events: none;
+            animation: driftGlow 18s ease-in-out infinite alternate;
+        }
+        @keyframes driftGlow {
+            from { opacity: 0.5; }
+            to { opacity: 1; }
+        }
+
+        /* HEADER */
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(2,2,2,0.85);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border);
+        }
+        .header-inner {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            color: #fff;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .logo-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #fff;
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.6); }
+        }
+        .back-btn {
+            padding: 8px 20px;
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+            letter-spacing: 0.02em;
+        }
+        .back-btn:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+
+        /* MAIN */
+        .main {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 40px 24px 100px;
+            position: relative; z-index: 1;
+        }
+
+        /* STEP PROGRESS */
+        .steps-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 44px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.3;
+            transition: all 0.35s ease;
+        }
+        .step.active { opacity: 1; }
+        .step.completed { opacity: 0.6; }
+        .step-num {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(255,255,255,0.25);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.35s;
+            flex-shrink: 0;
+        }
+        .step.active .step-num {
+            border-color: #fff;
+            background: #fff;
+            color: #000;
+        }
+        .step.completed .step-num {
+            border-color: var(--green);
+            background: var(--green-dim);
+            color: var(--green);
+        }
+        .step-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .step-connector {
+            width: 32px; height: 1px;
+            background: var(--border);
+            flex-shrink: 0;
+        }
+        @media (max-width: 480px) {
+            .step-label { display: none; }
+            .step-connector { width: 16px; }
+        }
+
+        /* CARDS */
+        .form-step { display: none; }
+        .form-step.active { display: block; animation: slideUp 0.4s cubic-bezier(0.22,1,0.36,1); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 36px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 520px) { .card { padding: 24px 20px; border-radius: 16px; } }
+
+        .card-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+        .card-sub {
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin-bottom: 28px;
+        }
+
+        /* PLATFORM GRID */
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        @media (max-width: 400px) { .platform-grid { grid-template-columns: 1fr; } }
+
+        .platform-option {
+            padding: 24px 16px;
+            text-align: center;
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .platform-option:hover {
+            border-color: rgba(255,255,255,0.25);
+            background: var(--surface-hover);
+            transform: translateY(-2px);
+        }
+        .platform-option.selected {
+            border-color: #fff;
+            background: rgba(255,255,255,0.06);
+        }
+        .platform-option i { font-size: 1.8rem; }
+        .platform-option p { font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+        .platform-option.selected p { color: #fff; }
+
+        /* SERVICES GRID */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .service-option {
+            padding: 14px;
+            text-align: center;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: var(--muted);
+        }
+        .service-option:hover { border-color: rgba(255,255,255,0.25); color: #fff; }
+        .service-option.selected { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); }
+
+        /* FORM INPUTS */
+        .field { margin-bottom: 22px; }
+        .field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255,255,255,0.04);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+        .form-input:focus { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.06); }
+        .form-input::placeholder { color: #333; }
+
+        /* PRICE DISPLAY */
+        .price-box {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .price-label { font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+        .price-rate { font-size: 0.9rem; color: var(--muted); margin: 6px 0; }
+        .price-total {
+            font-family: 'Syne', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            color: #fff;
+            line-height: 1;
+            margin: 8px 0 4px;
+        }
+        @media (max-width: 400px) { .price-total { font-size: 2.5rem; } }
+
+        /* QR */
+        .qr-wrapper {
+            display: inline-block;
+            padding: 12px;
+            background: #fff;
+            border-radius: 16px;
+            margin: 0 auto 24px;
+        }
+        .qr-wrapper img { display: block; width: 160px; height: 160px; border-radius: 8px; }
+
+        /* COUPON */
+        .coupon-box {
+            border: 1.5px dashed rgba(255,255,255,0.15);
+            border-radius: 14px;
+            padding: 18px;
+            margin: 20px 0;
+        }
+        .coupon-box label {
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 600;
+        }
+        .coupon-row { display: flex; gap: 8px; margin-top: 10px; }
+        .coupon-row .form-input { margin: 0; }
+        .apply-btn {
+            padding: 0 18px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+            flex-shrink: 0;
+        }
+        .apply-btn:hover { opacity: 0.85; }
+        .discount-msg { font-size: 0.85rem; color: var(--green); font-weight: 600; margin-top: 8px; display: none; }
+
+        /* PAYMENT AMOUNT */
+        .pay-amount-row {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            margin: 4px 0 20px;
+        }
+        .original-price { font-size: 0.9rem; color: var(--muted); text-decoration: line-through; display: none; }
+        .final-price { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--green); }
+
+        /* TRANSACTION */
+        .txn-row { display: flex; gap: 8px; margin-top: 10px; }
+        .txn-prefix {
+            padding: 13px 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--muted);
+            flex-shrink: 0;
+        }
+        .txn-row .form-input { margin: 0; }
+        .verify-btn {
+            padding: 0 16px;
+            background: var(--green);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: opacity 0.2s;
+        }
+        .verify-btn:hover { opacity: 0.85; }
+        .txn-status {
+            margin-top: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: none;
+        }
+        .txn-verified { background: var(--green-dim); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+
+        /* BUTTONS */
+        .btn-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        .btn {
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s;
+            letter-spacing: 0.02em;
+        }
+        .btn-primary {
+            background: #fff;
+            color: #000;
+        }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,255,255,0.2); }
+        .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-secondary {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+        @media (max-width: 400px) { .btn { padding: 13px 22px; font-size: 0.85rem; } }
+
+        /* SUCCESS */
+        .success-wrap {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .success-icon {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: var(--green-dim);
+            border: 1.5px solid rgba(34,197,94,0.3);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2rem;
+            color: var(--green);
+            animation: popIn 0.5s cubic-bezier(0.22,1,0.36,1);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .success-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            margin-bottom: 10px;
+        }
+        .success-sub { color: var(--muted); font-size: 0.95rem; margin-bottom: 32px; }
+
+        /* TELEGRAM FLOAT */
+        .tg-float {
+            position: fixed; bottom: 24px; right: 24px;
+            width: 52px; height: 52px;
+            background: #0088cc;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 1.3rem;
+            text-decoration: none;
+            z-index: 999;
+            box-shadow: 0 4px 20px rgba(0,136,204,0.4);
+            transition: transform 0.2s;
+        }
+        .tg-float:hover { transform: scale(1.1); }
+
+        /* DIVIDER */
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="header-inner">
+        <div class="logo">
+            <div class="logo-dot"></div>
+            Astropulse
+        </div>
+        <a href="index.html" class="back-btn">Exit</a>
+    </div>
+</header>
+
+<div class="main">
+    <!-- PROGRESS STEPS -->
+    <div class="steps-nav">
+        <div class="step active" id="s1">
+            <div class="step-num">1</div>
+            <span class="step-label">Platform</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" id="s2">
+            <div class="step-num">2</div>
+            <span class="step-label">Link</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" id="s3">
+            <div class="step-num">3</div>
+            <span class="step-label">Quantity</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" id="s4">
+            <div class="step-num">4</div>
+            <span class="step-label">Payment</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" id="s5">
+            <div class="step-num">5</div>
+            <span class="step-label">Done</span>
+        </div>
+    </div>
+
+    <!-- STEP 1: PLATFORM -->
+    <div class="form-step active" id="step1">
+        <div class="card">
+            <div class="card-title">Choose Platform</div>
+            <div class="card-sub">Select the social platform you want to boost</div>
+            <div class="platform-grid">
+                <div class="platform-option" onclick="selectPlatform('instagram', this)">
+                    <i class="fab fa-instagram"></i>
+                    <p>Instagram</p>
+                </div>
+                <div class="platform-option" onclick="selectPlatform('facebook', this)">
+                    <i class="fab fa-facebook"></i>
+                    <p>Facebook</p>
+                </div>
+                <div class="platform-option" onclick="selectPlatform('telegram', this)">
+                    <i class="fab fa-telegram"></i>
+                    <p>Telegram</p>
+                </div>
+            </div>
+            <div class="btn-row" style="justify-content: flex-end;">
+                <button class="btn btn-primary" onclick="nextStep()">Next Step →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: LINK & SERVICE -->
+    <div class="form-step" id="step2">
+        <div class="card">
+            <div class="card-title">Service Details</div>
+            <div class="card-sub">Paste your link and pick the service you need</div>
+
+            <div class="field">
+                <label>Target URL</label>
+                <input type="url" id="linkInput" class="form-input" placeholder="https://www.instagram.com/yourprofile">
+            </div>
+
+            <div class="field">
+                <div class="section-label">Select Service</div>
+                <div class="services-grid" id="servicesGrid"></div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn btn-primary" onclick="nextStep()">Continue →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 3: QUANTITY -->
+    <div class="form-step" id="step3">
+        <div class="card">
+            <div class="card-title">Enter Quantity</div>
+            <div class="card-sub">Choose how many you need (minimum 100)</div>
+
+            <div class="field">
+                <label>Quantity</label>
+                <input type="number" id="quantityInput" class="form-input" placeholder="e.g. 1000" oninput="updatePrice()">
+            </div>
+
+            <div class="price-box">
+                <div class="price-label">Total Cost</div>
+                <div class="price-rate">Rate per 1k: <span id="rateLabel">₹0</span></div>
+                <div class="price-total" id="totalPrice">₹0.00</div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn btn-primary" onclick="nextStep()">Go to Payment →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 4: PAYMENT -->
+    <div class="form-step" id="step4">
+        <div class="card">
+            <div class="card-title">Complete Payment</div>
+            <div class="card-sub">Scan the QR code and enter your transaction ID</div>
+
+            <div style="text-align: center;">
+                <div class="qr-wrapper">
+                    <img src="https://raw.githubusercontent.com/developer9692-boop/Instgram-Services/main/qr.png" alt="UPI QR Code">
+                </div>
+            </div>
+
+            <!-- COUPON -->
+            <div class="coupon-box">
+                <label>Have a coupon code?</label>
+                <div class="coupon-row">
+                    <input type="text" id="couponInput" class="form-input" placeholder="e.g. ASTRO123" style="margin:0;">
+                    <button class="apply-btn" onclick="applyCoupon()">Apply</button>
+                </div>
+                <div class="discount-msg" id="couponMessage"></div>
+            </div>
+
+            <!-- AMOUNT -->
+            <div class="pay-amount-row">
+                <span class="original-price" id="originalPrice"></span>
+                <span class="final-price" id="paymentAmount">₹0.00</span>
+            </div>
+
+            <!-- TRANSACTION ID -->
+            <div class="field">
+                <label>Transaction ID (12+ digits)</label>
+                <div class="txn-row">
+                    <div class="txn-prefix">TXN</div>
+                    <input type="text" id="transactionIdInput" class="form-input" placeholder="Enter your transaction ID" style="margin:0;">
+                    <button class="verify-btn" onclick="verifyTransaction()">Verify</button>
+                </div>
+                <div id="transactionStatus" class="txn-status"></div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+                <button class="btn btn-primary" id="confirmBtn" disabled onclick="nextStep()">Place Order →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 5: SUCCESS -->
+    <div class="form-step" id="step5">
+        <div class="card">
+            <div class="success-wrap">
+                <div class="success-icon">✓</div>
+                <div class="success-title">Order Confirmed!</div>
+                <p class="success-sub">Your order has been placed successfully and is now being processed. You'll see results soon.</p>
+                <button class="btn btn-primary" onclick="window.location.reload()">Place New Order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="https://t.me/your_bot" class="tg-float">
+    <i class="fab fa-telegram-plane"></i>
+</a>
+
+<script>
+    let currentStep = 1;
+    let platform = '';
+    let service = '';
+    let rate = 0;
+    let isVerified = false;
+    let isDiscounted = false;
+
+    const pricing = {
+        instagram: { 'Followers': 40, 'Likes': 20, 'Views': 5, 'Story Views': 8, 'Reels Views': 6 },
+        facebook: { 'Followers': 50, 'Likes': 30, 'Page Likes': 45 },
+        telegram: { 'Members': 60, 'Views': 10, 'Reactions': 15 }
+    };
+
+    function selectPlatform(p, el) {
+        platform = p;
+        document.querySelectorAll('.platform-option').forEach(e => e.classList.remove('selected'));
+        el.classList.add('selected');
+
+        const grid = document.getElementById('servicesGrid');
+        grid.innerHTML = '';
+        service = ''; rate = 0;
+        Object.entries(pricing[p]).forEach(([s, r]) => {
+            const div = document.createElement('div');
+            div.className = 'service-option';
+            div.textContent = s;
+            div.onclick = () => selectService(s, r, div);
+            grid.appendChild(div);
+        });
+    }
+
+    function selectService(s, r, el) {
+        service = s; rate = r;
+        document.querySelectorAll('.service-option').forEach(e => e.classList.remove('selected'));
+        el.classList.add('selected');
+        document.getElementById('rateLabel').innerText = '₹' + r;
+    }
+
+    function updatePrice() {
+        const qty = parseFloat(document.getElementById('quantityInput').value) || 0;
+        let total = (qty / 1000) * rate;
+        const original = total;
+        if (isDiscounted) total *= 0.8;
+
+        document.getElementById('totalPrice').innerText = '₹' + total.toFixed(2);
+
+        const origEl = document.getElementById('originalPrice');
+        if (isDiscounted && original > 0) {
+            origEl.innerText = '₹' + original.toFixed(2);
+            origEl.style.display = 'inline';
+        } else {
+            origEl.style.display = 'none';
+        }
+        document.getElementById('paymentAmount').innerText = '₹' + total.toFixed(2);
+    }
+
+    function applyCoupon() {
+        const code = document.getElementById('couponInput').value.trim().toUpperCase();
+        const msgEl = document.getElementById('couponMessage');
+        if (code === 'ASTRO123' && !isDiscounted) {
+            isDiscounted = true;
+            msgEl.innerText = '✓ 20% discount applied successfully!';
+            msgEl.style.display = 'block';
+            updatePrice();
+        } else if (isDiscounted) {
+            msgEl.innerText = '✓ Coupon already applied.';
+            msgEl.style.display = 'block';
+        } else {
+            msgEl.innerText = '✗ Invalid coupon code.';
+            msgEl.style.color = '#ef4444';
+            msgEl.style.display = 'block';
+        }
+    }
+
+    function verifyTransaction() {
+        const tid = document.getElementById('transactionIdInput').value.trim();
+        const statusEl = document.getElementById('transactionStatus');
+        if (tid.length >= 10) {
+            isVerified = true;
+            statusEl.innerText = '✓ Transaction verified — you\'re good to go!';
+            statusEl.className = 'txn-status txn-verified';
+            statusEl.style.display = 'block';
+            document.getElementById('confirmBtn').disabled = false;
+        } else {
+            statusEl.innerText = '✗ Please enter a valid transaction ID (10+ digits).';
+            statusEl.style.display = 'block';
+            statusEl.style.color = '#ef4444';
+            statusEl.style.background = 'rgba(239,68,68,0.1)';
+        }
+    }
+
+    function nextStep() {
+        if (currentStep === 1 && !platform) { showAlert('Please select a platform to continue.'); return; }
+        if (currentStep === 2) {
+            if (!service) { showAlert('Please select a service.'); return; }
+            if (!document.getElementById('linkInput').value.trim()) { showAlert('Please enter your target URL.'); return; }
+        }
+        if (currentStep === 3) {
+            const qty = parseInt(document.getElementById('quantityInput').value);
+            if (!qty || qty < 100) { showAlert('Minimum quantity is 100.'); return; }
+        }
+
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        document.getElementById(`s${currentStep}`).classList.remove('active');
+        document.getElementById(`s${currentStep}`).classList.add('completed');
+        currentStep++;
+        document.getElementById(`step${currentStep}`).classList.add('active');
+        document.getElementById(`s${currentStep}`).classList.add('active');
+    }
+
+    function prevStep() {
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        document.getElementById(`s${currentStep}`).classList.remove('active');
+        currentStep--;
+        document.getElementById(`step${currentStep}`).classList.add('active');
+        document.getElementById(`s${currentStep}`).classList.remove('completed');
+        document.getElementById(`s${currentStep}`).classList.add('active');
+    }
+
+    function showAlert(msg) {
+        // subtle inline — could upgrade to a toast later
+        alert(msg);
+    }
+</script>
+</body>
+</html>
