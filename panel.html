@@ -501,6 +501,56 @@
                 padding: 1.2rem;
             }
         }
+        /* Smaller QR Code & Coupon Styling */
+.qr-code {
+    max-width: 180px !important; /* Smaller size */
+    margin: 1.5rem 0 !important;
+}
+
+.coupon-section {
+    margin: 1.5rem 0;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    border: 1px dashed rgba(255,255,255,0.3);
+    text-align: left;
+}
+
+.coupon-input-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.apply-btn {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 0 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.apply-btn:hover {
+    background: #f0f0f0;
+}
+
+.discount-badge {
+    color: #4CAF50;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    display: none;
+    font-weight: 600;
+}
+
+#originalPrice {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
     </style>
 </head>
 <body>
@@ -591,17 +641,52 @@
 
         <!-- Step 4: Payment -->
         <div class="form-step" id="step4">
-            <div class="step-card">
-                <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">Complete Payment</h2>
-                <div class="qr-section">
-                    <div class="form-label" style="font-size: 1.3rem;">Scan QR Code (UPI)</div>
-                    <img src="https://raw.githubusercontent.com/developer9692-boop/Instgram-Services/main/qr.png" alt="UPI QR Code" class="qr-code">
-                    <div style="margin: 2rem 0; font-size: 1.2rem;">
-                        Total Amount: <strong id="paymentAmount">₹0</strong>
-                    </div>
+    <div class="step-card">
+        <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">Complete Payment</h2>
+        <div class="qr-section" style="padding: 1rem;">
+            <div class="form-label" style="font-size: 1.1rem;">Scan QR Code (UPI)</div>
+            <img src="https://raw.githubusercontent.com/developer9692-boop/Instgram-Services/main/qr.png" alt="UPI QR Code" class="qr-code">
+            
+            <div class="coupon-section">
+                <label class="form-label" style="font-size: 0.9rem; margin-bottom: 5px;">Discount Coupon</label>
+                <div class="coupon-input-group">
+                    <input type="text" id="couponInput" class="form-input" placeholder="Enter ASTRO123" style="padding: 0.8rem;">
+                    <button class="apply-btn" onclick="applyCoupon()">Apply</button>
                 </div>
-                
-                <!-- ENHANCED TRANSACTION INPUT SECTION -->
+                <div id="couponMessage" class="discount-badge"></div>
+            </div>
+
+            <div style="margin: 2rem 0; font-size: 1.2rem;">
+                <div id="originalPrice" style="display: none;"></div>
+                Total Amount: <strong id="paymentAmount">₹0</strong>
+            </div>
+        </div>
+        
+        <div class="transaction-input-group enhanced-transaction">
+            <div class="form-label transaction-title">
+                <i class="fas fa-receipt"></i> Enter UPI Transaction ID
+            </div>
+            <div class="transaction-input-wrapper">
+                <div class="input-prefix">TXN-</div>
+                <input type="text" class="form-input transaction-input" id="transactionIdInput" 
+                       placeholder="Enter 12-digit UPI transaction ID" maxlength="50">
+                <button class="verify-btn" id="verifyBtn" onclick="verifyTransaction()">
+                    <i class="fas fa-check-circle"></i> Verify
+                </button>
+            </div>
+            <div class="transaction-hints">
+                <small style="color: #888;">💡 Example: 123456789012 from PhonePe/GPay</small>
+            </div>
+            <div class="transaction-status" id="transactionStatus"></div>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: space-between; margin-top: 3rem;">
+            <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+            <button class="btn btn-primary" onclick="nextStep()">Confirm Order →</button>
+        </div>
+    </div>
+</div>
+<!-- ENHANCED TRANSACTION INPUT SECTION -->
                 <div class="transaction-input-group enhanced-transaction">
                     <div class="form-label transaction-title">
                         <i class="fas fa-receipt"></i> Enter UPI Transaction ID
@@ -690,6 +775,53 @@
             twitter: ['Views', 'Likes', 'Retweets', 'Followers'],
             telegram: ['Members', 'Views']
         };
+
+        let discountApplied = false;
+const discountRate = 0.20; // 20%
+
+function applyCoupon() {
+    const code = document.getElementById('couponInput').value.trim().toUpperCase();
+    const message = document.getElementById('couponMessage');
+    
+    if (code === 'ASTRO123') {
+        if (discountApplied) {
+            alert("Coupon already applied!");
+            return;
+        }
+        discountApplied = true;
+        message.textContent = "✅ ASTRO123 Applied! 20% Discount added.";
+        message.style.display = "block";
+        
+        // Lock input and refresh prices
+        document.getElementById('couponInput').disabled = true;
+        updatePrice(); 
+    } else {
+        alert("Invalid Coupon Code. Try ASTRO123");
+    }
+}
+
+// Replace your old updatePrice function with this one:
+function updatePrice() {
+    const quantity = parseInt(document.getElementById('quantityInput').value) || 0;
+    let baseTotal = (quantity / 1000) * ratePer1000;
+    let finalTotal = baseTotal;
+
+    const originalPriceEl = document.getElementById('originalPrice');
+    
+    if (discountApplied) {
+        finalTotal = baseTotal * (1 - discountRate);
+        originalPriceEl.textContent = `Original: ₹${baseTotal.toFixed(2)}`;
+        originalPriceEl.style.display = "block";
+    }
+
+    const formattedTotal = finalTotal.toFixed(2);
+    
+    // Update all display elements
+    document.getElementById('totalPrice').textContent = `₹${formattedTotal}`;
+    document.getElementById('finalAmount').textContent = `₹${formattedTotal}`;
+    document.getElementById('paymentAmount').textContent = `₹${formattedTotal}`;
+}
+        
 
         const orderIdPrefixes = {
             instagram: {
