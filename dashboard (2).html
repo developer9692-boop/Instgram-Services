@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASTROPULSE | ORDER DASHBOARD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.png" sizes="32x32">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255,255,255,0.08) 0%, transparent 50%);
+            z-index: -2;
+            animation: backgroundShift 20s ease-in-out infinite alternate;
+        }
+        @keyframes backgroundShift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 30px) scale(1.1); }
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: fixed;
+            top: 0; width: 100%;
+            background: #000;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #fff;
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+        .nav-back {
+            padding: 10px 24px;
+            background: transparent;
+            color: #ccc;
+            border: 1px solid #333;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .nav-back:hover { color: #fff; border-color: #fff; }
+
+        /* PAGE */
+        .page-wrap {
+            padding-top: 100px;
+            padding-bottom: 100px;
+        }
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* HEADER */
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeInDown 0.6s ease;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-header h1 {
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.03em;
+            margin-bottom: 10px;
+        }
+        .page-header p {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* CARD */
+        .card {
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 20px;
+            padding: 2.5rem;
+            animation: fadeInUp 0.5s ease;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 520px) { .card { padding: 1.8rem 1.5rem; } }
+
+        /* FORM STATE */
+        .form-state { display: block; }
+        .form-state.hidden {
+            display: none;
+        }
+
+        /* RESULT STATE */
+        .result-state { display: none; }
+        .result-state.show { display: block; }
+
+        /* LABEL */
+        .field-label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .field-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .field-sub {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 28px;
+        }
+
+        /* INPUT */
+        .input-wrap {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #444;
+            font-size: 1rem;
+        }
+        .order-input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+            letter-spacing: 0.04em;
+        }
+        .order-input:focus { border-color: #fff; background: #1a1a1a; }
+        .order-input::placeholder { color: #333; font-weight: 400; letter-spacing: 0; }
+
+        /* HINT CHIPS */
+        .hint-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+        .chip {
+            padding: 5px 12px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            color: #555;
+            font-weight: 500;
+            font-family: monospace;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .chip:hover { border-color: #fff; color: #fff; }
+
+        /* BTN */
+        .btn-check {
+            width: 100%;
+            padding: 15px;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.15);
+            letter-spacing: 0.02em;
+        }
+        .btn-check:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(255,255,255,0.35);
+        }
+        .btn-outline {
+            display: inline-block;
+            margin-top: 14px;
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            color: #666;
+            border: 1px solid #333;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .btn-outline:hover { color: #fff; border-color: #fff; }
+
+        /* RESULT ROWS */
+        .result-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.02em;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            transition: all 0.25s ease;
+        }
+        .result-row:hover {
+            border-color: #444;
+            background: #1a1a1a;
+            transform: translateX(4px);
+        }
+        .row-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #555;
+            flex-shrink: 0;
+        }
+        .row-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            text-align: right;
+        }
+
+        /* STATUS BADGE */
+        .status-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px 24px;
+            background: #111;
+            border: 1px solid #fff;
+            border-radius: 14px;
+            margin-top: 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 0.03em;
+        }
+        .status-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            animation: blink 1.5s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
+        }
+
+        /* THANK YOU BANNER */
+        .thankyou-banner {
+            margin-top: 16px;
+            padding: 16px 20px;
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .thankyou-banner strong { color: #fff; }
+
+        /* RESET BUTTON */
+        .btn-reset {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            background: transparent;
+            color: #666;
+            border: 1px solid #333;
+            border-radius: 50px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-reset:hover { color: #fff; border-color: #fff; }
+
+        /* ERROR */
+        .error-box {
+            padding: 16px 20px;
+            background: #111;
+            border: 1px solid #444;
+            border-radius: 14px;
+            color: #ccc;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .error-box span { color: #fff; font-weight: 600; }
+
+        /* DIVIDER */
+        hr { border: none; border-top: 1px solid #222; margin: 24px 0; }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            color: #444;
+            font-size: 0.875rem;
+            padding: 40px 20px 20px;
+            border-top: 1px solid #111;
+            margin-top: 48px;
+        }
+        .footer a { color: #666; text-decoration: none; transition: color 0.2s; }
+        .footer a:hover { color: #fff; }
+
+        /* TELEGRAM */
+        .telegram-float {
+            position: fixed;
+            bottom: 25px; right: 25px;
+            width: 60px; height: 60px;
+            background: #0088cc;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: #fff;
+            text-decoration: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px #fff inset;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: telegramPulse 2s infinite;
+        }
+        .telegram-float:hover {
+            transform: scale(1.1) translateY(-3px);
+            animation-play-state: paused;
+        }
+        @keyframes telegramPulse {
+            0%   { box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 0 rgba(0,136,204,0.7); }
+            70%  { box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 0 12px rgba(0,136,204,0); }
+            100% { box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 0 0 rgba(0,136,204,0); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            .result-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+            .row-value { text-align: left; }
+            .telegram-float { bottom: 20px; right: 20px; width: 54px; height: 54px; font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Astropulse</a>
+            <a href="panel.html" class="nav-back">← New Order</a>
+        </div>
+    </nav>
+
+    <div class="page-wrap">
+        <div class="container">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <h1>Order Dashboard</h1>
+                <p>Enter your Order ID to check status and details</p>
+            </div>
+
+            <!-- CARD -->
+            <div class="card" id="mainCard">
+
+                <!-- FORM STATE -->
+                <div class="form-state" id="formState">
+                    <div class="field-title">Track Your Order</div>
+                    <div class="field-sub">Enter the Order ID you received after placing your order</div>
+
+                    <div class="input-wrap">
+                        <i class="fas fa-search input-icon"></i>
+                        <input
+                            type="text"
+                            id="orderId"
+                            class="order-input"
+                            placeholder="e.g. INSTA_F123"
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                    </div>
+
+                    <div class="hint-chips">
+                        <span class="chip" onclick="fillHint('INSTA_F')">INSTA_F</span>
+                        <span class="chip" onclick="fillHint('FACE_L')">FACE_L</span>
+                        <span class="chip" onclick="fillHint('TELE_M')">TELE_M</span>
+                        <span class="chip" onclick="fillHint('TWITT_F')">TWITT_F</span>
+                    </div>
+
+                    <button class="btn-check" onclick="checkOrder()">
+                        <i class="fas fa-magnifying-glass" style="margin-right:8px;"></i>Check Order Status
+                    </button>
+
+                    <a href="index.html" class="btn-outline">← Back to Home</a>
+                </div>
+
+                <!-- RESULT STATE -->
+                <div class="result-state" id="resultState">
+                    <div id="resultContent"></div>
+                    <button class="btn-reset" onclick="resetDashboard()">
+                        <i class="fas fa-arrow-left" style="margin-right:6px;"></i>Check Another Order
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- FOOTER -->
+            <div class="footer">
+                © 2026 Astropulse. All rights reserved. &nbsp;|&nbsp;
+                <a href="https://t.me/AstroOwnerr" target="_blank">Support</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TELEGRAM FLOAT -->
+    <a href="https://t.me/AstroOwnerr" class="telegram-float" target="_blank" rel="noopener" title="Telegram Support">
+        <i class="fab fa-telegram-plane"></i>
+    </a>
+
+    <script>
+        const orderDecoder = {
+            'INSTA_F': 'Instagram Followers',
+            'INSTA_L': 'Instagram Likes',
+            'INSTA_C': 'Instagram Comments',
+            'INSTA_V': 'Instagram Views',
+            'INSTA_S': 'Instagram Story Views',
+            'FACE_F':  'Facebook Followers',
+            'FACE_L':  'Facebook Likes',
+            'FACE_V':  'Facebook Views',
+            'TWITT_F': 'Twitter Followers',
+            'TWITT_L': 'Twitter Likes',
+            'TWITT_R': 'Twitter Retweets',
+            'TWITT_V': 'Twitter Views',
+            'TELE_M':  'Telegram Members',
+            'TELE_V':  'Telegram Views'
+        };
+
+        function fillHint(prefix) {
+            document.getElementById('orderId').value = prefix;
+            document.getElementById('orderId').focus();
+        }
+
+        function checkOrder() {
+            const raw = document.getElementById('orderId').value.trim().toUpperCase();
+
+            if (!raw) {
+                showError('Please enter an Order ID to continue.');
+                return;
+            }
+
+            const orderIdRegex = /^(INSTA|FACE|TWITT|TELE)_[FLCRVSM][0-9]{3}$/;
+            if (!orderIdRegex.test(raw)) {
+                showError(`"${raw}" is not a valid Order ID format.`, 'Expected format: <strong>INSTA_F123</strong>, <strong>FACE_L456</strong>, etc.');
+                return;
+            }
+
+            const prefix    = raw.substring(0, raw.lastIndexOf('_') + 2);
+            const service   = orderDecoder[prefix] || 'Unknown Service';
+            const platform  = raw.split('_')[0];
+            const platformMap = { INSTA: 'Instagram', FACE: 'Facebook', TWITT: 'Twitter', TELE: 'Telegram' };
+            const platformName = platformMap[platform] || platform;
+
+            const now = new Date().toLocaleString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+
+            showResult(raw, platformName, service, now);
+        }
+
+        function showResult(orderId, platform, service, time) {
+            const formState   = document.getElementById('formState');
+            const resultState = document.getElementById('resultState');
+            const resultContent = document.getElementById('resultContent');
+
+            resultContent.innerHTML = `
+                <div class="result-title">Order Details</div>
+
+                <div class="result-row">
+                    <span class="row-label">Order ID</span>
+                    <span class="row-value" style="font-family:monospace;">${orderId}</span>
+                </div>
+                <div class="result-row">
+                    <span class="row-label">Platform</span>
+                    <span class="row-value">${platform}</span>
+                </div>
+                <div class="result-row">
+                    <span class="row-label">Service</span>
+                    <span class="row-value">${service}</span>
+                </div>
+                <div class="result-row">
+                    <span class="row-label">Checked At</span>
+                    <span class="row-value">${time} IST</span>
+                </div>
+
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    Order Processed & Delivered
+                </div>
+
+                <div class="thankyou-banner">
+                    Thank you for choosing <strong>Astropulse</strong>. Your order has been completed successfully.
+                </div>
+            `;
+
+            formState.classList.add('hidden');
+            resultState.classList.add('show');
+        }
+
+        function showError(main, sub = '') {
+            const formState   = document.getElementById('formState');
+            const resultState = document.getElementById('resultState');
+            const resultContent = document.getElementById('resultContent');
+
+            resultContent.innerHTML = `
+                <div class="result-title" style="color:#fff;">Invalid Order ID</div>
+                <div class="error-box">
+                    <span>${main}</span>
+                    ${sub ? `<br><br>${sub}` : ''}
+                </div>
+            `;
+
+            formState.classList.add('hidden');
+            resultState.classList.add('show');
+        }
+
+        function resetDashboard() {
+            document.getElementById('formState').classList.remove('hidden');
+            document.getElementById('resultState').classList.remove('show');
+            document.getElementById('orderId').value = '';
+            document.getElementById('orderId').focus();
+        }
+
+        // Enter key support
+        document.getElementById('orderId').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkOrder();
+        });
+    </script>
+
+</body>
+</html>
