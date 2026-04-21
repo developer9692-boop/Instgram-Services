@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="V3ph6HGFKVQ2g69kuSUmRb535O-KduDpUsjhVBCxQUk" />
+    <title>ASTROPULSE | SMM PANEL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="icon" href="/favicon.png" sizes="32x32">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255,255,255,0.08) 0%, transparent 50%);
+            z-index: -2;
+            animation: backgroundShift 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes backgroundShift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 30px) scale(1.1); }
+        }
+
+        /* HAMBURGER MENU */
+        .hamburger-menu {
+            position: fixed;
+            top: 20px; left: 20px;
+            z-index: 1001;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #fff;
+            padding: 10px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .hamburger-menu:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 8px 25px rgba(255,255,255,0.3);
+        }
+
+        .contact-menu {
+            position: fixed;
+            top: 75px; left: 20px;
+            background: #000;
+            backdrop-filter: blur(25px);
+            border: 1px solid #fff;
+            border-radius: 20px;
+            padding: 1.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-15px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            min-width: 220px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .contact-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-item::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .contact-item:hover::before { left: 100%; }
+        .contact-item:last-child { margin-bottom: 0; }
+
+        .contact-item:hover {
+            background: #fff;
+            color: #000;
+            transform: translateX(8px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.4);
+        }
+
+        .contact-icon {
+            font-size: 1.2rem;
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .contact-item:hover .contact-icon { opacity: 1; transform: scale(1.1); }
+
+        /* CONTAINER */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            position: fixed;
+            top: 0; width: 100%;
+            background: #000;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid #fff;
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+        }
+
+        /* HERO */
+        .hero {
+            padding: 140px 0 80px;
+            text-align: center;
+            background: #000;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent, transparent 2px,
+                rgba(255,255,255,0.05) 2px, rgba(255,255,255,0.05) 4px
+            );
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(2.8rem, 8vw, 4.5rem);
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1.2rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1rem, 3vw, 1.4rem);
+            font-weight: 400;
+            color: #666;
+            margin-bottom: 2.5rem;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 14px 36px;
+            background: #fff;
+            color: #000;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before { left: 100%; }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(255,255,255,0.4);
+        }
+
+        /* SECTIONS */
+        section { padding: 80px 0; }
+
+        .section-title {
+            font-family: 'Inter', sans-serif;
+            font-size: clamp(1.6rem, 4vw, 2.4rem);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #fff;
+            letter-spacing: -0.02em;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px; left: 50%;
+            transform: translateX(-50%);
+            width: 60px; height: 2px;
+            background: #fff;
+            border-radius: 2px;
+        }
+
+        /* CARDS */
+        .card {
+            background: #000;
+            border: 1px solid #fff;
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .card:hover {
+            background: #111;
+            border-color: #fff;
+            transform: translateY(-6px);
+            box-shadow: 0 16px 36px rgba(255,255,255,0.15);
+        }
+
+        /* PLATFORM SECTION */
+        .platform-section {
+            background: #000;
+            position: relative;
+            border-top: 1px solid #333;
+            border-bottom: 1px solid #333;
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .platform-option {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1.5rem;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            background: #111;
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .platform-option::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: #fff;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .platform-option:hover::before { transform: scaleX(1); }
+
+        .platform-option:hover {
+            background: #222;
+            border-color: #fff;
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.1);
+        }
+
+        .platform-icon {
+            font-size: 3rem;
+            margin-bottom: 1.2rem;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+            color: #fff;
+        }
+
+        .platform-option:hover .platform-icon {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .platform-option h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: #fff;
+        }
+
+        .platform-option p {
+            font-family: 'Inter', sans-serif;
+            color: #666;
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        /* FEATURES */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card { text-align: center; }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .feature-card h3 {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: #fff;
+        }
+
+        .feature-card p {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        /* PRICING TABLE */
+        .pricing-section {
+            background: #000;
+            position: relative;
+        }
+
+        .pricing-table {
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #fff;
+            background: #111;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .pricing-table thead { background: #000; }
+
+        .pricing-table th {
+            padding: 1.2rem 1rem;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.78rem;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #666;
+            border-bottom: 1px solid #333;
+        }
+
+        .pricing-table th:first-child {
+            text-align: left;
+            padding-left: 1.8rem;
+        }
+
+        .pricing-table tbody tr {
+            transition: all 0.25s ease;
+            border-bottom: 1px solid #222;
+            background: #111;
+        }
+
+        .pricing-table tbody tr:last-child { border-bottom: none; }
+
+        .pricing-table tbody tr:hover { background: #1a1a1a; }
+
+        .pricing-table td {
+            padding: 1rem 1rem;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .pricing-table td:first-child {
+            text-align: left;
+            padding-left: 1.8rem;
+            font-weight: 500;
+            color: #ccc;
+            position: relative;
+        }
+
+        .pricing-table td:first-child::before {
+            content: '₹';
+            position: absolute;
+            left: 1rem;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .pricing-table td:first-child span { margin-left: 1.2rem; }
+
+        .price-highlight {
+            color: #fff !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: #000;
+            text-align: center;
+            padding: 2.5rem 0 2rem;
+            border-top: 1px solid #333;
+        }
+
+        .footer p {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        /* TELEGRAM FLOAT */
+        .telegram-float {
+            position: fixed;
+            bottom: 25px; right: 25px;
+            width: 60px; height: 60px;
+            background: #0088cc;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: #fff;
+            text-decoration: none;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 1px #fff inset;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: telegramPulse 2s infinite;
+        }
+
+        .telegram-float:hover {
+            transform: scale(1.1) translateY(-3px);
+        }
+
+        @keyframes telegramPulse {
+            0%   { box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 0 rgba(0,136,204,0.7); }
+            70%  { box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 0 12px rgba(0,136,204,0); }
+            100% { box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 0 0 rgba(0,136,204,0); }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container { padding: 0 16px; }
+            section { padding: 60px 0; }
+            .platform-grid, .features-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+            .hero { padding: 120px 0 60px; }
+            .nav-container { padding: 0 16px; }
+            .telegram-float { bottom: 20px; right: 20px; width: 56px; height: 56px; }
+            .hamburger-menu { top: 15px; left: 15px; font-size: 1.4rem; }
+            .contact-menu { top: 65px; left: 15px; padding: 1.2rem; min-width: 190px; }
+            .pricing-table th, .pricing-table td { padding: 0.8rem 0.5rem; font-size: 0.85rem; }
+            .pricing-table th:first-child, .pricing-table td:first-child { padding-left: 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 1.8rem 1.5rem; }
+            .telegram-float { bottom: 15px; right: 15px; width: 52px; height: 52px; font-size: 1.6rem; }
+            .hamburger-menu { top: 12px; left: 12px; font-size: 1.3rem; padding: 8px; }
+            .contact-menu { top: 55px; left: 12px; padding: 1rem; }
+            .pricing-table { font-size: 0.82rem; }
+            .pricing-table td:first-child::before { display: none; }
+            .pricing-table td:first-child span { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3-Dot Contact Menu -->
+    <div class="hamburger-menu" id="hamburgerMenu">
+        <i class="fas fa-ellipsis-v"></i>
+    </div>
+
+    <div class="contact-menu" id="contactMenu">
+        <a href="https://instagram.com/astroooo_ig" class="contact-item" target="_blank">
+            <i class="fab fa-instagram contact-icon"></i>
+            Instagram
+        </a>
+        <a href="https://t.me/AstroOwnerr" class="contact-item" target="_blank">
+            <i class="fab fa-telegram-plane contact-icon"></i>
+            Telegram
+        </a>
+        <a href="mailto:developer9334@gmail.com" class="contact-item" target="_blank">
+            <i class="fas fa-envelope contact-icon"></i>
+            Email
+        </a>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Astropulse</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="container">
+            <h1>Astropulse</h1>
+            <p class="hero-subtitle">Professional SMM Panel – Fast, Secure & Affordable</p>
+            <a href="panel.html" class="cta-button">Start Ordering</a>
+        </div>
+    </section>
+
+    <!-- Platform Selection -->
+    <section class="platform-section">
+        <div class="container">
+            <h2 class="section-title">Our Platforms</h2>
+            <div class="platform-grid">
+                <a href="panel.html" class="platform-option" data-platform="instagram">
+                    <div class="platform-icon"><i class="fab fa-instagram"></i></div>
+                    <h3>Instagram</h3>
+                    <p>Likes • Followers • Views</p>
+                </a>
+                <a href="panel.html" class="platform-option" data-platform="facebook">
+                    <div class="platform-icon"><i class="fab fa-facebook-f"></i></div>
+                    <h3>Facebook</h3>
+                    <p>Views • Followers • Likes</p>
+                </a>
+                <a href="panel.html" class="platform-option" data-platform="telegram">
+                    <div class="platform-icon"><i class="fab fa-telegram-plane"></i></div>
+                    <h3>Telegram</h3>
+                    <p>Members • Views • Engagement</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="platform-section">
+        <div class="container">
+            <h2 class="section-title">Why Choose Us</h2>
+            <div class="features-grid">
+                <div class="feature-card card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Delivery</h3>
+                    <p>Orders processed in minutes</p>
+                </div>
+                <div class="feature-card card">
+                    <div class="feature-icon">💰</div>
+                    <h3>Best Prices</h3>
+                    <p>From ₹0.3 per 1K</p>
+                </div>
+                <div class="feature-card card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>100% Safe</h3>
+                    <p>Drop protection included</p>
+                </div>
+                <div class="feature-card card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Easy Payments</h3>
+                    <p>UPI QR code payments</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Table -->
+    <section class="pricing-section">
+        <div class="container">
+            <h2 class="section-title">Pricing Table</h2>
+            <table class="pricing-table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>100</th>
+                        <th>500</th>
+                        <th>1K</th>
+                        <th>5K</th>
+                        <th>10K</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span>Instagram Likes</span></td>
+                        <td class="price-highlight">₹2</td>
+                        <td>₹10</td>
+                        <td>₹20</td>
+                        <td>₹100</td>
+                        <td>₹200</td>
+                    </tr>
+                    <tr>
+                        <td><span>Instagram Followers</span></td>
+                        <td>₹4</td>
+                        <td>₹20</td>
+                        <td class="price-highlight">₹40</td>
+                        <td>₹200</td>
+                        <td>₹400</td>
+                    </tr>
+                    <tr>
+                        <td><span>Instagram Views</span></td>
+                        <td class="price-highlight">₹0.03</td>
+                        <td>₹0.15</td>
+                        <td>₹0.3</td>
+                        <td>₹1.5</td>
+                        <td>₹3</td>
+                    </tr>
+                    <tr>
+                        <td><span>Facebook Likes</span></td>
+                        <td>₹5</td>
+                        <td>₹25</td>
+                        <td class="price-highlight">₹50</td>
+                        <td>₹250</td>
+                        <td>₹500</td>
+                    </tr>
+                    <tr>
+                        <td><span>Facebook Followers</span></td>
+                        <td>₹5</td>
+                        <td>₹25</td>
+                        <td class="price-highlight">₹50</td>
+                        <td>₹250</td>
+                        <td>₹500</td>
+                    </tr>
+                    <tr>
+                        <td><span>Facebook Views</span></td>
+                        <td class="price-highlight">₹1</td>
+                        <td>₹5</td>
+                        <td>₹10</td>
+                        <td>₹50</td>
+                        <td>₹100</td>
+                    </tr>
+                    <tr>
+                        <td><span>Telegram Members</span></td>
+                        <td>₹5</td>
+                        <td>₹25</td>
+                        <td class="price-highlight">₹50</td>
+                        <td>₹250</td>
+                        <td>₹500</td>
+                    </tr>
+                    <tr>
+                        <td><span>Telegram Views</span></td>
+                        <td>₹1</td>
+                        <td>₹3</td>
+                        <td>₹5</td>
+                        <td>₹25</td>
+                        <td>₹50</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <p style="font-family: 'Inter', sans-serif; color: #666; font-size: 0.875rem;">⭐ Best prices in market • Instant start • 100% safe</p>
+                <a href="panel.html" class="cta-button" style="margin-top: 1.2rem; display: inline-block;">Order Now — From ₹1</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Astropulse. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- TELEGRAM FLOAT -->
+    <a href="https://t.me/AstroOwnerr" class="telegram-float" target="_blank">
+        <i class="fab fa-telegram-plane"></i>
+    </a>
+
+    <script>
+        const hamburgerMenu = document.getElementById('hamburgerMenu');
+        const contactMenu = document.getElementById('contactMenu');
+
+        hamburgerMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+            contactMenu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function() {
+            contactMenu.classList.remove('active');
+        });
+
+        contactMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            navbar.style.background = '#000';
+            navbar.style.borderBottom = '1px solid #fff';
+        });
+
+        document.querySelectorAll('.pricing-table tbody tr').forEach(row => {
+            row.addEventListener('mouseenter', function() { this.style.transform = 'scale(1.01)'; });
+            row.addEventListener('mouseleave', function() { this.style.transform = 'scale(1)'; });
+        });
+    </script>
+</body>
+</html>
