@@ -748,7 +748,7 @@
 
             if (code === 'ASTRO111' && !isDiscounted) {
                 isDiscounted = true;
-                ok.innerText = '✓ 20% discount applied successfully!';
+                ok.innerText = '✓ 40% discount applied successfully!';
                 ok.style.display = 'block';
                 updatePrice();
             } else if (isDiscounted) {
@@ -782,7 +782,7 @@
             const link  = document.getElementById('linkInput').value.trim();
             const txnId = document.getElementById('transactionIdInput').value.trim();
             const amt   = document.getElementById('paymentAmount').innerText;
-            const coupon = isDiscounted ? 'ASTRO123 (20% off)' : 'None';
+            const coupon = isDiscounted ? 'ASTRO123 (40% off)' : 'None';
             const orderTime = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
 
             const formData = new FormData();
