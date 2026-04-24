@@ -725,7 +725,7 @@
             const qty = parseFloat(document.getElementById('quantityInput').value) || 0;
             let total = (qty / 1000) * rate;
             const original = total;
-            if (isDiscounted) total *= 0.8;
+            if (isDiscounted) total *= 0.16;
 
             document.getElementById('totalPrice').innerText = '₹' + total.toFixed(2);
 
