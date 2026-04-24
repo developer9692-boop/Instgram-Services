@@ -725,7 +725,7 @@
             const qty = parseFloat(document.getElementById('quantityInput').value) || 0;
             let total = (qty / 1000) * rate;
             const original = total;
-            if (isDiscounted) total *= 0.16;
+            if (isDiscounted) total *= 0.8;
 
             document.getElementById('totalPrice').innerText = '₹' + total.toFixed(2);
 
@@ -748,7 +748,7 @@
 
             if (code === 'ASTRO111' && !isDiscounted) {
                 isDiscounted = true;
-                ok.innerText = '✓ 40% discount applied successfully!';
+                ok.innerText = '✓ 20% discount applied successfully!';
                 ok.style.display = 'block';
                 updatePrice();
             } else if (isDiscounted) {
