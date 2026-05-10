@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    /* ===== RESET & BASE ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #0a0a0a;
@@ -40,7 +39,6 @@
       overflow-x: hidden;
     }
 
-    /* ===== SCROLLBAR ===== */
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-track { background: var(--bg2); }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 99px; }
@@ -91,36 +89,14 @@
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .login-logo {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-    .login-logo .brand {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
+    .login-logo { text-align: center; margin-bottom: 32px; }
+    .login-logo .brand { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
     .login-logo .brand span { color: var(--neon); }
     .login-logo p { color: var(--text2); font-size: 13px; margin-top: 6px; }
-    .login-card h2 {
-      font-size: 22px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .login-card .subtitle {
-      color: var(--text2);
-      font-size: 14px;
-      margin-bottom: 28px;
-    }
+    .login-card h2 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+    .login-card .subtitle { color: var(--text2); font-size: 14px; margin-bottom: 28px; }
     .form-group { margin-bottom: 20px; }
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text2);
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
-    }
+    .form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 8px; letter-spacing: 0.5px; }
     .form-group input {
       width: 100%;
       background: var(--bg3);
@@ -133,10 +109,7 @@
       transition: border-color 0.2s, box-shadow 0.2s;
       outline: none;
     }
-    .form-group input:focus {
-      border-color: var(--neon);
-      box-shadow: 0 0 0 3px rgba(0,255,204,0.1);
-    }
+    .form-group input:focus { border-color: var(--neon); box-shadow: 0 0 0 3px rgba(0,255,204,0.1); }
     .login-btn {
       width: 100%;
       padding: 13px;
@@ -182,30 +155,12 @@
       z-index: 100;
       transition: transform 0.3s ease;
     }
-    .sidebar-brand {
-      padding: 24px 20px;
-      border-bottom: 1px solid var(--border);
-    }
-    .sidebar-brand .brand {
-      font-size: 18px;
-      font-weight: 700;
-    }
+    .sidebar-brand { padding: 24px 20px; border-bottom: 1px solid var(--border); }
+    .sidebar-brand .brand { font-size: 18px; font-weight: 700; }
     .sidebar-brand .brand span { color: var(--neon); }
-    .sidebar-brand .version {
-      font-size: 11px;
-      color: var(--text3);
-      margin-top: 2px;
-    }
+    .sidebar-brand .version { font-size: 11px; color: var(--text3); margin-top: 2px; }
     .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
-    .nav-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--text3);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 0 8px;
-      margin: 16px 0 8px;
-    }
+    .nav-label { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; padding: 0 8px; margin: 16px 0 8px; }
     .nav-item {
       display: flex;
       align-items: center;
@@ -222,10 +177,7 @@
     .nav-item:hover { background: var(--bg3); color: var(--text); }
     .nav-item.active { background: rgba(0,255,204,0.08); color: var(--neon); border: 1px solid rgba(0,255,204,0.15); }
     .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-    .sidebar-footer {
-      padding: 16px 12px;
-      border-top: 1px solid var(--border);
-    }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
     .logout-btn {
       display: flex;
       align-items: center;
@@ -261,14 +213,7 @@
       z-index: 50;
     }
     .topbar-left { display: flex; align-items: center; gap: 16px; }
-    .hamburger {
-      display: none;
-      background: none;
-      border: none;
-      color: var(--text);
-      cursor: pointer;
-      padding: 4px;
-    }
+    .hamburger { display: none; background: none; border: none; color: var(--text); cursor: pointer; padding: 4px; }
     .hamburger svg { width: 22px; height: 22px; }
     .page-title { font-size: 16px; font-weight: 600; }
     .topbar-right { display: flex; align-items: center; gap: 12px; }
@@ -290,11 +235,51 @@
       border-radius: 50%;
       animation: blink 1.5s ease infinite;
     }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.2; }
-    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
     .topbar-time { font-size: 13px; color: var(--text2); }
+
+    /* ===== BACKEND STATUS BANNER ===== */
+    .backend-banner {
+      margin: 0 24px 0;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .backend-banner.error {
+      display: flex;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: #fca5a5;
+    }
+    .backend-banner.warning {
+      display: flex;
+      background: rgba(245,158,11,0.08);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: #fcd34d;
+    }
+    .backend-banner.success {
+      display: flex;
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.25);
+      color: #86efac;
+    }
+    .banner-retry {
+      margin-left: auto;
+      padding: 4px 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+    .banner-retry:hover { background: rgba(255,255,255,0.15); }
 
     /* ===== PAGE CONTENT ===== */
     .page-content { padding: 24px; }
@@ -330,14 +315,7 @@
     .stat-card.completed::before { background: var(--success); }
     .stat-card.revenue::before { background: var(--neon2); }
     .stat-card.today::before { background: var(--info); }
-    .stat-icon {
-      width: 38px; height: 38px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 14px;
-    }
+    .stat-icon { width: 38px; height: 38px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
     .stat-icon svg { width: 18px; height: 18px; }
     .stat-card.total .stat-icon { background: rgba(0,255,204,0.1); color: var(--neon); }
     .stat-card.pending .stat-icon { background: rgba(245,158,11,0.1); color: var(--warning); }
@@ -345,13 +323,7 @@
     .stat-card.revenue .stat-icon { background: rgba(124,58,237,0.1); color: #a78bfa; }
     .stat-card.today .stat-icon { background: rgba(59,130,246,0.1); color: var(--info); }
     .stat-label { font-size: 12px; color: var(--text2); font-weight: 500; letter-spacing: 0.3px; }
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      margin: 6px 0 4px;
-      letter-spacing: -1px;
-      transition: all 0.3s;
-    }
+    .stat-value { font-size: 28px; font-weight: 700; margin: 6px 0 4px; letter-spacing: -1px; transition: all 0.3s; }
     .stat-sub { font-size: 12px; color: var(--text3); }
     .stat-card:nth-child(1) { animation-delay: 0.05s; }
     .stat-card:nth-child(2) { animation-delay: 0.1s; }
@@ -371,19 +343,8 @@
       flex-wrap: wrap;
       margin-bottom: 20px;
     }
-    .search-wrap {
-      flex: 1;
-      min-width: 200px;
-      position: relative;
-    }
-    .search-wrap svg {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 16px; height: 16px;
-      color: var(--text3);
-    }
+    .search-wrap { flex: 1; min-width: 200px; position: relative; }
+    .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text3); }
     .search-wrap input {
       width: 100%;
       background: var(--bg3);
@@ -426,35 +387,14 @@
       border: none;
     }
     .action-btn svg { width: 15px; height: 15px; }
-    .btn-export {
-      background: rgba(59,130,246,0.1);
-      color: #93c5fd;
-      border: 1px solid rgba(59,130,246,0.2);
-    }
+    .btn-export { background: rgba(59,130,246,0.1); color: #93c5fd; border: 1px solid rgba(59,130,246,0.2); }
     .btn-export:hover { background: rgba(59,130,246,0.2); }
-    .btn-refresh {
-      background: rgba(0,255,204,0.08);
-      color: var(--neon);
-      border: 1px solid rgba(0,255,204,0.2);
-    }
+    .btn-refresh { background: rgba(0,255,204,0.08); color: var(--neon); border: 1px solid rgba(0,255,204,0.2); }
     .btn-refresh:hover { background: rgba(0,255,204,0.15); }
-    .auto-badge {
-      font-size: 11px;
-      background: rgba(34,197,94,0.1);
-      color: #86efac;
-      border: 1px solid rgba(34,197,94,0.2);
-      padding: 2px 8px;
-      border-radius: 99px;
-      margin-left: 4px;
-    }
+    .auto-badge { font-size: 11px; background: rgba(34,197,94,0.1); color: #86efac; border: 1px solid rgba(34,197,94,0.2); padding: 2px 8px; border-radius: 99px; margin-left: 4px; }
 
     /* ===== ORDER TABLE ===== */
-    .table-wrap {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
+    .table-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
     .table-header {
       padding: 16px 20px;
       border-bottom: 1px solid var(--border);
@@ -465,21 +405,9 @@
       flex-wrap: wrap;
     }
     .table-title { font-size: 15px; font-weight: 600; }
-    .order-count {
-      font-size: 12px;
-      color: var(--text2);
-      background: var(--bg3);
-      padding: 3px 10px;
-      border-radius: 99px;
-      border: 1px solid var(--border);
-    }
+    .order-count { font-size: 12px; color: var(--text2); background: var(--bg3); padding: 3px 10px; border-radius: 99px; border: 1px solid var(--border); }
     .table-scroll { overflow-x: auto; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      min-width: 1200px;
-    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 1200px; }
     thead th {
       background: var(--bg3);
       padding: 11px 14px;
@@ -492,50 +420,18 @@
       white-space: nowrap;
       border-bottom: 1px solid var(--border);
     }
-    tbody tr {
-      border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-    }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: rgba(255,255,255,0.02); }
-    td {
-      padding: 12px 14px;
-      color: var(--text2);
-      vertical-align: middle;
-      white-space: nowrap;
-    }
+    td { padding: 12px 14px; color: var(--text2); vertical-align: middle; white-space: nowrap; }
     td:first-child { color: var(--text); font-weight: 500; }
-    .platform-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+    .platform-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .platform-instagram { background: rgba(225,48,108,0.1); color: #f9a8d4; border: 1px solid rgba(225,48,108,0.2); }
-    .platform-youtube { background: rgba(255,0,0,0.1); color: #fca5a5; border: 1px solid rgba(255,0,0,0.2); }
-    .platform-tiktok { background: rgba(0,255,204,0.08); color: var(--neon); border: 1px solid rgba(0,255,204,0.2); }
     .platform-facebook { background: rgba(59,130,246,0.1); color: #93c5fd; border: 1px solid rgba(59,130,246,0.2); }
-    .platform-twitter { background: rgba(29,161,242,0.1); color: #7dd3fc; border: 1px solid rgba(29,161,242,0.2); }
+    .platform-telegram { background: rgba(0,136,204,0.1); color: #7dd3fc; border: 1px solid rgba(0,136,204,0.2); }
     .platform-default { background: rgba(255,255,255,0.05); color: var(--text2); border: 1px solid var(--border); }
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .status-badge::before {
-      content: '';
-      width: 5px; height: 5px;
-      border-radius: 50%;
-    }
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 600; }
+    .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
     .status-pending { background: rgba(245,158,11,0.1); color: #fcd34d; border: 1px solid rgba(245,158,11,0.2); }
     .status-pending::before { background: #fcd34d; }
     .status-processing { background: rgba(59,130,246,0.1); color: #93c5fd; border: 1px solid rgba(59,130,246,0.2); }
@@ -544,127 +440,38 @@
     .status-completed::before { background: #86efac; }
     .status-cancelled { background: rgba(239,68,68,0.1); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
     .status-cancelled::before { background: #fca5a5; }
-    .link-text {
-      max-width: 150px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: block;
-    }
+    .link-text { max-width: 150px; overflow: hidden; text-overflow: ellipsis; display: block; }
     .action-cell { display: flex; align-items: center; gap: 6px; }
-    .tbl-btn {
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.15s;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
+    .tbl-btn { padding: 5px 10px; border-radius: 6px; font-size: 11px; font-family: 'Inter', sans-serif; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; display: inline-flex; align-items: center; gap: 4px; }
     .tbl-btn svg { width: 12px; height: 12px; }
-    .btn-complete {
-      background: rgba(34,197,94,0.1);
-      color: #86efac;
-      border: 1px solid rgba(34,197,94,0.2);
-    }
+    .btn-complete { background: rgba(34,197,94,0.1); color: #86efac; border: 1px solid rgba(34,197,94,0.2); }
     .btn-complete:hover { background: rgba(34,197,94,0.2); }
-    .btn-delete {
-      background: rgba(239,68,68,0.1);
-      color: #fca5a5;
-      border: 1px solid rgba(239,68,68,0.2);
-    }
+    .btn-delete { background: rgba(239,68,68,0.1); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
     .btn-delete:hover { background: rgba(239,68,68,0.2); }
-    .loading-row td {
-      text-align: center;
-      padding: 48px;
-      color: var(--text3);
-    }
-    .loader {
-      display: inline-block;
-      width: 20px; height: 20px;
-      border: 2px solid var(--border2);
-      border-top-color: var(--neon);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-bottom: 8px;
-    }
+    .loading-row td { text-align: center; padding: 48px; color: var(--text3); }
+    .loader { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border2); border-top-color: var(--neon); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-    }
+    .empty-state { text-align: center; padding: 60px 20px; }
     .empty-state svg { width: 48px; height: 48px; color: var(--text3); margin-bottom: 16px; }
     .empty-state p { color: var(--text3); font-size: 14px; }
+    .empty-state .error-detail { color: rgba(239,68,68,0.7); font-size: 12px; margin-top: 8px; }
+    .empty-state .retry-link { color: var(--neon); cursor: pointer; text-decoration: underline; font-size: 13px; margin-top: 12px; display: inline-block; }
 
     /* ===== PAGINATION ===== */
-    .pagination {
-      padding: 14px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+    .pagination { padding: 14px 20px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
     .page-info { font-size: 13px; color: var(--text2); }
     .page-btns { display: flex; gap: 6px; }
-    .page-btn {
-      width: 32px; height: 32px;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text2);
-      font-size: 13px;
-      font-family: 'Inter', sans-serif;
-      cursor: pointer;
-      transition: all 0.15s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .page-btn { width: 32px; height: 32px; background: var(--bg3); border: 1px solid var(--border); border-radius: 6px; color: var(--text2); font-size: 13px; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
     .page-btn:hover { border-color: var(--border2); color: var(--text); }
     .page-btn.active { background: var(--text); color: #000; border-color: var(--text); font-weight: 600; }
     .page-btn:disabled { opacity: 0.3; cursor: default; }
 
     /* ===== TOAST ===== */
-    #toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      pointer-events: none;
-    }
-    .toast {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--bg3);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      font-size: 13px;
-      min-width: 280px;
-      max-width: 360px;
-      pointer-events: auto;
-      animation: slideIn 0.3s ease;
-      backdrop-filter: blur(10px);
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(100%); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-    .toast.fade-out {
-      animation: slideOut 0.3s ease forwards;
-    }
-    @keyframes slideOut {
-      to { opacity: 0; transform: translateX(100%); }
-    }
+    #toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+    .toast { display: flex; align-items: center; gap: 12px; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 13px; min-width: 280px; max-width: 360px; pointer-events: auto; animation: slideIn 0.3s ease; backdrop-filter: blur(10px); }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+    .toast.fade-out { animation: slideOut 0.3s ease forwards; }
+    @keyframes slideOut { to { opacity: 0; transform: translateX(100%); } }
     .toast-icon { width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     .toast-icon svg { width: 12px; height: 12px; }
     .toast.success .toast-icon { background: rgba(34,197,94,0.2); color: #86efac; }
@@ -676,52 +483,16 @@
     .toast-text { flex: 1; color: var(--text); }
 
     /* ===== NOTIFICATION BADGE ===== */
-    .notif-btn {
-      position: relative;
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 7px;
-      cursor: pointer;
-      color: var(--text2);
-      transition: all 0.2s;
-    }
+    .notif-btn { position: relative; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px; cursor: pointer; color: var(--text2); transition: all 0.2s; }
     .notif-btn:hover { border-color: var(--border2); color: var(--text); }
     .notif-btn svg { width: 18px; height: 18px; display: block; }
-    .notif-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 16px;
-      height: 16px;
-      background: var(--danger);
-      border-radius: 50%;
-      font-size: 9px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      display: none;
-    }
+    .notif-badge { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: var(--danger); border-radius: 50%; font-size: 9px; font-weight: 700; display: none; align-items: center; justify-content: center; color: #fff; }
 
-    /* ===== OVERLAY for mobile sidebar ===== */
-    #sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      z-index: 99;
-    }
+    #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99; }
 
-    /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-      .sidebar.open {
-        transform: translateX(0);
-      }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
       #sidebar-overlay.open { display: block; }
       .main { margin-left: 0; }
       .hamburger { display: block; }
@@ -766,7 +537,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
         <div class="brand">Astro<span>Pulse</span></div>
-        <div class="version">Admin Panel v1.0</div>
+        <div class="version">Admin Panel v1.1</div>
       </div>
       <nav class="sidebar-nav">
         <div class="nav-label">Main</div>
@@ -818,6 +589,12 @@
           </button>
           <span class="topbar-time" id="clock"></span>
         </div>
+      </div>
+
+      <!-- ✅ FIX: Backend status banner -->
+      <div class="backend-banner" id="backend-banner">
+        <span id="banner-msg"></span>
+        <button class="banner-retry" onclick="loadOrders()">Retry Now</button>
       </div>
 
       <!-- Content -->
@@ -889,7 +666,7 @@
             <option value="">All Platforms</option>
             <option value="instagram">Instagram</option>
             <option value="facebook">Facebook</option>
-            <option value="twitter">Telegram</option>
+            <option value="telegram">Telegram</option>
           </select>
           <select class="filter-select" id="status-filter" onchange="applyFilters()">
             <option value="">All Status</option>
@@ -946,7 +723,7 @@
                 <tr class="loading-row">
                   <td colspan="15">
                     <div><div class="loader"></div></div>
-                    <p>Loading orders...</p>
+                    <p>Connecting to backend...</p>
                   </td>
                 </tr>
               </tbody>
@@ -963,43 +740,41 @@
   </div><!-- /layout -->
 </div><!-- /dashboard -->
 
-<!-- Toast Container -->
 <div id="toast-container"></div>
 
 <script>
   /* ============================================================
      CONFIGURATION
+     ✅ FIX 1: API_URL now matches panel.html exactly — both use /api/orders
   ============================================================ */
-  // 👇 Replace with your deployed backend URL
-  const API_URL = "https://smmbackend-1-xdx4.onrender.com";
+  const API_URL    = "https://smmbackend-1-xdx4.onrender.com/api/orders";
   const ADMIN_USER = "Astropulse";
   const ADMIN_PASS = "915512";
-  const PAGE_SIZE = 15;
+  const PAGE_SIZE  = 15;
+  const FETCH_TIMEOUT_MS = 20000; // 20s — Render cold-start can take ~15s
 
   /* ============================================================
      STATE
   ============================================================ */
-  let allOrders = [];
+  let allOrders      = [];
   let filteredOrders = [];
-  let currentPage = 1;
+  let currentPage    = 1;
   let autoRefreshTimer = null;
   let prevOrderCount = 0;
-  let newOrderCount = 0;
+  let newOrderCount  = 0;
+  let consecutiveFails = 0;
 
   /* ============================================================
      AUTH
   ============================================================ */
   function checkAuth() {
-    const loggedIn = localStorage.getItem("ap_admin_auth");
-    if (loggedIn === "true") {
-      showDashboard();
-    }
+    if (localStorage.getItem("ap_admin_auth") === "true") showDashboard();
   }
 
   function handleLogin() {
     const user = document.getElementById("username").value.trim();
     const pass = document.getElementById("password").value.trim();
-    const err = document.getElementById("login-error");
+    const err  = document.getElementById("login-error");
     if (user === ADMIN_USER && pass === ADMIN_PASS) {
       localStorage.setItem("ap_admin_auth", "true");
       err.style.display = "none";
@@ -1027,7 +802,6 @@
     startAutoRefresh();
   }
 
-  // Enter key on login
   document.addEventListener("keydown", function(e) {
     if (e.key === "Enter" && document.getElementById("login-page").style.display !== "none") {
       handleLogin();
@@ -1064,19 +838,68 @@
   }
 
   /* ============================================================
+     BACKEND BANNER HELPERS
+  ============================================================ */
+  function showBanner(msg, type) {
+    const banner = document.getElementById("backend-banner");
+    document.getElementById("banner-msg").textContent = msg;
+    banner.className = "backend-banner " + type;
+  }
+  function hideBanner() {
+    document.getElementById("backend-banner").className = "backend-banner";
+  }
+
+  /* ============================================================
+     ✅ FIX 2: fetchWithTimeout — handles Render cold-start delays
+  ============================================================ */
+  async function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(id);
+      return res;
+    } catch (e) {
+      clearTimeout(id);
+      throw e;
+    }
+  }
+
+  /* ============================================================
      LOAD ORDERS
+     ✅ FIX 3: Uses API_URL (which is now /api/orders), has timeout,
+               shows descriptive errors, tracks consecutive failures
   ============================================================ */
   async function loadOrders() {
     try {
       const icon = document.getElementById("refresh-icon");
       icon.style.animation = "spin 0.8s linear infinite";
 
-      const res = await fetch(API_URL, {
-        headers: { "Content-Type": "application/json" }
+      const res = await fetchWithTimeout(API_URL, {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        }
       });
 
-      if (!res.ok) throw new Error("Server error " + res.status);
-      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+      }
+
+      let data;
+      try {
+        data = await res.json();
+      } catch (_) {
+        throw new Error("Backend returned invalid JSON. Check your server response.");
+      }
+
+      if (!Array.isArray(data)) {
+        throw new Error(`Expected array of orders, got: ${typeof data}. Check your API route.`);
+      }
+
+      // Successful load — reset failures
+      consecutiveFails = 0;
+      hideBanner();
 
       // Detect new orders
       if (allOrders.length > 0 && data.length > prevOrderCount) {
@@ -1092,11 +915,42 @@
       applyFilters();
 
       icon.style.animation = "";
+
     } catch (err) {
-      console.error(err);
-      showToast("Failed to load orders. Check API_URL.", "error");
+      consecutiveFails++;
+      console.error("loadOrders error:", err.message);
       document.getElementById("refresh-icon").style.animation = "";
-      renderEmpty("Cannot connect to backend. Please check your API URL.");
+
+      // ✅ FIX 4: Friendly, actionable error messages
+      let bannerMsg, emptyMsg, errorDetail;
+
+      if (err.name === "AbortError") {
+        bannerMsg   = "⏳ Backend is waking up (Render cold-start). Retrying automatically...";
+        emptyMsg    = "Backend is starting up — this can take up to 30 seconds on Render's free plan.";
+        errorDetail = "If this persists, your server may be down or the URL may be wrong.";
+        showBanner(bannerMsg, "warning");
+      } else if (err.message.includes("Failed to fetch") || err.message.includes("NetworkError")) {
+        bannerMsg   = "⚠️ Cannot reach backend. Check CORS settings on your server.";
+        emptyMsg    = "Network error — could not connect to the backend.";
+        errorDetail = "Make sure your backend has CORS enabled: app.use(cors())";
+        showBanner(bannerMsg, "error");
+      } else if (err.message.startsWith("HTTP")) {
+        bannerMsg   = `⚠️ Server error: ${err.message}`;
+        emptyMsg    = `Server returned an error: ${err.message}`;
+        errorDetail = "Check your backend logs on Render for details.";
+        showBanner(bannerMsg, "error");
+      } else {
+        bannerMsg   = `⚠️ ${err.message}`;
+        emptyMsg    = err.message;
+        errorDetail = `API URL in use: ${API_URL}`;
+        showBanner(bannerMsg, "error");
+      }
+
+      if (allOrders.length === 0) {
+        renderEmpty(emptyMsg, errorDetail);
+      }
+
+      showToast("Failed to load orders — see banner for details.", "error");
     }
   }
 
@@ -1108,11 +962,11 @@
      STATS
   ============================================================ */
   function updateStats() {
-    const total = allOrders.length;
-    const pending = allOrders.filter(o => o.status === "Pending").length;
+    const total     = allOrders.length;
+    const pending   = allOrders.filter(o => o.status === "Pending").length;
     const completed = allOrders.filter(o => o.status === "Completed").length;
-    const revenue = allOrders.reduce((s, o) => s + (parseFloat(o.amount) || 0), 0);
-    const today = new Date().toDateString();
+    const revenue   = allOrders.reduce((s, o) => s + (parseFloat(o.amount) || 0), 0);
+    const today     = new Date().toDateString();
     const todayCount = allOrders.filter(o => new Date(o.createdAt).toDateString() === today).length;
 
     animateNumber("stat-total", total);
@@ -1144,9 +998,9 @@
      FILTERS
   ============================================================ */
   function applyFilters() {
-    const search = document.getElementById("search-input").value.toLowerCase();
+    const search   = document.getElementById("search-input").value.toLowerCase();
     const platform = document.getElementById("platform-filter").value.toLowerCase();
-    const status = document.getElementById("status-filter").value;
+    const status   = document.getElementById("status-filter").value;
 
     filteredOrders = allOrders.filter(o => {
       const matchSearch = !search ||
@@ -1156,7 +1010,7 @@
         (o.service && o.service.toLowerCase().includes(search));
 
       const matchPlatform = !platform || (o.platform && o.platform.toLowerCase() === platform);
-      const matchStatus = !status || o.status === status;
+      const matchStatus   = !status || o.status === status;
 
       return matchSearch && matchPlatform && matchStatus;
     });
@@ -1181,8 +1035,8 @@
     }
 
     const start = (currentPage - 1) * PAGE_SIZE;
-    const end = Math.min(start + PAGE_SIZE, total);
-    const page = filteredOrders.slice(start, end);
+    const end   = Math.min(start + PAGE_SIZE, total);
+    const page  = filteredOrders.slice(start, end);
 
     document.getElementById("page-info").textContent = `Showing ${start + 1}–${end} of ${total}`;
 
@@ -1224,7 +1078,7 @@
     renderPagination(total);
   }
 
-  function renderEmpty(msg) {
+  function renderEmpty(msg, detail = "") {
     document.getElementById("orders-tbody").innerHTML = `
       <tr>
         <td colspan="15">
@@ -1233,6 +1087,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
             </svg>
             <p>${msg}</p>
+            ${detail ? `<p class="error-detail">${detail}</p>` : ''}
+            <span class="retry-link" onclick="loadOrders()">↻ Retry connection</span>
           </div>
         </td>
       </tr>
@@ -1244,10 +1100,8 @@
     if (!p) return "platform-default";
     const lp = p.toLowerCase();
     if (lp.includes("instagram")) return "platform-instagram";
-    if (lp.includes("youtube")) return "platform-youtube";
-    if (lp.includes("tiktok")) return "platform-tiktok";
-    if (lp.includes("facebook")) return "platform-facebook";
-    if (lp.includes("twitter")) return "platform-twitter";
+    if (lp.includes("facebook"))  return "platform-facebook";
+    if (lp.includes("telegram"))  return "platform-telegram";
     return "platform-default";
   }
 
@@ -1255,7 +1109,7 @@
      PAGINATION
   ============================================================ */
   function renderPagination(total) {
-    const pages = Math.ceil(total / PAGE_SIZE);
+    const pages     = Math.ceil(total / PAGE_SIZE);
     const container = document.getElementById("page-btns");
     if (pages <= 1) { container.innerHTML = ""; return; }
 
@@ -1268,7 +1122,7 @@
     `;
 
     const start = Math.max(1, currentPage - 2);
-    const end = Math.min(pages, currentPage + 2);
+    const end   = Math.min(pages, currentPage + 2);
     for (let i = start; i <= end; i++) {
       html += `<button class="page-btn ${i === currentPage ? "active" : ""}" onclick="goPage(${i})">${i}</button>`;
     }
@@ -1292,31 +1146,32 @@
 
   /* ============================================================
      ACTIONS
+     ✅ FIX 5: Uses API_URL (now /api/orders) for PATCH and DELETE
   ============================================================ */
   async function markComplete(id) {
     try {
-      const res = await fetch(`${API_URL}/${id}`, {
+      const res = await fetchWithTimeout(`${API_URL}/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "Completed" })
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       showToast("Order marked as completed!", "success");
       loadOrders();
-    } catch {
-      showToast("Failed to update order.", "error");
+    } catch (e) {
+      showToast("Failed to update order: " + e.message, "error");
     }
   }
 
   async function deleteOrder(id) {
     if (!confirm("Delete this order permanently?")) return;
     try {
-      const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
+      const res = await fetchWithTimeout(`${API_URL}/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       showToast("Order deleted.", "info");
       loadOrders();
-    } catch {
-      showToast("Failed to delete order.", "error");
+    } catch (e) {
+      showToast("Failed to delete order: " + e.message, "error");
     }
   }
 
@@ -1331,10 +1186,10 @@
       o.coupon, o.transactionId, o.device, o.browser, o.os, o.ip,
       o.createdAt ? new Date(o.createdAt).toLocaleString() : "", o.status
     ].map(v => `"${(v || "").toString().replace(/"/g, '""')}"`).join(","));
-    const csv = [headers.join(","), ...rows].join("\n");
+    const csv  = [headers.join(","), ...rows].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
     a.href = url; a.download = `astropulse_orders_${Date.now()}.csv`;
     a.click(); URL.revokeObjectURL(url);
     showToast("Orders exported successfully!", "success");
@@ -1362,8 +1217,8 @@
   function showToast(msg, type = "info") {
     const icons = {
       success: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`,
-      error: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`,
-      info: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>`
+      error:   `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>`,
+      info:    `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" /></svg>`
     };
     const toast = document.createElement("div");
     toast.className = `toast ${type}`;

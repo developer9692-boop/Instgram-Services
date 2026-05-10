@@ -72,10 +72,7 @@
             text-decoration: none;
             transition: all 0.3s ease;
         }
-        .exit-btn:hover {
-            color: #fff;
-            border-color: #fff;
-        }
+        .exit-btn:hover { color: #fff; border-color: #fff; }
 
         /* CONTAINER */
         .container {
@@ -85,11 +82,7 @@
             position: relative;
             z-index: 1;
         }
-
-        .page-wrap {
-            padding-top: 100px;
-            padding-bottom: 100px;
-        }
+        .page-wrap { padding-top: 100px; padding-bottom: 100px; }
 
         /* STEPS NAV */
         .steps-nav {
@@ -108,7 +101,6 @@
         }
         .step.active { opacity: 1; }
         .step.done { opacity: 0.55; }
-
         .step-circle {
             width: 34px; height: 34px;
             border-radius: 50%;
@@ -118,15 +110,8 @@
             flex-shrink: 0;
             transition: all 0.35s ease;
         }
-        .step.active .step-circle {
-            border-color: #fff;
-            background: #fff;
-            color: #000;
-        }
-        .step.done .step-circle {
-            border-color: #fff;
-            color: #fff;
-        }
+        .step.active .step-circle { border-color: #fff; background: #fff; color: #000; }
+        .step.done .step-circle { border-color: #fff; color: #fff; }
         .step-label {
             font-size: 0.78rem;
             font-weight: 500;
@@ -135,12 +120,7 @@
             color: #ccc;
         }
         .step.active .step-label { color: #fff; }
-
-        .step-line {
-            width: 36px; height: 1px;
-            background: #222;
-            flex-shrink: 0;
-        }
+        .step-line { width: 36px; height: 1px; background: #222; flex-shrink: 0; }
         @media (max-width: 480px) {
             .step-label { display: none; }
             .step-line { width: 18px; }
@@ -163,18 +143,8 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .card-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 6px;
-            letter-spacing: -0.02em;
-        }
-        .card-sub {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 28px;
-        }
+        .card-title { font-size: 1.6rem; font-weight: 700; color: #fff; margin-bottom: 6px; letter-spacing: -0.02em; }
+        .card-sub { font-size: 0.9rem; color: #666; margin-bottom: 28px; }
 
         /* PLATFORM GRID */
         .platform-grid {
@@ -205,18 +175,15 @@
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
-        .platform-option:hover::before,
-        .platform-option.selected::before { transform: scaleX(1); }
-        .platform-option:hover,
-        .platform-option.selected {
+        .platform-option:hover::before, .platform-option.selected::before { transform: scaleX(1); }
+        .platform-option:hover, .platform-option.selected {
             background: #222;
             border-color: #fff;
             transform: translateY(-4px);
             box-shadow: 0 10px 30px rgba(255,255,255,0.1);
         }
         .platform-option i { font-size: 2rem; color: #fff; opacity: 0.7; transition: opacity 0.2s; }
-        .platform-option:hover i,
-        .platform-option.selected i { opacity: 1; }
+        .platform-option:hover i, .platform-option.selected i { opacity: 1; }
         .platform-option span { font-size: 0.85rem; font-weight: 500; color: #ccc; }
         .platform-option.selected span { color: #fff; }
 
@@ -240,11 +207,7 @@
             transition: all 0.25s ease;
         }
         .service-option:hover { border-color: #fff; color: #fff; background: #1a1a1a; }
-        .service-option.selected {
-            border-color: #fff;
-            color: #fff;
-            background: #222;
-        }
+        .service-option.selected { border-color: #fff; color: #fff; background: #222; }
 
         /* FIELD */
         .field { margin-bottom: 22px; }
@@ -281,21 +244,9 @@
             text-align: center;
             margin: 20px 0;
         }
-        .price-meta {
-            font-size: 0.78rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: #555;
-            margin-bottom: 4px;
-        }
+        .price-meta { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #555; margin-bottom: 4px; }
         .price-rate { font-size: 0.9rem; color: #555; margin-bottom: 6px; }
-        .price-total {
-            font-size: 3.2rem;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: -0.03em;
-            line-height: 1;
-        }
+        .price-total { font-size: 3.2rem; font-weight: 700; color: #fff; letter-spacing: -0.03em; line-height: 1; }
         @media (max-width: 400px) { .price-total { font-size: 2.4rem; } }
 
         /* QR */
@@ -412,20 +363,10 @@
             text-decoration: none;
             transition: all 0.3s ease;
         }
-        .btn-primary {
-            background: #fff;
-            color: #000;
-        }
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255,255,255,0.4);
-        }
+        .btn-primary { background: #fff; color: #000; }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(255,255,255,0.4); }
         .btn-primary:disabled { opacity: 0.25; cursor: not-allowed; }
-        .btn-secondary {
-            background: transparent;
-            color: #666;
-            border: 1px solid #333;
-        }
+        .btn-secondary { background: transparent; color: #666; border: 1px solid #333; }
         .btn-secondary:hover { color: #fff; border-color: #fff; }
         @media (max-width: 400px) { .btn { padding: 12px 22px; font-size: 0.875rem; } }
 
@@ -445,33 +386,33 @@
             from { transform: scale(0.5); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
-        .success-title {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 10px;
-        }
-        .success-sub {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 32px;
-            max-width: 360px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .success-btns {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+        .success-title { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 10px; }
+        .success-sub { color: #666; font-size: 0.95rem; margin-bottom: 32px; max-width: 360px; margin-left: auto; margin-right: auto; }
+        .success-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
         /* DIVIDER */
-        .divider {
-            border: none;
-            border-top: 1px solid #222;
-            margin: 24px 0;
+        .divider { border: none; border-top: 1px solid #222; margin: 24px 0; }
+
+        /* ORDER TOAST */
+        .order-toast {
+            position: fixed;
+            bottom: 90px; right: 25px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-size: 0.875rem;
+            color: #ccc;
+            max-width: 280px;
+            z-index: 999;
+            display: none;
+            animation: toastIn 0.3s ease;
         }
+        .order-toast.show { display: block; }
+        .order-toast.success { border-color: #22c55e; color: #22c55e; }
+        .order-toast.error { border-color: #ef4444; color: #ef4444; }
+        .order-toast.loading { border-color: #555; color: #aaa; }
+        @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 
         /* TELEGRAM */
         .telegram-float {
@@ -488,9 +429,7 @@
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             animation: telegramPulse 2s infinite;
         }
-        .telegram-float:hover {
-            transform: scale(1.1) translateY(-3px);
-        }
+        .telegram-float:hover { transform: scale(1.1) translateY(-3px); }
         @keyframes telegramPulse {
             0% { box-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 0 0 0 rgba(0,136,204,0.7); }
             70% { box-shadow: 0 8px 25px rgba(0,0,0,0.6), 0 0 0 12px rgba(0,136,204,0); }
@@ -680,6 +619,9 @@
         </div>
     </div>
 
+    <!-- ORDER STATUS TOAST -->
+    <div class="order-toast" id="orderToast"></div>
+
     <!-- TELEGRAM FLOAT -->
     <a href="https://t.me/AstroOwnerr" class="telegram-float" target="_blank">
         <i class="fab fa-telegram-plane"></i>
@@ -693,6 +635,7 @@
         let isVerified = false;
         let isDiscounted = false;
 
+        // ✅ FIX 1: Unified backend URL with correct /api/orders path
         const BACKEND_URL = "https://smmbackend-1-xdx4.onrender.com/api/orders";
 
         const pricing = {
@@ -779,6 +722,17 @@
             }
         }
 
+        // ✅ FIX 2: Toast helper for user-visible feedback
+        function showOrderToast(msg, type = 'loading') {
+            const toast = document.getElementById('orderToast');
+            toast.textContent = msg;
+            toast.className = 'order-toast show ' + type;
+        }
+        function hideOrderToast() {
+            document.getElementById('orderToast').className = 'order-toast';
+        }
+
+        // ✅ FIX 3: saveOrderToBackend with timeout + proper error reporting
         async function saveOrderToBackend() {
             const qty    = document.getElementById('quantityInput').value;
             const link   = document.getElementById('linkInput').value.trim();
@@ -830,14 +784,46 @@
                 status:        'Pending'
             };
 
+            // ✅ FIX 4: AbortController for timeout (Render cold-start can be slow)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
             try {
-                await fetch(BACKEND_URL, {
+                showOrderToast('⏳ Saving order to server...', 'loading');
+
+                const res = await fetch(BACKEND_URL, {
                     method:  'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body:    JSON.stringify(orderPayload)
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body:    JSON.stringify(orderPayload),
+                    signal:  controller.signal
                 });
+
+                clearTimeout(timeoutId);
+
+                // ✅ FIX 5: Check HTTP status code, not just catch
+                if (!res.ok) {
+                    const errText = await res.text().catch(() => '');
+                    console.error('Backend returned error:', res.status, errText);
+                    showOrderToast(`⚠️ Server error (${res.status}). Order sent via email instead.`, 'error');
+                    return false;
+                }
+
+                showOrderToast('✓ Order saved!', 'success');
+                return true;
+
             } catch (e) {
-                console.error('Backend save failed:', e);
+                clearTimeout(timeoutId);
+                if (e.name === 'AbortError') {
+                    console.error('Backend request timed out');
+                    showOrderToast('⚠️ Server took too long. Order sent via email.', 'error');
+                } else {
+                    console.error('Backend save failed:', e.message);
+                    showOrderToast('⚠️ Could not reach server. Order sent via email.', 'error');
+                }
+                return false;
             }
         }
 
@@ -867,7 +853,9 @@
                     method: 'POST',
                     body:   formData
                 });
-            } catch (e) {}
+            } catch (e) {
+                console.error('Email send failed:', e);
+            }
         }
 
         async function nextStep() {
@@ -886,8 +874,15 @@
                 const btn = document.getElementById('confirmBtn');
                 btn.disabled = true;
                 btn.textContent = 'Placing Order...';
-                await saveOrderToBackend();
-                sendOrderEmail();
+
+                // ✅ FIX 6: Run both in parallel, don't block on backend failure
+                const [backendOk] = await Promise.allSettled([
+                    saveOrderToBackend(),
+                    sendOrderEmail()
+                ]);
+
+                // Order is always confirmed to user — email is the reliable fallback
+                setTimeout(hideOrderToast, 3000);
                 btn.textContent = 'Place Order →';
             }
 
