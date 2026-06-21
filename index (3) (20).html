@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASTROPULSE | SMM PANEL</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<link rel="icon" type="image/png" href="/favicon.png" sizes="32x32">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#ffffff;
+  --surface:#fff5f5;
+  --surface-2:#ffe8e8;
+  --line:rgba(220,30,30,0.13);
+  --pulse:#E8000D;
+  --pulse-2:#ff3333;
+  --violet:#E8000D;
+  --blue:#c0000a;
+  --text:#1a0505;
+  --text-dim:#6b3333;
+  --text-faint:#b07070;
+  --green:#16a34a;
+}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.5;overflow-x:hidden;font-size:15px;
+  background-image:
+    radial-gradient(ellipse 700px 380px at 12% -4%, rgba(232,0,13,0.07), transparent 60%),
+    radial-gradient(ellipse 600px 420px at 100% 8%, rgba(232,0,13,0.05), transparent 60%);
+  background-repeat:no-repeat;
+}
+h1,h2,h3,.logo-name,.hero-stat-val,.card-title{font-family:'Space Grotesk',sans-serif}
+
+/* ── NAVBAR ── */
+.navbar-wrap{position:sticky;top:0;z-index:999;padding:14px 14px 0}
+.navbar{
+  background:linear-gradient(120deg,#E8000D 0%,#c0000a 52%,#8b0000 100%);
+  padding:0 10px 0 14px;
+  height:64px;
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 10px 30px -8px rgba(232,0,13,0.45), inset 0 1px 0 rgba(255,255,255,0.18);
+  position:relative;overflow:hidden;
+  max-width:480px;margin:0 auto;
+}
+.navbar::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 85% 50%, rgba(255,255,255,0.16), transparent 60%);
+  pointer-events:none;
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;position:relative;z-index:1}
+.logo-icon{
+  width:40px;height:40px;
+  background:#7a0000;
+  border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative;
+  box-shadow:0 0 0 1.5px rgba(255,255,255,0.25), 0 4px 10px rgba(0,0,0,0.35);
+}
+.logo-icon .ring{
+  position:absolute;width:19px;height:19px;border:1.5px solid var(--pulse-2);
+  border-radius:50%;transform:rotate(-25deg);
+}
+.logo-icon .core{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--pulse);
+  box-shadow:0 0 8px 2px rgba(255,93,58,0.9);
+}
+.logo-text{display:flex;flex-direction:column;line-height:1.12}
+.logo-name{font-size:1.12rem;font-weight:700;letter-spacing:0.01em;color:#fff}
+.logo-sub{font-size:0.6rem;font-weight:500;opacity:0.92;letter-spacing:0.07em;text-transform:uppercase;color:#ffe9e2}
+.nav-right{display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+.nav-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:#7a0000;
+  border:2px solid rgba(255,255,255,0.35);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;overflow:hidden;flex-shrink:0;
+}
+.nav-menu-btn{
+  width:42px;height:42px;
+  background:#7a0000;
+  border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  cursor:pointer;border:1.5px solid rgba(255,255,255,0.18);flex-shrink:0;
+  transition:background 0.2s,transform 0.15s;
+}
+.nav-menu-btn:hover{background:#5a0000;transform:translateY(-1px)}
+.nav-menu-btn span{display:block;width:18px;height:2px;background:#fff;border-radius:2px;transition:all 0.3s}
+
+/* ── SLIDE-IN SIDEBAR ── */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;z-index:1100;
+  background:rgba(5,6,16,0.7);
+  backdrop-filter:blur(3px);
+}
+.sidebar-overlay.open{display:block}
+.sidebar{
+  position:fixed;top:0;right:-300px;width:280px;height:100vh;
+  background:#fff;z-index:1200;
+  transition:right 0.32s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+  box-shadow:-8px 0 32px rgba(232,0,13,0.18);
+  border-left:1px solid var(--line);
+}
+.sidebar.open{right:0}
+.sidebar-header{
+  background:linear-gradient(120deg,#E8000D 0%,#c0000a 55%,#8b0000 100%);
+  padding:20px 16px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.sidebar-logo{display:flex;align-items:center;gap:8px}
+.sidebar-logo-name{font-weight:700;font-size:1rem;color:#fff;font-family:'Space Grotesk',sans-serif}
+.sidebar-close{
+  width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,0.18);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;color:#fff;font-size:1rem;
+  transition:background 0.15s;
+}
+.sidebar-close:hover{background:rgba(255,255,255,0.3)}
+.sidebar-body{flex:1;padding:16px 12px;overflow-y:auto}
+.sidebar-section-title{font-size:0.65rem;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.1em;padding:0 8px;margin-bottom:8px;margin-top:4px}
+.sidebar-item{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 12px;border-radius:12px;
+  cursor:pointer;text-decoration:none;color:#3a1010;
+  font-size:0.88rem;font-weight:500;
+  transition:background 0.15s,color 0.15s;
+  margin-bottom:4px;
+  border:none;background:transparent;width:100%;text-align:left;font-family:'Inter',sans-serif;
+}
+.sidebar-item:hover{background:#fff0f0;color:#E8000D}
+.sidebar-item i{
+  width:34px;height:34px;border-radius:9px;background:#ffe8e8;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.9rem;flex-shrink:0;color:var(--pulse);
+}
+.sidebar-item:hover i{background:#ffd0d0}
+.sidebar-item.green i{color:#25d366}
+.sidebar-item.telegram-blue i{color:#29b6f6}
+.sidebar-item.orange i{color:#ff9800}
+.sidebar-divider{height:1px;background:var(--line);margin:10px 0}
+.sidebar-footer{padding:14px 16px;border-top:1px solid var(--line)}
+.sidebar-contact-email{font-size:0.72rem;color:var(--text-faint);text-align:center}
+.sidebar-contact-email a{color:var(--pulse);text-decoration:none}
+
+/* ── HERO BANNER ── */
+.hero{
+  position:relative;
+  padding:40px 16px 30px;
+  text-align:center;
+  overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+  width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,0,13,0.18) 0%,rgba(232,0,13,0.08) 45%,transparent 72%);
+  filter:blur(6px);
+  animation:pulseGlow 3.6s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes pulseGlow{
+  0%,100%{opacity:0.65;transform:translateX(-50%) scale(0.94)}
+  50%{opacity:1;transform:translateX(-50%) scale(1.05)}
+}
+.hero-ring{
+  position:absolute;top:-30px;left:50%;transform:translateX(-50%);
+  width:220px;height:220px;border-radius:50%;
+  border:1px solid rgba(255,138,92,0.3);
+  pointer-events:none;
+}
+.hero-eyebrow{
+  position:relative;z-index:1;
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(232,0,13,0.08);
+  border:1px solid rgba(232,0,13,0.3);
+  color:#E8000D;
+  font-size:0.68rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+  padding:6px 14px;border-radius:50px;margin-bottom:16px;
+}
+.hero-eyebrow i{color:var(--pulse);font-size:0.62rem}
+.hero h1{
+  position:relative;z-index:1;
+  font-size:2.3rem;font-weight:700;margin-bottom:8px;letter-spacing:-0.01em;
+  background:linear-gradient(120deg,#E8000D 0%,#c0000a 55%,#8b0000 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hero p{position:relative;z-index:1;font-size:0.85rem;color:var(--text-dim);margin-bottom:22px}
+.hero p em{color:#ffb89a;font-style:normal;font-weight:600}
+.hero-stats{position:relative;z-index:1;display:flex;justify-content:center;gap:10px;margin-bottom:24px}
+.hero-stat{
+  text-align:center;background:rgba(255,255,255,0.04);
+  border:1px solid var(--line);border-radius:14px;
+  padding:10px 16px;backdrop-filter:blur(6px);
+}
+.hero-stat-val{font-size:1.2rem;font-weight:700;color:var(--pulse)}
+.hero-stat-lbl{font-size:0.6rem;color:var(--text-dim);letter-spacing:0.05em;text-transform:uppercase;margin-top:1px}
+.hero-btn{
+  position:relative;z-index:1;
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(120deg,var(--pulse) 0%,#ff3d6e 100%);
+  color:#fff;
+  font-weight:700;font-size:0.88rem;
+  padding:14px 30px;border-radius:50px;
+  text-decoration:none;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;
+  box-shadow:0 10px 26px -6px rgba(255,61,90,0.55);
+  transition:transform 0.15s,box-shadow 0.15s;
+}
+.hero-btn:hover{transform:translateY(-2px);box-shadow:0 14px 30px -6px rgba(255,61,90,0.65)}
+
+/* ── PAGE CONTAINER ── */
+.page{max-width:480px;margin:0 auto;padding:0 0 110px}
+
+/* ── SECTION CARD ── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:18px;
+  margin:14px;
+  overflow:hidden;
+  box-shadow:0 1px 0 rgba(255,255,255,0.03) inset;
+}
+.card.allow-overflow{overflow:visible}
+.card-header{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 16px;
+  border-bottom:1px solid var(--line);
+}
+.card-icon{
+  width:38px;height:38px;
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;
+  box-shadow:0 4px 12px -3px rgba(255,61,90,0.5);
+}
+.card-title{font-size:1.05rem;font-weight:700}
+.card-body{padding:14px 16px}
+
+/* ── ABOUT SECTION ── */
+.about-section{padding:18px 14px 6px}
+.about-section h2{font-size:1.15rem;font-weight:700;margin-bottom:10px;color:var(--pulse)}
+.about-section p{font-size:0.83rem;color:var(--text-dim);line-height:1.7;margin-bottom:10px}
+.about-section p em{color:#ffb89a;font-style:normal;font-weight:600}
+.about-points{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+.about-pt{
+  display:flex;align-items:flex-start;gap:10px;font-size:0.83rem;color:var(--pulse);
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 13px;
+}
+.about-pt i{color:var(--pulse);margin-top:2px;font-size:0.85rem;flex-shrink:0}
+
+/* ── PLATFORM SCROLL ── */
+.platform-scroll-wrap{
+  padding:16px 16px;
+  border-bottom:1px solid var(--line);
+}
+.platform-scroll-label{font-size:0.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:11px}
+.platform-scroll{
+  display:flex;gap:9px;
+  overflow-x:auto;
+  padding-bottom:6px;
+  scrollbar-width:none;
+}
+.platform-scroll::-webkit-scrollbar{display:none}
+.plat-pill{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  flex-shrink:0;
+  padding:10px 14px;
+  background:var(--surface-2);
+  border-radius:13px;
+  border:1.5px solid transparent;
+  cursor:pointer;transition:border-color 0.15s,background 0.15s,transform 0.15s;
+  min-width:72px;
+  user-select:none;
+}
+.plat-pill:hover{background:#1c2348;transform:translateY(-1px)}
+.plat-pill.active{border-color:var(--pulse);background:rgba(255,93,58,0.1)}
+.plat-pill i{font-size:1.35rem}
+.plat-pill span{font-size:0.65rem;font-weight:600;color:var(--text-dim);white-space:nowrap}
+.plat-pill.active span{color:var(--pulse)}
+.pi-ig{color:#e1306c}
+.pi-fb{color:#1877f2}
+.pi-tg{color:#29b6f6}
+.pi-yt{color:#ff0000}
+.pi-tw{color:#1da1f2}
+
+/* ── SERVICE DROPDOWN ── */
+.service-section{padding:16px 16px;border-bottom:1px solid var(--line)}
+.field-lbl{font-size:0.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:9px}
+.custom-select{position:relative}
+.select-trigger{
+  width:100%;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface-2);
+  border:1.5px solid var(--line);
+  border-radius:13px;
+  padding:13px 15px;
+  cursor:pointer;
+  font-family:'Inter',sans-serif;
+  font-size:0.88rem;color:var(--pulse);
+  gap:8px;
+  transition:border-color 0.15s;
+}
+.select-trigger:hover{border-color:rgba(124,108,255,0.4)}
+.select-trigger i.chevron{color:var(--text-dim);font-size:0.8rem;transition:transform 0.2s;flex-shrink:0}
+.select-trigger.open i.chevron{transform:rotate(180deg)}
+.select-trigger.open{border-color:var(--pulse);border-bottom-left-radius:0;border-bottom-right-radius:0}
+.select-id{
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  color:#fff;font-size:0.72rem;font-weight:700;
+  padding:3px 9px;border-radius:6px;flex-shrink:0;white-space:nowrap;
+}
+.select-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left;min-width:0}
+.dropdown-list{
+  display:none;
+  position:absolute;top:100%;left:0;right:0;z-index:200;
+  background:var(--surface-2);
+  border:1.5px solid var(--pulse);
+  border-top:none;
+  border-bottom-left-radius:13px;border-bottom-right-radius:13px;
+  max-height:260px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:#3a4060 transparent;
+  box-shadow:0 16px 30px -10px rgba(0,0,0,0.5);
+}
+.dropdown-list.open{display:block}
+.dropdown-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;
+  cursor:pointer;
+  border-bottom:1px solid var(--line);
+  font-size:0.83rem;color:var(--pulse);
+  transition:background 0.1s;
+}
+.dropdown-item:last-child{border-bottom:none}
+.dropdown-item:hover{background:#1c2348}
+.dropdown-item.selected{background:rgba(255,93,58,0.12);color:var(--pulse)}
+.d-id{background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);color:#fff;font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:6px;flex-shrink:0;white-space:nowrap}
+.d-name{flex:1;line-height:1.4}
+
+/* ── SERVICE INFO ROWS ── */
+.svc-info-section{padding:16px 16px;border-bottom:1px solid var(--line)}
+.svc-info-rows{display:flex;flex-direction:column;gap:8px}
+.info-row{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:12px 14px;
+}
+.info-row-left{display:flex;align-items:center;gap:10px;color:var(--text-dim);font-size:0.85rem}
+.info-row-left i{width:16px;text-align:center;font-size:0.9rem;color:var(--pulse-2)}
+.info-row-val{font-size:0.85rem;font-weight:700;color:var(--pulse)}
+
+/* ── MORE ABOUT ── */
+.more-about{
+  background:rgba(124,92,255,0.07);
+  border:1px solid rgba(124,92,255,0.22);
+  border-radius:13px;
+  padding:14px 15px;
+  margin:16px 16px;
+}
+.more-about-title{display:flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:700;margin-bottom:10px;color:var(--pulse)}
+.more-about-item{display:flex;align-items:flex-start;gap:8px;font-size:0.78rem;color:var(--text-dim);margin-bottom:8px;line-height:1.55}
+.more-about-item:last-child{margin-bottom:0}
+.more-about-item i{color:var(--pulse-2);margin-top:2px;font-size:0.72rem;flex-shrink:0}
+
+/* ── FORM FIELDS ── */
+.form-section{padding:16px 16px;border-bottom:1px solid var(--line)}
+.form-field{margin-bottom:14px}
+.form-field:last-child{margin-bottom:0}
+.f-label{font-size:0.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:8px}
+.f-input{
+  width:100%;
+  background:var(--surface-2);
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  padding:13px 15px;
+  color:var(--pulse);font-size:0.88rem;font-weight:700;
+  font-family:'Inter',sans-serif;
+  outline:none;transition:border-color 0.15s;
+}
+.f-input:focus{border-color:var(--pulse)}
+.f-input::placeholder{color:var(--text-faint)}
+.qty-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.price-display{
+  background:var(--surface-2);
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  padding:13px 15px;
+  font-size:0.88rem;color:var(--text-dim);
+}
+.price-display.has-price{color:var(--pulse-2);font-weight:700;font-size:1rem}
+.min-max{font-size:0.68rem;color:var(--text-faint);margin-top:6px}
+
+/* ── ORDER BTN ── */
+.order-btn-wrap{padding:14px 16px}
+.order-btn{
+  width:100%;padding:15px;
+  background:#E8000D;
+  color:#fff;border:none;
+  font-size:0.95rem;font-weight:700;
+  border-radius:12px;cursor:pointer;
+  font-family:'Inter',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:background 0.15s;
+}
+.order-btn:hover{background:#c0000a}
+
+/* ── PRICE TABLE SECTION ── */
+.price-table-section{margin:12px}
+.price-table-header{
+  background:#1e2438;border-radius:14px 14px 0 0;
+  padding:16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid #2a3050;
+}
+.price-table-header-left{display:flex;align-items:center;gap:10px}
+.price-table-toggle{
+  display:flex;gap:4px;
+}
+.pt-tab{
+  padding:6px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;
+  cursor:pointer;border:none;background:#252d45;color:#9aa3bf;
+  font-family:'Inter',sans-serif;transition:all 0.15s;white-space:nowrap;
+}
+.pt-tab.active{background:#E8000D;color:#fff}
+.price-table-wrap{
+  background:#1e2438;
+  border-radius:0 0 14px 14px;
+  overflow:hidden;
+}
+.price-table-scroll{
+  overflow-x:auto;
+  scrollbar-width:thin;
+  scrollbar-color:#3a4060 transparent;
+  max-height:360px;
+  overflow-y:auto;
+}
+table.pt{width:100%;border-collapse:collapse;min-width:500px}
+table.pt thead tr{background:#252d45;position:sticky;top:0;z-index:5}
+table.pt th{
+  padding:10px 12px;font-size:0.68rem;font-weight:700;
+  color:#9aa3bf;text-transform:uppercase;letter-spacing:0.06em;
+  text-align:left;border-bottom:1px solid #2a3050;white-space:nowrap;
+}
+table.pt td{
+  padding:10px 12px;font-size:0.78rem;color:#c5cce0;
+  border-bottom:1px solid #2a3050;vertical-align:top;
+}
+table.pt tr:last-child td{border-bottom:none}
+table.pt tbody tr:hover{background:#252d45}
+.pt-id{background:#E8000D;color:#fff;font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:5px;white-space:nowrap;display:inline-block}
+.pt-rate{color:#E8000D;font-weight:700}
+.pt-badge{
+  display:inline-block;padding:2px 7px;border-radius:5px;
+  font-size:0.62rem;font-weight:700;
+}
+.pt-badge.green{background:#1a3a1a;color:#2ecc71;border:1px solid #2ecc71}
+.pt-badge.blue{background:#1a1e3a;color:#29b6f6;border:1px solid #29b6f6}
+.pt-badge.yellow{background:#3a2e00;color:#f5c518;border:1px solid #f5c518}
+
+/* ── PAYMENT MODAL ── */
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.75);
+  align-items:flex-end;justify-content:center;
+}
+.modal-overlay.open{display:flex}
+.modal-overlay.open .modal-sheet{animation:modalSlideUp 0.34s cubic-bezier(.34,1.1,.64,1)}
+@keyframes modalSlideUp{from{transform:translateY(48px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-sheet{
+  background:#1e2438;
+  border-radius:20px 20px 0 0;
+  padding:24px 20px;
+  width:100%;max-width:480px;
+  max-height:90vh;overflow-y:auto;
+}
+.modal-handle{width:40px;height:4px;background:#3a4060;border-radius:2px;margin:0 auto 20px}
+.modal-title{font-size:1.05rem;font-weight:700;margin-bottom:6px;text-align:center}
+.modal-sub{font-size:0.78rem;color:#9aa3bf;text-align:center;margin-bottom:20px}
+.modal-order-info{
+  background:#252d45;border-radius:10px;padding:12px 14px;
+  margin-bottom:16px;
+}
+.modal-order-row{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;font-size:0.82rem;padding:5px 0;border-bottom:1px solid #2a3050}
+.modal-order-row:last-child{border-bottom:none}
+.mor-key{flex-shrink:0;padding-top:1px}
+.mor-val{text-align:right}
+.mor-key{color:#9aa3bf}.mor-val{font-weight:600;color:#fff}
+.txn-section{margin-bottom:16px}
+.txn-label{font-size:0.72rem;font-weight:600;color:#9aa3bf;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:7px}
+.modal-btn{
+  width:100%;padding:14px;
+  background:#E8000D;color:#fff;border:none;
+  font-size:0.92rem;font-weight:700;
+  border-radius:12px;cursor:pointer;
+  font-family:'Inter',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-bottom:10px;transition:background 0.15s;
+}
+.modal-btn:hover{background:#c0000a}
+.modal-btn.secondary{background:#252d45;color:#9aa3bf}
+.modal-btn.secondary:hover{background:#2d3555;color:#fff}
+
+/* ── CONFIRMATION ── */
+.confirm-screen{padding:24px 20px;text-align:center;display:none}
+.confirm-screen.active{display:block}
+.confirm-icon-wrap{
+  width:80px;height:80px;
+  background:#1a3a1a;border:2px solid #2ecc71;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;color:#2ecc71;
+  margin:0 auto 18px;
+}
+.confirm-title{font-size:1.2rem;font-weight:800;margin-bottom:6px}
+.confirm-sub{font-size:0.82rem;color:#9aa3bf;margin-bottom:22px}
+.order-id-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:#2d1e20;border:1.5px solid #E8000D;
+  border-radius:8px;padding:6px 16px;
+  font-size:0.82rem;font-weight:700;color:#E8000D;
+  margin-bottom:18px;
+}
+.conf-card{
+  background:#252d45;border-radius:12px;padding:14px;
+  text-align:left;margin-bottom:16px;
+}
+.conf-card h4{font-size:0.7rem;font-weight:700;color:#9aa3bf;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:12px}
+.conf-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid #2a3050;font-size:0.82rem}
+.conf-row:last-child{border-bottom:none}
+.conf-key{color:#9aa3bf}.conf-val{font-weight:600;color:#fff;text-align:right;max-width:60%;word-break:break-all}
+.status-badge{display:inline-flex;align-items:center;gap:5px;background:#1a2e1a;border:1px solid #2ecc71;color:#2ecc71;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:20px}
+.tg-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:#0088cc;color:#fff;
+  font-weight:700;font-size:0.88rem;
+  padding:13px;border-radius:12px;
+  text-decoration:none;margin-bottom:10px;
+  border:none;cursor:pointer;font-family:'Inter',sans-serif;
+  transition:background 0.15s;
+}
+.tg-btn:hover{background:#006fa3}
+.new-order-btn{
+  background:#252d45;color:#9aa3bf;
+  border:none;font-family:'Inter',sans-serif;
+  font-size:0.88rem;font-weight:600;
+  padding:13px;border-radius:12px;width:100%;
+  cursor:pointer;transition:background 0.15s,color 0.15s;
+}
+.new-order-btn:hover{background:#2d3555;color:#fff}
+
+/* ── UPI PAY CTA ── */
+.upi-pay-btn{
+  background:linear-gradient(120deg,#0a7cff 0%,#0057d9 100%);
+  box-shadow:0 8px 20px -6px rgba(10,124,255,0.55);
+}
+.upi-pay-btn:hover{background:linear-gradient(120deg,#0066dd 0%,#0048b8 100%)}
+.verify-link-btn{
+  width:100%;background:none;border:1.5px dashed #3a4060;color:#9aa3bf;
+  font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:600;
+  padding:11px;border-radius:10px;cursor:pointer;margin-top:10px;
+  transition:border-color 0.15s,color 0.15s;
+}
+.verify-link-btn:hover{border-color:#0a7cff;color:#0a7cff}
+
+/* ── VERIFICATION STEP ── */
+.verify-icon-wrap{
+  width:64px;height:64px;background:#1a2a4a;border:2px solid #0a7cff;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.7rem;color:#0a7cff;margin:0 auto 14px;
+}
+.verify-field{margin-bottom:14px}
+.verify-field label{display:block;font-size:0.72rem;font-weight:600;color:#9aa3bf;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:7px}
+.verify-field input[readonly]{background:#1a2038;color:#9aa3bf;cursor:not-allowed}
+.verify-submit-btn{
+  width:100%;padding:14px;background:#0a7cff;color:#fff;border:none;
+  font-size:0.92rem;font-weight:700;border-radius:12px;cursor:pointer;
+  font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-bottom:10px;margin-top:4px;transition:background 0.15s,opacity 0.15s;
+}
+.verify-submit-btn:hover{background:#0066dd}
+.verify-submit-btn:disabled{opacity:0.6;cursor:not-allowed}
+.verify-error{display:none;background:#3a1a1a;border:1px solid #E8000D;color:#ff9a9a;font-size:0.78rem;padding:10px 12px;border-radius:10px;margin-bottom:14px}
+
+/* ── HOW IT WORKS ── */
+.hiw-section{padding:14px 12px}
+.hiw-section h2{font-size:1rem;font-weight:700;margin-bottom:14px}
+.hiw-steps{display:flex;flex-direction:column;gap:10px}
+.hiw-step{
+  display:flex;align-items:flex-start;gap:12px;
+  background:#1e2438;border-radius:10px;padding:13px 14px;
+}
+.hiw-num{
+  width:30px;height:30px;
+  background:#E8000D;
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.82rem;font-weight:800;flex-shrink:0;
+}
+.hiw-text h3{font-size:0.88rem;font-weight:700;margin-bottom:3px}
+.hiw-text p{font-size:0.78rem;color:#9aa3bf;line-height:1.5}
+
+/* ── RULES SECTION ── */
+.rules-card{
+  background:#1e2438;border-radius:14px;
+  margin:0 12px 12px;padding:16px;
+}
+.rules-card h3{font-size:0.9rem;font-weight:700;margin-bottom:12px}
+.rules-card p{font-size:0.8rem;color:#9aa3bf;line-height:1.65;margin-bottom:10px}
+.rules-card p:last-child{margin-bottom:0}
+.rule-bold{font-weight:700;color:#fff}
+
+/* ── CONTACT SECTION ── */
+.contact-section{
+  background:#1e2438;border-radius:14px;
+  margin:12px;padding:16px;
+}
+.contact-section h3{font-size:0.9rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.contact-grid{display:flex;flex-direction:column;gap:8px}
+.contact-btn{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 14px;border-radius:11px;
+  text-decoration:none;font-size:0.85rem;font-weight:600;
+  transition:opacity 0.15s,transform 0.15s;
+  cursor:pointer;border:none;font-family:'Inter',sans-serif;width:100%;
+}
+.contact-btn:hover{opacity:0.88;transform:translateY(-1px)}
+.contact-btn.email{background:#252d45;color:#fff}
+.contact-btn.telegram{background:#0088cc;color:#fff}
+.contact-btn.whatsapp{background:#25d366;color:#fff}
+.contact-btn i{font-size:1.1rem;width:20px;text-align:center}
+.contact-btn-label{flex:1}
+.contact-btn-sub{font-size:0.7rem;opacity:0.8;font-weight:400}
+.contact-btn-arrow{opacity:0.6;font-size:0.75rem}
+
+/* ── FOOTER ── */
+.footer{background:#1e2438;padding:20px 16px;margin-top:8px;text-align:center}
+.footer-logo{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:10px}
+.footer-links{display:flex;justify-content:center;gap:20px;margin-bottom:12px;flex-wrap:wrap}
+.footer-link{font-size:0.78rem;color:#9aa3bf;text-decoration:none;transition:color 0.15s}
+.footer-link:hover{color:#E8000D}
+.footer-copy{font-size:0.72rem;color:#5a6480}
+
+/* ── WA FLOAT ── */
+.wa-float{
+  position:fixed;bottom:22px;left:18px;z-index:800;
+  width:52px;height:52px;
+  background:#25d366;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;color:#fff;text-decoration:none;
+  box-shadow:0 4px 14px rgba(37,211,102,0.45);
+  transition:transform 0.15s;
+}
+.wa-float:hover{transform:scale(1.08)}
+
+/* ── SUPPORT BTN FIXED ── */
+.support-fixed{
+  position:fixed;bottom:22px;right:18px;z-index:800;
+  background:#E8000D;color:#fff;
+  font-size:0.78rem;font-weight:700;
+  padding:10px 16px;border-radius:50px;
+  text-decoration:none;display:flex;align-items:center;gap:6px;
+  box-shadow:0 4px 14px rgba(232,0,13,0.4);
+  transition:transform 0.15s;
+}
+.support-fixed:hover{transform:scale(1.04)}
+
+@media(min-width:481px){
+  .page{border-left:1px solid #2a3050;border-right:1px solid #2a3050}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div style="background:#fff;border-radius:8px;padding:5px 10px;display:flex;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.18)">
+        <img src="astropulse-logo.png" alt="Astropulse SMM" style="height:24px;width:auto;display:block">
+      </div>
+    </div>
+    <button class="sidebar-close" onclick="closeSidebar()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="sidebar-body">
+    <div class="sidebar-section-title">Quick Links</div>
+    <a href="#order" class="sidebar-item" onclick="closeSidebar()">
+      <i class="fas fa-shopping-cart"></i>
+      <span>Order Services</span>
+    </a>
+    <button class="sidebar-item" onclick="closeSidebar();document.getElementById('priceTableSection').scrollIntoView({behavior:'smooth'})">
+      <i class="fas fa-table"></i>
+      <span>Price List</span>
+    </button>
+    <button class="sidebar-item" onclick="closeSidebar();openTrackModal()">
+      <i class="fas fa-location-crosshairs"></i>
+      <span>Track Order</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-title">Contact & Support</div>
+
+    <a href="mailto:astropulsesmmpanel@gmail.com" class="sidebar-item" onclick="closeSidebar()">
+      <i class="fas fa-envelope" style="color:#E8000D"></i>
+      <div style="display:flex;flex-direction:column">
+        <span>Contact Support</span>
+        <span style="font-size:0.68rem;color:#5a6480">astropulsesmmpanel@gmail.com</span>
+      </div>
+    </a>
+
+    <a href="https://t.me/Astroownerr" target="_blank" class="sidebar-item telegram-blue" onclick="closeSidebar()">
+      <i class="fab fa-telegram-plane"></i>
+      <div style="display:flex;flex-direction:column">
+        <span>Telegram Support</span>
+        <span style="font-size:0.68rem;color:#5a6480">@Astroownerr</span>
+      </div>
+    </a>
+
+    <a href="https://wa.me/92738282822" target="_blank" class="sidebar-item green" onclick="closeSidebar()">
+      <i class="fab fa-whatsapp"></i>
+      <div style="display:flex;flex-direction:column">
+        <span>WhatsApp Support</span>
+        <span style="font-size:0.68rem;color:#5a6480">+92738282822</span>
+      </div>
+    </a>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-title">Info</div>
+    <a href="#about" class="sidebar-item orange" onclick="closeSidebar()">
+      <i class="fas fa-info-circle"></i>
+      <span>About Astropulse</span>
+    </a>
+    <button class="sidebar-item" onclick="closeSidebar();document.querySelector('.rules-card').scrollIntoView({behavior:'smooth'})">
+      <i class="fas fa-shield-halved" style="color:#9aa3bf"></i>
+      <span>Usage Rules</span>
+    </button>
+  </div>
+  <div class="sidebar-footer">
+    <div class="sidebar-contact-email"><i class="fas fa-envelope"></i> <a href="mailto:astropulsesmmpanel@gmail.com">astropulsesmmpanel@gmail.com</a></div>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="#" class="logo" style="position:relative;z-index:1">
+    <div style="background:#fff;border-radius:8px;padding:5px 10px;display:flex;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,0.18)">
+      <img src="astropulse-logo.png" alt="Astropulse SMM" style="height:28px;width:auto;display:block">
+    </div>
+  </a>
+  <div class="nav-right">
+    <div class="nav-avatar"><i class="fas fa-user" style="color:#9aa3bf;font-size:0.9rem"></i></div>
+    <button class="nav-menu-btn" id="menuBtn" onclick="openSidebar()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Astropulse</h1>
+  <p><em>The Way of Famous</em> — India's Premium SMM Panel</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-val">50K+</div><div class="hero-stat-lbl">Orders</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">₹0.3</div><div class="hero-stat-lbl">From / 1K</div></div>
+    <div class="hero-stat"><div class="hero-stat-val">24/7</div><div class="hero-stat-lbl">Support</div></div>
+  </div>
+  <a href="#order" class="hero-btn"><i class="fas fa-bolt"></i> Place Order Now</a>
+</div>
+
+<!-- ABOUT -->
+<div class="about-section" id="about">
+  <h2>About Astropulse</h2>
+  <p><em>Astropulse</em> is India's trusted social media marketing panel. We help creators, brands and businesses grow their online presence with fast, safe and affordable SMM services.</p>
+  <div class="about-points">
+    <div class="about-pt"><i class="fas fa-check-circle"></i>No password required — 100% safe</div>
+    <div class="about-pt"><i class="fas fa-check-circle"></i>Orders start within 0–10 minutes</div>
+    <div class="about-pt"><i class="fas fa-check-circle"></i>Pay via any UPI app — instant QR scan</div>
+    <div class="about-pt"><i class="fas fa-check-circle"></i>Dedicated WhatsApp & Telegram support</div>
+  </div>
+</div>
+
+<!-- NEW ORDER CARD -->
+<div class="card allow-overflow" id="order" style="margin-top:16px">
+  <div class="card-header">
+    <div class="card-icon"><i class="fas fa-shopping-cart"></i></div>
+    <span class="card-title">New Order</span>
+  </div>
+
+  <!-- PLATFORM SCROLL -->
+  <div class="platform-scroll-wrap">
+    <div class="platform-scroll-label">Choose a Platform</div>
+    <div class="platform-scroll" id="platformScroll">
+      <div class="plat-pill active" onclick="selectPlatform('instagram',this)">
+        <i class="fab fa-instagram pi-ig"></i><span>Instagram</span>
+      </div>
+      <div class="plat-pill" onclick="selectPlatform('facebook',this)">
+        <i class="fab fa-facebook-f pi-fb"></i><span>Facebook</span>
+      </div>
+      <div class="plat-pill" onclick="selectPlatform('telegram',this)">
+        <i class="fab fa-telegram-plane pi-tg"></i><span>Telegram</span>
+      </div>
+      <div class="plat-pill" onclick="selectPlatform('youtube',this)">
+        <i class="fab fa-youtube pi-yt"></i><span>YouTube</span>
+      </div>
+      <div class="plat-pill" onclick="selectPlatform('twitter',this)">
+        <i class="fab fa-twitter pi-tw"></i><span>Twitter</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICE SELECT -->
+  <div class="service-section">
+    <div class="field-lbl">Service</div>
+    <div class="custom-select" id="customSelect">
+      <div class="select-trigger" id="selectTrigger" onclick="toggleDropdown()">
+        <span class="select-id" id="selId">—</span>
+        <span class="select-name" id="selName">Select a service...</span>
+        <i class="fas fa-chevron-down chevron"></i>
+      </div>
+      <div class="dropdown-list" id="dropdownList"></div>
+    </div>
+  </div>
+
+  <!-- SERVICE INFO ROWS -->
+  <div class="svc-info-section" id="svcInfoSection" style="display:none">
+    <div class="svc-info-rows">
+      <div class="info-row">
+        <div class="info-row-left"><i class="fas fa-person-walking"></i> Start Time</div>
+        <div class="info-row-val" id="infoStart">—</div>
+      </div>
+      <div class="info-row">
+        <div class="info-row-left"><i class="fas fa-fire"></i> Speed</div>
+        <div class="info-row-val" id="infoSpeed">—</div>
+      </div>
+      <div class="info-row">
+        <div class="info-row-left"><i class="fas fa-shield"></i> Refill</div>
+        <div class="info-row-val" id="infoRefill">—</div>
+      </div>
+      <div class="info-row">
+        <div class="info-row-left"><i class="fas fa-droplet"></i> Drop</div>
+        <div class="info-row-val" id="infoDrop">—</div>
+      </div>
+      <div class="info-row">
+        <div class="info-row-left"><i class="fas fa-circle-dot"></i> Quality</div>
+        <div class="info-row-val" id="infoQuality">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MORE ABOUT SERVICE -->
+  <div class="more-about" id="moreAbout" style="display:none">
+    <div class="more-about-title"><i class="fas fa-list"></i> More About Service</div>
+    <div class="more-about-item"><i class="fas fa-triangle-exclamation"></i>Ensure your post or reel is public before ordering. Private, deleted, or restricted content will result in order failure.</div>
+    <div class="more-about-item"><i class="fas fa-triangle-exclamation"></i>No modifications after order placement. Once submitted, the order will process automatically.</div>
+    <div class="more-about-item"><i class="fas fa-triangle-exclamation"></i>Do not place a second order on the same link until the first one is fully completed.</div>
+    <div class="more-about-item"><i class="fas fa-triangle-exclamation"></i>Delivery speed may fluctuate. High server demand may slow processing, but orders are always completed.</div>
+  </div>
+
+  <!-- LINK + QUANTITY -->
+  <div class="form-section" id="formSection" style="display:none">
+    <div class="form-field">
+      <div class="f-label">Your Link</div>
+      <input type="url" class="f-input" id="linkInput" placeholder="https://www.instagram.com/yourprofile">
+    </div>
+    <div class="qty-row">
+      <div class="form-field" style="margin-bottom:0">
+        <div class="f-label">Quantity</div>
+        <input type="number" class="f-input" id="qtyInput" placeholder="e.g. 1000" oninput="calcPrice()">
+        <div class="min-max" id="minMaxHint">Min: — | Max: —</div>
+      </div>
+      <div class="form-field" style="margin-bottom:0">
+        <div class="f-label">Price (₹)</div>
+        <div class="price-display" id="priceDisplay">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER BUTTON -->
+  <div class="order-btn-wrap" id="orderBtnWrap" style="display:none">
+    <button class="order-btn" onclick="openPaymentModal()">
+      <i class="fas fa-bolt"></i> Confirm & Pay
+    </button>
+  </div>
+
+</div><!-- /card -->
+
+<!-- PRICE TABLE SECTION -->
+<div class="price-table-section" id="priceTableSection">
+  <div class="price-table-header">
+    <div class="price-table-header-left">
+      <div class="card-icon" style="width:32px;height:32px;font-size:0.85rem"><i class="fas fa-table"></i></div>
+      <span style="font-weight:700;font-size:0.95rem">Price List</span>
+    </div>
+    <div class="price-table-toggle" id="ptTabBar">
+      <button class="pt-tab active" onclick="switchPtTab('instagram',this)">IG</button>
+      <button class="pt-tab" onclick="switchPtTab('facebook',this)">FB</button>
+      <button class="pt-tab" onclick="switchPtTab('telegram',this)">TG</button>
+      <button class="pt-tab" onclick="switchPtTab('youtube',this)">YT</button>
+      <button class="pt-tab" onclick="switchPtTab('twitter',this)">TW</button>
+    </div>
+  </div>
+  <div class="price-table-wrap">
+    <div class="price-table-scroll">
+      <table class="pt" id="priceTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Service</th>
+            <th>Rate/1K</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Start</th>
+            <th>Refill</th>
+          </tr>
+        </thead>
+        <tbody id="priceTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="hiw-section">
+  <h2>How Orders Work</h2>
+  <div class="hiw-steps">
+    <div class="hiw-step">
+      <div class="hiw-num">1</div>
+      <div class="hiw-text">
+        <h3>Choose Platform & Service</h3>
+        <p>Select your social platform, pick the service you want, and enter your link.</p>
+      </div>
+    </div>
+    <div class="hiw-step">
+      <div class="hiw-num">2</div>
+      <div class="hiw-text">
+        <h3>Pay via UPI QR</h3>
+        <p>Scan the QR code with any UPI app (GPay, PhonePe, Paytm) and pay the exact amount.</p>
+      </div>
+    </div>
+    <div class="hiw-step">
+      <div class="hiw-num">3</div>
+      <div class="hiw-text">
+        <h3>Enter Transaction ID</h3>
+        <p>Enter your UTR / transaction ID after payment for instant order confirmation.</p>
+      </div>
+    </div>
+    <div class="hiw-step">
+      <div class="hiw-num">4</div>
+      <div class="hiw-text">
+        <h3>Order Starts Processing</h3>
+        <p>Your order enters our system and delivery begins within the service's stated start time.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT SECTION -->
+<div class="contact-section">
+  <h3><i class="fas fa-headset" style="color:#E8000D"></i> Contact & Support</h3>
+  <div class="contact-grid">
+    <a href="mailto:astropulsesmmpanel@gmail.com" class="contact-btn email">
+      <i class="fas fa-envelope"></i>
+      <div class="contact-btn-label">
+        <div>Contact Support</div>
+        <div class="contact-btn-sub">astropulsesmmpanel@gmail.com</div>
+      </div>
+      <i class="fas fa-chevron-right contact-btn-arrow"></i>
+    </a>
+    <a href="https://t.me/Astroownerr" target="_blank" class="contact-btn telegram">
+      <i class="fab fa-telegram-plane"></i>
+      <div class="contact-btn-label">
+        <div>Telegram Support</div>
+        <div class="contact-btn-sub">@Astroownerr</div>
+      </div>
+      <i class="fas fa-chevron-right contact-btn-arrow"></i>
+    </a>
+    <a href="https://wa.me/92738282822" target="_blank" class="contact-btn whatsapp">
+      <i class="fab fa-whatsapp"></i>
+      <div class="contact-btn-label">
+        <div>WhatsApp Support</div>
+        <div class="contact-btn-sub">+92738282822</div>
+      </div>
+      <i class="fas fa-chevron-right contact-btn-arrow"></i>
+    </a>
+  </div>
+</div>
+
+<!-- USAGE RULES -->
+<div class="rules-card">
+  <h3>Important Usage Rules</h3>
+  <p><span class="rule-bold">• Pending / Processing:</span> Your order has been received and queued. It will start within the estimated start time mentioned in the service description.</p>
+  <p><span class="rule-bold">• In Progress:</span> Delivery has started, and the ordered quantity is being delivered gradually.</p>
+  <p><span class="rule-bold">• Completed:</span> The full quantity of your order has been delivered successfully.</p>
+  <p><span class="rule-bold">• Partial:</span> Only part of the order was delivered. The remaining amount is automatically refunded to your account balance.</p>
+  <p><span class="rule-bold">• Canceled:</span> The order could not be completed and has been fully refunded to your balance.</p>
+</div>
+<div class="rules-card" style="margin-top:0">
+  <h3><i class="fas fa-triangle-exclamation" style="color:#E8000D;margin-right:6px"></i>Do Not</h3>
+  <p>• Do not place the same order on the same link or account from another panel while an order is already in progress on that link.</p>
+  <p>• Do not place a new order on the same link before the previous order is completed or refilled.</p>
+  <p>• Changing the username or link after placing an order may cause the order to be marked as completed. In such cases, the order will not be eligible for refund or refill.</p>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-logo">
+    <span style="font-size:1.05rem;font-weight:800;color:#fff">Astropulse</span>
+  </div>
+  <div class="footer-links">
+    <a href="#about" class="footer-link">About</a>
+    <a href="#order" class="footer-link">Order</a>
+    <a href="https://t.me/Astroownerr" target="_blank" class="footer-link">Telegram</a>
+    <a href="https://wa.me/92738282822" target="_blank" class="footer-link">WhatsApp</a>
+    <a href="mailto:astropulsesmmpanel@gmail.com" class="footer-link">Email</a>
+  </div>
+  <p class="footer-copy">© 2026 Astropulse. All rights reserved.</p>
+</div>
+
+</div><!-- /page -->
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="payModal">
+  <div class="modal-sheet" id="modalSheet">
+
+    <!-- STEP: ORDER SUMMARY + PAY -->
+    <div id="payStep">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Order Summary</div>
+      <div class="modal-sub">Review your order, then pay via any UPI app</div>
+
+      <div class="modal-order-info">
+        <div class="modal-order-row"><span class="mor-key">Platform</span><span class="mor-val" id="moPlatform">—</span></div>
+        <div class="modal-order-row"><span class="mor-key">Service</span><span class="mor-val" id="moService">—</span></div>
+        <div class="modal-order-row"><span class="mor-key">Quantity</span><span class="mor-val" id="moQty">—</span></div>
+        <div class="modal-order-row"><span class="mor-key">Link</span><span class="mor-val" id="moLink" style="font-size:0.72rem;word-break:break-all">—</span></div>
+        <div class="modal-order-row"><span class="mor-key">Total Amount</span><span class="mor-val" id="moTotal" style="color:#E8000D;font-size:1rem">₹0.00</span></div>
+      </div>
+
+      <button class="modal-btn upi-pay-btn" onclick="payViaUpi()"><i class="fas fa-mobile-screen-button"></i> Pay via UPI App</button>
+
+      <button class="verify-link-btn" onclick="showVerifyStep()"><i class="fas fa-receipt"></i> Already paid? Enter transaction details</button>
+      <button class="modal-btn secondary" onclick="closeModal()" style="margin-top:10px">Cancel</button>
+    </div>
+
+    <!-- STEP: PAYMENT VERIFICATION -->
+    <div id="verifyStep" style="display:none">
+      <div class="modal-handle"></div>
+      <div class="verify-icon-wrap"><i class="fas fa-shield-halved"></i></div>
+      <div class="modal-title">Verify Your Payment</div>
+      <div class="modal-sub">Enter your transaction details so we can confirm and process your order</div>
+
+      <div class="verify-error" id="verifyError"></div>
+
+      <div class="verify-field">
+        <label>Order ID</label>
+        <input type="text" class="f-input" id="verifyOrderId" readonly>
+      </div>
+      <div class="verify-field">
+        <label>Amount Paid (₹)</label>
+        <input type="text" class="f-input" id="verifyAmount" readonly>
+      </div>
+      <div class="verify-field">
+        <label>UTR / Transaction ID</label>
+        <input type="text" class="f-input" id="verifyTxn" placeholder="e.g. 412345678901">
+      </div>
+
+      <button class="verify-submit-btn" id="verifySubmitBtn" onclick="submitVerification()"><i class="fas fa-paper-plane"></i> Submit & Confirm Order</button>
+      <button class="modal-btn secondary" onclick="backToPayStep()">Back</button>
+    </div>
+
+    <!-- STEP: CONFIRMATION -->
+    <div class="confirm-screen" id="confirmStep">
+      <div class="confirm-icon-wrap"><i class="fas fa-check"></i></div>
+      <div class="confirm-title">Order Confirmed!</div>
+      <div class="confirm-sub"><em>Your order has been received and is being processed</em></div>
+      <div class="order-id-chip"><i class="fas fa-hashtag"></i><span id="confOrderId">ASTR00000000</span></div>
+      <div class="conf-card">
+        <h4>Order Summary</h4>
+        <div class="conf-row"><span class="conf-key">Platform</span><span class="conf-val" id="confPlatform">—</span></div>
+        <div class="conf-row"><span class="conf-key">Service</span><span class="conf-val" id="confService">—</span></div>
+        <div class="conf-row"><span class="conf-key">Quantity</span><span class="conf-val" id="confQty">—</span></div>
+        <div class="conf-row"><span class="conf-key">Link</span><span class="conf-val" id="confLink">—</span></div>
+        <div class="conf-row"><span class="conf-key">Amount Paid</span><span class="conf-val" style="color:#E8000D" id="confAmount">—</span></div>
+        <div class="conf-row"><span class="conf-key">Txn ID</span><span class="conf-val" id="confTxn">—</span></div>
+        <div class="conf-row"><span class="conf-key">Status</span><span class="conf-val"><span class="status-badge"><i class="fas fa-circle" style="font-size:0.5rem"></i>Processing</span></span></div>
+      </div>
+      <p style="font-size:0.78rem;color:#9aa3bf;margin-bottom:16px;line-height:1.6">Your order will start within <strong style="color:#fff">5–15 minutes</strong>. For any issues contact our support.</p>
+      <a href="https://t.me/Astroownerr" class="tg-btn" target="_blank"><i class="fab fa-telegram-plane"></i> Contact Support on Telegram</a>
+      <button class="new-order-btn" onclick="resetAll()"><i class="fas fa-plus"></i> Place Another Order</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- TRACK ORDER MODAL -->
+<div class="modal-overlay" id="trackModal">
+  <div class="modal-sheet" id="trackModalSheet">
+
+    <!-- STEP: ENTER ORDER ID -->
+    <div id="trackInputStep">
+      <div class="modal-handle"></div>
+      <div class="modal-title">Track Your Order</div>
+      <div class="modal-sub">Enter your Order ID to check its current status</div>
+      <div class="txn-section">
+        <div class="txn-label">Order ID</div>
+        <input type="text" class="f-input" id="trackOrderInput" placeholder="e.g. ASTR38572197" style="text-transform:uppercase" onkeydown="if(event.key==='Enter')trackOrder()">
+        <div id="trackError" style="color:#ff5c5c;font-size:0.75rem;margin-top:8px;display:none"><i class="fas fa-circle-exclamation"></i> Please enter a valid Order ID (e.g. ASTR38572197)</div>
+      </div>
+      <button class="modal-btn" onclick="trackOrder()"><i class="fas fa-magnifying-glass-location"></i> Track Order</button>
+      <button class="modal-btn secondary" onclick="closeTrackModal()">Cancel</button>
+    </div>
+
+    <!-- STEP: RESULT -->
+    <div class="confirm-screen" id="trackResultStep">
+      <div class="confirm-icon-wrap"><i class="fas fa-circle-check"></i></div>
+      <div class="confirm-title">Order Processed!</div>
+      <div class="confirm-sub"><em>Great news — your order has been successfully processed</em></div>
+      <div class="order-id-chip"><i class="fas fa-hashtag"></i><span id="trackResultId">ASTR00000000</span></div>
+      <div class="conf-card">
+        <h4>Order Status</h4>
+        <div class="conf-row"><span class="conf-key">Status</span><span class="conf-val"><span class="status-badge"><i class="fas fa-circle" style="font-size:0.5rem"></i>Completed</span></span></div>
+        <div class="conf-row"><span class="conf-key">Delivery</span><span class="conf-val">100% Delivered</span></div>
+        <div class="conf-row"><span class="conf-key">Checked On</span><span class="conf-val" id="trackResultTime">—</span></div>
+      </div>
+      <p style="font-size:0.78rem;color:#9aa3bf;margin-bottom:16px;line-height:1.6">Thank you for choosing <strong style="color:#fff">Astropulse</strong>! For any concerns, feel free to contact our support.</p>
+      <a href="https://t.me/Astroownerr" class="tg-btn" target="_blank"><i class="fab fa-telegram-plane"></i> Contact Support on Telegram</a>
+      <button class="new-order-btn" onclick="closeTrackModal()"><i class="fas fa-check"></i> Done</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- FLOAT BUTTONS -->
+<a href="https://wa.me/92738282822" class="wa-float" target="_blank" title="WhatsApp Support"><i class="fab fa-whatsapp"></i></a>
+<a href="https://t.me/Astroownerr" class="support-fixed" target="_blank"><i class="fab fa-telegram-plane"></i> Support</a>
+
+<script>
+// ─── SERVICE DATA ───────────────────────────────────────────────────────────
+const DATA = {
+  instagram:[
+    {id:3450,name:'Instagram Reel Views | 10M/Day | Non Drop | Lifetime Refill',start:'0-2 Mins',speed:'10M/Day',refill:'Lifetime',drop:'Non Drop',quality:'High Quality',rate:0.3,min:100,max:10000000},
+    {id:3451,name:'Instagram Followers | High Quality | Non Drop | 30 Days Refill',start:'0-5 Mins',speed:'50K/Day',refill:'30 Days',drop:'Non Drop',quality:'High Quality',rate:30,min:100,max:100000},
+    {id:3452,name:'Instagram Likes | Non Drop | Fast Start',start:'0-2 Mins',speed:'100K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:20,min:50,max:50000},
+    {id:3453,name:'Instagram Story Views | Real Looking',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'Medium',rate:16,min:100,max:10000},
+    {id:3454,name:'Instagram Followers | Indian | Non Drop',start:'0-10 Mins',speed:'5K/Day',refill:'30 Days',drop:'Non Drop',quality:'Indian',rate:45,min:100,max:50000},
+    {id:3455,name:'Instagram Likes | Country Targeted | India',start:'0-5 Mins',speed:'20K/Day',refill:'No Refill',drop:'Non Drop',quality:'Indian',rate:25,min:100,max:20000},
+    {id:3456,name:'Instagram Reach & Impression | Post',start:'0-2 Mins',speed:'1M/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:8,min:1000,max:10000000},
+    {id:3457,name:'Instagram Comments | Custom | Fast',start:'0-30 Mins',speed:'500/Day',refill:'No Refill',drop:'Non Drop',quality:'Real Looking',rate:20,min:10,max:500},
+  ],
+  facebook:[
+    {id:3122,name:'Facebook Video/Reel Views | 200K/Day Speed | Start: 0-10 Mins',start:'0-10 Mins',speed:'200K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:6,min:100,max:10000000},
+    {id:3200,name:'Facebook Page Likes | Non Drop | Fast',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:40,min:100,max:50000},
+    {id:3201,name:'Facebook Post Likes | Instant Start',start:'0-2 Mins',speed:'50K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:15,min:100,max:50000},
+    {id:3202,name:'Facebook Followers | Profile | Non Drop',start:'0-5 Mins',speed:'5K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:60,min:100,max:50000},
+    {id:3203,name:'Facebook Story Views | Fast',start:'0-5 Mins',speed:'20K/Day',refill:'No Refill',drop:'Non Drop',quality:'Medium',rate:10,min:100,max:100000},
+    {id:3204,name:'Facebook Group Members | Real',start:'0-10 Mins',speed:'2K/Day',refill:'No Refill',drop:'Non Drop',quality:'Real Looking',rate:45,min:100,max:10000},
+    {id:3205,name:'Facebook Post Shares | Fast',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:120,min:100,max:10000},
+  ],
+  telegram:[
+    {id:3300,name:'Telegram Channel Members | Real Looking | Non Drop',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:50,min:100,max:100000},
+    {id:3301,name:'Telegram Post Views | Instant | 1M/Day',start:'0-1 Min',speed:'1M/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:2,min:100,max:10000000},
+    {id:3302,name:'Telegram Reactions | All Emoji | Fast',start:'0-2 Mins',speed:'50K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:12,min:100,max:50000},
+    {id:3303,name:'Telegram Channel Views | Last 5 Posts',start:'0-2 Mins',speed:'500K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:5,min:1000,max:10000000},
+    {id:3304,name:'Telegram Group Members | Slow | Non Drop',start:'0-15 Mins',speed:'2K/Day',refill:'No Refill',drop:'Non Drop',quality:'Medium',rate:40,min:100,max:20000},
+    {id:3305,name:'Telegram Post Forwards | Fast',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:5,min:100,max:50000},
+  ],
+  youtube:[
+    {id:3321,name:'YouTube Native Ads Views | Non Drop | 200K/Day | Lifetime Refill | Start: 0-4 Hour',start:'0-4 Hours',speed:'200K/Day',refill:'Lifetime',drop:'Non Drop',quality:'High Quality',rate:155,min:40000,max:1000000},
+    {id:3477,name:'YouTube Subscribers | Non Drop | 1K-3K/Day | Lifetime Refill | Start: 0-1 Hour',start:'0-1 Hour',speed:'1K-3K/Day',refill:'Lifetime',drop:'Non Drop',quality:'High Quality',rate:5926,min:100,max:10000},
+    {id:3479,name:'YouTube Subscribers | Non Drop | 2K-5K/Day | Lifetime Refill | Fast Speed | Start: 0-1 Hour',start:'0-1 Hour',speed:'2K-5K/Day',refill:'Lifetime',drop:'Non Drop',quality:'High Quality',rate:250,min:100,max:20000},
+    {id:3410,name:'YouTube Video Views | High Retention | Non Drop',start:'0-30 Mins',speed:'100K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Retention',rate:100,min:1000,max:1000000},
+    {id:3411,name:'YouTube Likes | Non Drop | Fast',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:270,min:100,max:10000},
+  ],
+  twitter:[
+    {id:678,name:'Twitter Impression — [Non Drop][Speed: 50M/Day] — Start: 0-1 Hour',start:'0-1 Hour',speed:'50M/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:300,min:1000,max:100000000},
+    {id:679,name:'Twitter Followers | Non Drop | High Quality',start:'0-5 Mins',speed:'5K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:350,min:100,max:50000},
+    {id:680,name:'Twitter Likes | Fast | Non Drop',start:'0-2 Mins',speed:'20K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:300,min:100,max:20000},
+    {id:681,name:'Twitter Retweets | Fast',start:'0-5 Mins',speed:'5K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:200,min:100,max:10000},
+  ],
+};
+
+let curPlatform = 'instagram';
+let curService  = null;
+
+// ─── SIDEBAR ─────────────────────────────────────────────────────────────────
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// ─── PRICE TABLE ─────────────────────────────────────────────────────────────
+let curPtPlatform = 'instagram';
+
+function buildPriceTable(p){
+  const tbody = document.getElementById('priceTableBody');
+  tbody.innerHTML='';
+  (DATA[p]||[]).forEach(svc=>{
+    const refillBadge = svc.refill==='Lifetime'
+      ? `<span class="pt-badge green">Lifetime</span>`
+      : svc.refill==='No Refill'
+      ? `<span class="pt-badge yellow">No Refill</span>`
+      : `<span class="pt-badge blue">${svc.refill}</span>`;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><span class="pt-id">${svc.id}</span></td>
+      <td style="max-width:180px;font-size:0.74rem;line-height:1.45">${svc.name}</td>
+      <td class="pt-rate">₹${svc.rate}</td>
+      <td>${svc.min.toLocaleString()}</td>
+      <td>${svc.max.toLocaleString()}</td>
+      <td style="white-space:nowrap">${svc.start}</td>
+      <td>${refillBadge}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function switchPtTab(p, el){
+  curPtPlatform=p;
+  document.querySelectorAll('.pt-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  buildPriceTable(p);
+}
+
+// ─── PLATFORM SELECT ─────────────────────────────────────────────────────────
+function selectPlatform(p, el) {
+  curPlatform = p;
+  curService  = null;
+  document.querySelectorAll('.plat-pill').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  closeDropdown();
+  document.getElementById('selId').textContent = '—';
+  document.getElementById('selName').textContent = 'Select a service...';
+  document.getElementById('svcInfoSection').style.display='none';
+  document.getElementById('moreAbout').style.display='none';
+  document.getElementById('formSection').style.display='none';
+  document.getElementById('orderBtnWrap').style.display='none';
+  buildDropdown(p);
+}
+
+// ─── BUILD DROPDOWN ──────────────────────────────────────────────────────────
+function buildDropdown(p) {
+  const list = document.getElementById('dropdownList');
+  list.innerHTML='';
+  (DATA[p]||[]).forEach(svc=>{
+    const d=document.createElement('div');
+    d.className='dropdown-item';
+    d.innerHTML=`<span class="d-id">${svc.id}</span><span class="d-name">${svc.name}</span>`;
+    d.addEventListener('click',function(e){e.stopPropagation();selectService(svc);});
+    list.appendChild(d);
+  });
+}
+buildDropdown('instagram');
+buildPriceTable('instagram');
+
+function toggleDropdown() {
+  const trigger=document.getElementById('selectTrigger');
+  const list=document.getElementById('dropdownList');
+  const isOpen=list.classList.contains('open');
+  if(isOpen){closeDropdown();}else{
+    trigger.classList.add('open');
+    list.classList.add('open');
+  }
+}
+function closeDropdown(){
+  const trigger=document.getElementById('selectTrigger');
+  const list=document.getElementById('dropdownList');
+  if(trigger) trigger.classList.remove('open');
+  if(list) list.classList.remove('open');
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('#customSelect')) closeDropdown();
+});
+
+// ─── SELECT SERVICE ──────────────────────────────────────────────────────────
+function selectService(svc) {
+  curService=svc;
+  closeDropdown();
+  document.getElementById('selId').textContent=svc.id;
+  document.getElementById('selName').textContent=svc.name;
+  document.querySelectorAll('.dropdown-item').forEach(d=>{
+    d.classList.toggle('selected', d.querySelector('.d-id').textContent==svc.id);
+  });
+  document.getElementById('infoStart').textContent=svc.start;
+  document.getElementById('infoSpeed').textContent=svc.speed;
+  document.getElementById('infoRefill').textContent=svc.refill;
+  document.getElementById('infoDrop').textContent=svc.drop;
+  document.getElementById('infoQuality').textContent=svc.quality;
+  document.getElementById('svcInfoSection').style.display='block';
+  document.getElementById('moreAbout').style.display='block';
+  document.getElementById('linkInput').value='';
+  document.getElementById('qtyInput').value='';
+  document.getElementById('priceDisplay').textContent='—';
+  document.getElementById('priceDisplay').className='price-display';
+  document.getElementById('minMaxHint').textContent=`Min: ${svc.min.toLocaleString()} | Max: ${svc.max.toLocaleString()}`;
+  const ph={instagram:'https://www.instagram.com/yourprofile',facebook:'https://www.facebook.com/yourprofile',telegram:'https://t.me/yourchannel',youtube:'https://www.youtube.com/watch?v=XXXXXX',twitter:'https://twitter.com/yourprofile'};
+  document.getElementById('linkInput').placeholder=ph[curPlatform]||'Enter link here';
+  document.getElementById('formSection').style.display='block';
+  document.getElementById('orderBtnWrap').style.display='block';
+  setTimeout(()=>document.getElementById('svcInfoSection').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+// ─── CALC PRICE ──────────────────────────────────────────────────────────────
+function calcPrice(){
+  const qty=parseInt(document.getElementById('qtyInput').value)||0;
+  const pd=document.getElementById('priceDisplay');
+  if(!curService||qty===0){pd.textContent='—';pd.className='price-display';return;}
+  const price=((qty/1000)*curService.rate).toFixed(2);
+  pd.textContent='₹'+price;
+  pd.className='price-display has-price';
+}
+
+// ─── CONFIG: EDIT THESE VALUES BEFORE GOING LIVE ─────────────────────────────
+const UPI_ID              = 'murarisingh9155@ibl';            // e.g. 'astropulse@okhdfcbank'
+const EMAILJS_PUBLIC_KEY  = 'ldG1GdAaUqSz2hk_h'; // EmailJS → Account → General
+const EMAILJS_SERVICE_ID  = 'service_163w9wd'; // EmailJS → Email Services
+const EMAILJS_TEMPLATE_ID = 'template_nzny5pf';// EmailJS → Email Templates
+// Your EmailJS template's "To Email" field should be set to your own inbox
+// (e.g. astropulsesmmpanel@gmail.com) so every submission lands there.
+
+if (window.emailjs) { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); }
+
+let currentOrderAmount = 0;   // numeric ₹ amount for the active order
+let currentOrderId     = '';  // ASTR-prefixed order id for the active order
+
+// ─── OPEN PAYMENT (ORDER SUMMARY) ─────────────────────────────────────────────
+function openPaymentModal(){
+  if(!curService){alert('Please select a service.');return;}
+  const link=document.getElementById('linkInput').value.trim();
+  const qty=parseInt(document.getElementById('qtyInput').value)||0;
+  if(!link){alert('Please enter your link.');return;}
+  if(qty<curService.min||qty>curService.max){
+    alert(`Quantity must be between ${curService.min.toLocaleString()} and ${curService.max.toLocaleString()}.`);return;
+  }
+  const price=((qty/1000)*curService.rate).toFixed(2);
+  currentOrderAmount = parseFloat(price);
+  currentOrderId = 'ASTR'+Date.now().toString().slice(-8);
+
+  document.getElementById('moTotal').textContent='₹'+price;
+  document.getElementById('moPlatform').textContent=curPlatform.charAt(0).toUpperCase()+curPlatform.slice(1);
+  document.getElementById('moService').textContent=curService.id+' - '+curService.name.split('|')[0].trim();
+  document.getElementById('moQty').textContent=qty.toLocaleString();
+  document.getElementById('moLink').textContent=link;
+
+  document.getElementById('verifyError').style.display='none';
+  document.getElementById('verifyTxn').value='';
+  document.getElementById('verifyOrderId').value=currentOrderId;
+  document.getElementById('verifyAmount').value=price;
+
+  document.getElementById('payStep').style.display='block';
+  document.getElementById('verifyStep').style.display='none';
+  document.getElementById('confirmStep').className='confirm-screen';
+  document.getElementById('payModal').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('payModal').classList.remove('open');
+}
+document.getElementById('payModal').addEventListener('click',function(e){
+  if(e.target===document.getElementById('payModal')) closeModal();
+});
+
+// ─── DYNAMIC UPI DEEP LINK GENERATOR ──────────────────────────────────────────
+function generateUpiLink(amount){
+  const params = new URLSearchParams({
+    pa: UPI_ID,
+    pn: 'Astropulse',
+    am: Number(amount).toFixed(2),
+    cu: 'INR',
+    tn: 'Astropulse Order ' + currentOrderId
+  });
+  return 'upi://pay?' + params.toString();
+}
+
+// Opens the user's default UPI app via a generic deep link, then surfaces
+// the verification form so they can submit their UTR after paying
+function payViaUpi(){
+  const link = generateUpiLink(currentOrderAmount);
+
+  // Attempt to launch whichever UPI app is installed (works on supported
+  // Android/iOS devices — the OS shows its own app chooser if more than
+  // one UPI app is installed)
+  window.location.href = link;
+
+  // We can't programmatically detect a completed payment without a gateway,
+  // so we bring the user to the verification form automatically a moment
+  // after the redirect attempt — they fill in the UTR once payment is done.
+  setTimeout(showVerifyStep, 1200);
+}
+
+// ─── VERIFICATION STEP ────────────────────────────────────────────────────────
+function showVerifyStep(){
+  document.getElementById('payStep').style.display='none';
+  document.getElementById('verifyStep').style.display='block';
+}
+function backToPayStep(){
+  document.getElementById('verifyStep').style.display='none';
+  document.getElementById('payStep').style.display='block';
+}
+
+// ─── SUBMIT VERIFICATION → EMAILJS → SHOW CONFIRMATION ──────────────────────
+function submitVerification(){
+  const txn  = document.getElementById('verifyTxn').value.trim();
+  const errEl = document.getElementById('verifyError');
+
+  if(!txn){errEl.textContent='Please enter your Transaction / UTR ID.';errEl.style.display='block';return;}
+  if(!window.emailjs){errEl.textContent='Email service failed to load. Please refresh and try again.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+
+  const link=document.getElementById('linkInput').value.trim();
+  const qty=parseInt(document.getElementById('qtyInput').value)||0;
+  const price=currentOrderAmount.toFixed(2);
+
+  const btn = document.getElementById('verifySubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+  // Order + payment details are only sent now, after verification submission
+  const templateParams = {
+    order_id: currentOrderId,
+    platform: curPlatform.charAt(0).toUpperCase()+curPlatform.slice(1),
+    service: curService.name.split('|')[0].trim(),
+    quantity: qty.toLocaleString(),
+    link: link,
+    amount_paid: '₹'+price,
+    utr_transaction_id: txn
+  };
+
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+  .then(() => {
+    document.getElementById('confOrderId').textContent=currentOrderId;
+    document.getElementById('confPlatform').textContent=curPlatform.charAt(0).toUpperCase()+curPlatform.slice(1);
+    document.getElementById('confService').textContent=curService.name.split('|')[0].trim();
+    document.getElementById('confQty').textContent=qty.toLocaleString();
+    document.getElementById('confLink').textContent=link;
+    document.getElementById('confAmount').textContent='₹'+price;
+    document.getElementById('confTxn').textContent=txn;
+    document.getElementById('verifyStep').style.display='none';
+    document.getElementById('confirmStep').className='confirm-screen active';
+  })
+  .catch(() => {
+    errEl.textContent='Could not submit your verification. Please check your connection and try again.';
+    errEl.style.display='block';
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit & Confirm Order';
+  });
+}
+
+// ─── TRACK ORDER ─────────────────────────────────────────────────────────────
+function openTrackModal(){
+  document.getElementById('trackOrderInput').value = '';
+  document.getElementById('trackError').style.display = 'none';
+  document.getElementById('trackInputStep').style.display = 'block';
+  document.getElementById('trackResultStep').className = 'confirm-screen';
+  document.getElementById('trackModal').classList.add('open');
+  setTimeout(()=>document.getElementById('trackOrderInput').focus(), 200);
+}
+function closeTrackModal(){
+  document.getElementById('trackModal').classList.remove('open');
+}
+document.getElementById('trackModal').addEventListener('click', function(e){
+  if (e.target === document.getElementById('trackModal')) closeTrackModal();
+});
+
+function trackOrder(){
+  const raw = document.getElementById('trackOrderInput').value.trim().toUpperCase();
+  const errEl = document.getElementById('trackError');
+  const isValid = /^ASTR\d{6,10}$/.test(raw);
+  if (!isValid){
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  document.getElementById('trackResultId').textContent = raw;
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+  const timeStr = now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit', hour12:true });
+  document.getElementById('trackResultTime').textContent = dateStr + ', ' + timeStr;
+
+  document.getElementById('trackInputStep').style.display = 'none';
+  document.getElementById('trackResultStep').className = 'confirm-screen active';
+}
+
+function resetAll(){
+  closeModal();
+  document.getElementById('verifyStep').style.display='none';
+  curService=null;
+  document.getElementById('selId').textContent='—';
+  document.getElementById('selName').textContent='Select a service...';
+  document.getElementById('svcInfoSection').style.display='none';
+  document.getElementById('moreAbout').style.display='none';
+  document.getElementById('formSection').style.display='none';
+  document.getElementById('orderBtnWrap').style.display='none';
+  document.getElementById('linkInput').value='';
+  document.getElementById('qtyInput').value='';
+  window.scrollTo({top:document.getElementById('order').offsetTop-70,behavior:'smooth'});
+}
+
+// ─── AMBIENT BACKGROUND MUSIC (auto-generated, no UI button) ─────────────────
+(function(){
+  let ctx, master, started = false;
+  const chords = [
+    [261.63, 311.13, 392.00, 466.16],
+    [233.08, 277.18, 349.23, 415.30],
+    [220.00, 261.63, 329.63, 392.00],
+    [196.00, 233.08, 293.66, 349.23]
+  ];
+  let chordIdx = 0;
+  let timerHandles = [];
+
+  function playPad(freqs, dur){
+    const now = ctx.currentTime;
+    freqs.forEach((f, i)=>{
+      const osc = ctx.createOscillator();
+      const oscGain = ctx.createGain();
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 1400;
+      osc.type = i === 0 ? 'sine' : 'triangle';
+      osc.frequency.value = f;
+      osc.detune.value = (i % 2 === 0 ? -4 : 4);
+      oscGain.gain.value = 0;
+      osc.connect(filter);
+      filter.connect(oscGain);
+      oscGain.connect(master);
+      const peak = 0.05 / freqs.length * (i === 0 ? 1.4 : 1);
+      oscGain.gain.linearRampToValueAtTime(peak, now + dur * 0.35);
+      oscGain.gain.linearRampToValueAtTime(peak * 0.7, now + dur * 0.7);
+      oscGain.gain.linearRampToValueAtTime(0, now + dur);
+      osc.start(now);
+      osc.stop(now + dur + 0.05);
+    });
+  }
+
+  function playPluck(freq, t, vol){
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 2200;
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+    g.gain.value = 0;
+    osc.connect(filter);
+    filter.connect(g);
+    g.connect(master);
+    g.gain.linearRampToValueAtTime(vol, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0008, t + 1.1);
+    osc.start(t);
+    osc.stop(t + 1.2);
+  }
+
+  function scheduleLoop(){
+    const barDur = 4.6;
+    const freqs = chords[chordIdx % chords.length];
+    const now = ctx.currentTime;
+    playPad(freqs, barDur);
+    const arp = [freqs[0]*2, freqs[1]*2, freqs[2]*2, freqs[3]*2];
+    arp.forEach((f, i)=>{
+      const t = now + 0.4 + i * (barDur / 5);
+      playPluck(f, t, 0.035);
+    });
+    chordIdx++;
+    timerHandles.push(setTimeout(scheduleLoop, barDur * 1000));
+  }
+
+  function startMusic(){
+    if (started) return;
+    try{
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      master = ctx.createGain();
+      master.gain.value = 0.0001;
+      master.connect(ctx.destination);
+      master.gain.linearRampToValueAtTime(0.55, ctx.currentTime + 3);
+      started = true;
+      scheduleLoop();
+    }catch(e){ /* Web Audio not available */ }
+  }
+
+  function tryStart(){
+    if (started) { if(ctx && ctx.state === 'suspended') ctx.resume(); return; }
+    startMusic();
+  }
+
+  window.addEventListener('load', startMusic, { once:true });
+  ['click','touchstart','keydown','scroll','mousemove','pointerdown'].forEach(evt=>{
+    window.addEventListener(evt, tryStart, { once:true, passive:true });
+  });
+  document.addEventListener('visibilitychange', function(){
+    if (!ctx) return;
+    if (document.hidden) { ctx.suspend(); }
+    else { ctx.resume(); }
+  });
+})();
+</script>
+</body>
+</html>
