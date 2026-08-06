@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit Promotion | Astropulse</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#ffffff;
+  --surface:#fff5f5;
+  --surface-2:#ffe8e8;
+  --line:rgba(220,30,30,0.13);
+  --pulse:#E8000D;
+  --pulse-2:#ff3333;
+  --text:#1a0505;
+  --text-dim:#6b3333;
+  --text-faint:#b07070;
+  --green:#16a34a;
+}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.5;overflow-x:hidden;font-size:15px;
+  min-height:100vh;
+  background-image:
+    radial-gradient(ellipse 700px 380px at 12% -4%, rgba(232,0,13,0.07), transparent 60%),
+    radial-gradient(ellipse 600px 420px at 100% 8%, rgba(232,0,13,0.05), transparent 60%);
+  background-repeat:no-repeat;
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 14px 60px;
+}
+h1,h2,.card-title{font-family:'Space Grotesk',sans-serif}
+
+.top-bar{width:100%;max-width:520px;display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.back-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:12px;
+  background:var(--surface-2);border:1.5px solid var(--line);
+  color:var(--pulse);text-decoration:none;flex-shrink:0;
+  transition:border-color 0.15s;
+}
+.back-btn:hover{border-color:var(--pulse)}
+.top-title{font-size:1.05rem;font-weight:800;color:var(--text)}
+.top-sub{font-size:0.72rem;color:var(--text-dim)}
+
+.promo-card{
+  width:100%;max-width:520px;
+  background:var(--surface);
+  border:1.5px solid var(--line);
+  border-radius:20px;
+  padding:22px 20px 24px;
+  box-shadow:0 20px 40px -20px rgba(232,0,13,0.15);
+}
+.promo-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:1.3rem;margin-bottom:14px;
+}
+.promo-title{font-size:1.15rem;font-weight:800;margin-bottom:6px}
+.promo-desc{font-size:0.82rem;color:var(--text-dim);margin-bottom:20px;line-height:1.55}
+
+.form-field{margin-bottom:16px}
+.f-label{font-size:0.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.f-label .req{color:var(--pulse)}
+.f-input,.f-select{
+  width:100%;
+  background:var(--surface-2);
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  padding:12px 14px;
+  font-family:'Inter',sans-serif;
+  font-size:0.88rem;color:var(--text);
+  outline:none;
+  transition:border-color 0.15s;
+}
+.f-input:focus,.f-select:focus{border-color:var(--pulse)}
+.f-hint{font-size:0.7rem;color:var(--text-faint);margin-top:6px}
+
+.tg-note{
+  display:flex;gap:9px;align-items:flex-start;
+  background:var(--surface-2);
+  border:1px dashed var(--line);
+  border-radius:12px;
+  padding:11px 13px;
+  font-size:0.74rem;color:var(--text-dim);
+  margin-bottom:18px;
+}
+.tg-note i{color:var(--pulse);margin-top:2px;flex-shrink:0}
+
+.field-error{color:#ff5c5c;font-size:0.75rem;margin-top:7px;display:none}
+.field-error i{margin-right:5px}
+
+.submit-btn{
+  width:100%;
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  color:#fff;border:none;border-radius:13px;
+  padding:14px;font-size:0.92rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
+  transition:transform 0.15s,opacity 0.15s;
+}
+.submit-btn:hover{transform:translateY(-1px)}
+.submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+
+.top-error{
+  display:none;
+  background:#fff0f0;border:1px solid rgba(232,0,13,0.35);
+  color:var(--pulse);font-size:0.8rem;
+  border-radius:12px;padding:11px 13px;margin-bottom:16px;
+  align-items:center;gap:8px;
+}
+
+/* Success screen */
+.success-screen{display:none;text-align:center;padding:10px 0 4px}
+.success-icon{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green),#22c55e);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:1.6rem;margin:0 auto 16px;
+}
+.success-title{font-size:1.1rem;font-weight:800;margin-bottom:8px}
+.success-desc{font-size:0.82rem;color:var(--text-dim);margin-bottom:18px;line-height:1.55}
+.ref-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface-2);border:1.5px solid var(--line);
+  border-radius:11px;padding:9px 15px;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--pulse);
+  font-size:0.85rem;margin-bottom:20px;
+}
+.home-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface-2);border:1.5px solid var(--line);
+  color:var(--text);text-decoration:none;
+  padding:11px 20px;border-radius:12px;font-size:0.85rem;font-weight:600;
+}
+
+@media(min-width:600px){
+  body{padding:40px 14px 70px}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="index.html" class="back-btn" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+  <div>
+    <div class="top-title">Submit a Promotion</div>
+    <div class="top-sub">Astropulse SMM Panel</div>
+  </div>
+</div>
+
+<div class="promo-card">
+
+  <!-- FORM STEP -->
+  <div id="promoFormStep">
+    <div class="promo-icon"><i class="fas fa-bullhorn"></i></div>
+    <div class="promo-title">Promote Astropulse & Get Rewarded</div>
+    <div class="promo-desc">
+      Promoted us somewhere? Tell us where and share the link below. Our team will review it
+      and get in touch with you on Telegram.
+    </div>
+
+    <div class="top-error" id="promoTopError">
+      <i class="fas fa-circle-exclamation"></i>
+      <span id="promoTopErrorText">Something went wrong.</span>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Platform <span class="req">*</span></div>
+      <select class="f-select" id="promoPlatform">
+        <option value="">Select where you promoted us...</option>
+        <option value="Instagram">Instagram</option>
+        <option value="Facebook">Facebook</option>
+        <option value="Telegram">Telegram</option>
+        <option value="YouTube">YouTube</option>
+        <option value="Twitter / X">Twitter / X</option>
+        <option value="WhatsApp">WhatsApp</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Promotion Link <span class="req">*</span></div>
+      <input type="text" class="f-input" id="promoLink" placeholder="Link to your post, story, video, or channel where you promoted us">
+      <div class="f-hint">Paste the exact link/profile where the promotion is visible.</div>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Your Telegram ID <span class="req">*</span></div>
+      <input type="text" class="f-input" id="promoTelegram" placeholder="e.g. @yourusername">
+      <div class="field-error" id="tgError"><i class="fas fa-circle-exclamation"></i>Telegram ID is required. Promotions can't be submitted without it.</div>
+    </div>
+
+    <div class="tg-note">
+      <i class="fas fa-info-circle"></i>
+      <span>A Telegram ID is required for every promotion submission. We use it to contact you and confirm your reward — if you don't have Telegram, we won't be able to process a promotion.</span>
+    </div>
+
+    <button class="submit-btn" id="promoSubmitBtn" onclick="submitPromotion()">
+      <i class="fas fa-paper-plane"></i> Submit Promotion
+    </button>
+  </div>
+
+  <!-- SUCCESS STEP -->
+  <div class="success-screen" id="promoSuccessStep">
+    <div class="success-icon"><i class="fas fa-check"></i></div>
+    <div class="success-title">Promotion Submitted!</div>
+    <div class="success-desc">Thanks for spreading the word. Our team will review your submission and reach out to you on Telegram.</div>
+    <div class="ref-chip"><i class="fas fa-hashtag"></i><span id="promoRefId">PROMO00000000</span></div>
+    <br>
+    <a href="index.html" class="home-btn"><i class="fas fa-house"></i> Back to Home</a>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG: EDIT THESE VALUES BEFORE GOING LIVE ─────────────────────────────
+// Reuses the same EmailJS account as the main site. Create a dedicated
+// EmailJS template for promotions with these variables:
+// promo_id, promo_platform, promo_link, telegram_id, submitted_at
+const EMAILJS_PUBLIC_KEY       = 'ldG1GdAaUqSz2hk_h';   // EmailJS → Account → General
+const EMAILJS_SERVICE_ID       = 'service_rpk6219';     // EmailJS → Email Services
+const EMAILJS_PROMO_TEMPLATE_ID = 'template_promo_id';  // ← create this template in EmailJS and paste its ID here
+
+if (window.emailjs) { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); }
+
+function showTopError(msg){
+  const el = document.getElementById('promoTopError');
+  document.getElementById('promoTopErrorText').textContent = msg;
+  el.style.display = 'flex';
+}
+function hideTopError(){
+  document.getElementById('promoTopError').style.display = 'none';
+}
+
+function submitPromotion(){
+  hideTopError();
+  document.getElementById('tgError').style.display = 'none';
+
+  const platform = document.getElementById('promoPlatform').value;
+  const link     = document.getElementById('promoLink').value.trim();
+  const tgId     = document.getElementById('promoTelegram').value.trim();
+
+  if(!platform){ showTopError('Please select the platform where you promoted us.'); return; }
+  if(!link){ showTopError('Please enter your promotion link.'); return; }
+
+  // Hard requirement: no Telegram ID → no promotion submission.
+  if(!tgId){
+    document.getElementById('tgError').style.display = 'block';
+    document.getElementById('promoTelegram').focus();
+    return;
+  }
+
+  if(!window.emailjs){ showTopError('Email service failed to load. Please refresh and try again.'); return; }
+
+  const btn = document.getElementById('promoSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+  const promoId = 'PROMO' + Date.now().toString().slice(-8);
+  const templateParams = {
+    promo_id:       promoId,
+    promo_platform: platform,
+    promo_link:     link,
+    telegram_id:    tgId,
+    submitted_at:   new Date().toLocaleString()
+  };
+
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_PROMO_TEMPLATE_ID, templateParams)
+  .then(() => {
+    document.getElementById('promoRefId').textContent = promoId;
+    document.getElementById('promoFormStep').style.display = 'none';
+    document.getElementById('promoSuccessStep').style.display = 'block';
+  })
+  .catch(() => {
+    showTopError('Could not submit. Please check your connection and try again.');
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Promotion';
+  });
+}
+</script>
+
+</body>
+</html>

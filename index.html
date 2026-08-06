@@ -346,6 +346,26 @@ h1,h2,h3,.logo-name,.hero-stat-val,.card-title{font-family:'Space Grotesk',sans-
 .d-id{background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);color:#fff;font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:6px;flex-shrink:0;white-space:nowrap}
 .d-name{flex:1;line-height:1.4}
 
+/* ── COMMENT TYPE PILLS ── */
+.comment-type-grid{display:flex;flex-wrap:wrap;gap:8px}
+.comment-type-pill{
+  display:flex;align-items:center;gap:7px;
+  background:var(--surface-2);
+  border:1.5px solid var(--line);
+  border-radius:11px;
+  padding:9px 13px;
+  font-size:0.78rem;font-weight:600;color:var(--text-dim);
+  cursor:pointer;user-select:none;
+  transition:all 0.15s;
+}
+.comment-type-pill i{font-size:0.85rem;color:var(--pulse)}
+.comment-type-pill:hover{border-color:var(--pulse)}
+.comment-type-pill.active{
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  border-color:var(--pulse);color:#fff;
+}
+.comment-type-pill.active i{color:#fff}
+
 /* ── SERVICE INFO ROWS ── */
 .svc-info-section{padding:16px 16px;border-bottom:1px solid var(--line)}
 .svc-info-rows{display:flex;flex-direction:column;gap:8px}
@@ -991,6 +1011,10 @@ table.pt tbody tr:hover{background:#252d45}
       <i class="fas fa-location-crosshairs"></i>
       <span>Track Order</span>
     </button>
+    <a href="promotion.html" class="sidebar-item" onclick="closeSidebar()">
+      <i class="fas fa-bullhorn"></i>
+      <span>Promotion</span>
+    </a>
 
     <div class="sidebar-divider"></div>
     <div class="sidebar-section-title">Contact & Support</div>
@@ -1149,6 +1173,35 @@ table.pt tbody tr:hover{background:#252d45}
         <div class="info-row-left"><i class="fas fa-circle-dot"></i> Quality</div>
         <div class="info-row-val" id="infoQuality">—</div>
       </div>
+    </div>
+  </div>
+
+  <!-- COMMENT TYPE SELECT (only shown for Comment services) -->
+  <div class="service-section" id="commentTypeSection" style="display:none">
+    <div class="field-lbl">Comment Type</div>
+    <div class="comment-type-grid" id="commentTypeGrid">
+      <div class="comment-type-pill" data-type="love" onclick="selectCommentType('love',this)">
+        <i class="fas fa-heart"></i><span>Love / Compliment</span>
+      </div>
+      <div class="comment-type-pill" data-type="abuse" onclick="selectCommentType('abuse',this)">
+        <i class="fas fa-fire"></i><span>Abuse / Roast</span>
+      </div>
+      <div class="comment-type-pill" data-type="emojis" onclick="selectCommentType('emojis',this)">
+        <i class="fas fa-face-smile"></i><span>Emojis Only</span>
+      </div>
+      <div class="comment-type-pill" data-type="mixed" onclick="selectCommentType('mixed',this)">
+        <i class="fas fa-shuffle"></i><span>Mixed / Random</span>
+      </div>
+      <div class="comment-type-pill" data-type="custom" onclick="selectCommentType('custom',this)">
+        <i class="fas fa-pen"></i><span>Custom (Write Your Own)</span>
+      </div>
+    </div>
+    <div class="form-field" id="customCommentWrap" style="display:none;margin-top:12px">
+      <div class="f-label">Your Custom Comment Text</div>
+      <input type="text" class="f-input" id="customCommentInput" placeholder="e.g. This is amazing! 🔥" oninput="onCustomCommentInput()">
+    </div>
+    <div id="commentTypeError" style="color:#ff5c5c;font-size:0.75rem;margin-top:8px;display:none">
+      <i class="fas fa-circle-exclamation"></i> Please select a comment type before ordering.
     </div>
   </div>
 
@@ -1352,6 +1405,7 @@ table.pt tbody tr:hover{background:#252d45}
         <div class="modal-order-row"><span class="mor-key">Service</span><span class="mor-val" id="moService">—</span></div>
         <div class="modal-order-row"><span class="mor-key">Quantity</span><span class="mor-val" id="moQty">—</span></div>
         <div class="modal-order-row"><span class="mor-key">Link</span><span class="mor-val" id="moLink" style="font-size:0.72rem;word-break:break-all">—</span></div>
+        <div class="modal-order-row" id="moCommentTypeRow" style="display:none"><span class="mor-key">Comment Type</span><span class="mor-val" id="moCommentType">—</span></div>
         <div class="modal-order-row"><span class="mor-key">Total Amount</span><span class="mor-val" id="moTotal" style="color:#E8000D;font-size:1rem">₹0.00</span></div>
       </div>
 
@@ -1579,6 +1633,10 @@ function submitQrVerification(){
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
 
+  const commentTypeText = /comment/i.test(curService.name)
+    ? (curCommentType==='custom' ? `Custom — "${curCustomComment}"` : (COMMENT_TYPE_LABELS[curCommentType]||'—'))
+    : '';
+
   // Identical templateParams as the UPI "Pay via App" flow
   const templateParams = {
     order_id:          currentOrderId,
@@ -1587,7 +1645,8 @@ function submitQrVerification(){
     quantity:          qty.toLocaleString(),
     link:              link,
     amount_paid:       '₹' + price,
-    utr_transaction_id: txn
+    utr_transaction_id: txn,
+    comment_type:      commentTypeText
   };
 
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
@@ -1672,8 +1731,37 @@ const DATA = {
   ],
 };
 
-let curPlatform = 'instagram';
-let curService  = null;
+let curPlatform      = 'instagram';
+let curService       = null;
+let curCommentType   = '';   // 'love' | 'abuse' | 'emojis' | 'mixed' | 'custom'
+let curCustomComment = '';   // text entered when curCommentType === 'custom'
+
+const COMMENT_TYPE_LABELS = {
+  love:   'Love / Compliment',
+  abuse:  'Abuse / Roast',
+  emojis: 'Emojis Only',
+  mixed:  'Mixed / Random',
+  custom: 'Custom'
+};
+
+// ─── COMMENT TYPE SELECT ──────────────────────────────────────────────────────
+function selectCommentType(type, el){
+  curCommentType = type;
+  document.querySelectorAll('.comment-type-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('commentTypeError').style.display='none';
+  const customWrap = document.getElementById('customCommentWrap');
+  if(type === 'custom'){
+    customWrap.style.display='block';
+    setTimeout(()=>document.getElementById('customCommentInput').focus(),50);
+  } else {
+    customWrap.style.display='none';
+    curCustomComment = '';
+  }
+}
+function onCustomCommentInput(){
+  curCustomComment = document.getElementById('customCommentInput').value.trim();
+}
 
 // ─── SIDEBAR ─────────────────────────────────────────────────────────────────
 function openSidebar(){
@@ -1786,6 +1874,17 @@ function selectService(svc) {
   document.getElementById('infoQuality').textContent=svc.quality;
   document.getElementById('svcInfoSection').style.display='block';
   document.getElementById('moreAbout').style.display='block';
+
+  // Comment-type selector: only shown when the service is a Comments service
+  curCommentType = '';
+  curCustomComment = '';
+  document.getElementById('customCommentWrap').style.display='none';
+  document.getElementById('customCommentInput').value='';
+  document.getElementById('commentTypeError').style.display='none';
+  document.querySelectorAll('.comment-type-pill').forEach(p=>p.classList.remove('active'));
+  const isCommentService = /comment/i.test(svc.name);
+  document.getElementById('commentTypeSection').style.display = isCommentService ? 'block' : 'none';
+
   document.getElementById('linkInput').value='';
   document.getElementById('qtyInput').value='';
   document.getElementById('priceDisplay').textContent='—';
@@ -1809,10 +1908,10 @@ function calcPrice(){
 }
 
 // ─── CONFIG: EDIT THESE VALUES BEFORE GOING LIVE ─────────────────────────────
-const UPI_ID              = '8707210511@fam';            // e.g. 'astropulse@okhdfcbank'
-const EMAILJS_PUBLIC_KEY  = 'ldG1GdAaUqSz2hk_h'; // EmailJS → Account → General
-const EMAILJS_SERVICE_ID  = 'service_rpk6219'; // EmailJS → Email Services
-const EMAILJS_TEMPLATE_ID = 'template_nzny5pf';// EmailJS → Email Templates
+const UPI_ID              = 'ENTER_YOUR_UPI_ID';            // e.g. 'astropulse@okhdfcbank'
+const EMAILJS_PUBLIC_KEY  = 'ENTER_PUBLIC_KEY'; // EmailJS → Account → General
+const EMAILJS_SERVICE_ID  = 'ENTER_SERVUCE_ID'; // EmailJS → Email Services
+const EMAILJS_TEMPLATE_ID = 'TENPLATE_ID';// EmailJS → Email Templates
 // Your EmailJS template's "To Email" field should be set to your own inbox
 // (e.g. astropulsesmmpanel@gmail.com) so every submission lands there.
 
@@ -1824,6 +1923,19 @@ let currentOrderId     = '';  // ASTR-prefixed order id for the active order
 // ─── OPEN PAYMENT (ORDER SUMMARY) ─────────────────────────────────────────────
 function openPaymentModal(){
   if(!curService){alert('Please select a service.');return;}
+  const isCommentService = /comment/i.test(curService.name);
+  if(isCommentService){
+    if(!curCommentType){
+      document.getElementById('commentTypeError').style.display='block';
+      document.getElementById('commentTypeSection').scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+    if(curCommentType==='custom' && !curCustomComment){
+      alert('Please write your custom comment text.');
+      document.getElementById('customCommentInput').focus();
+      return;
+    }
+  }
   const link=document.getElementById('linkInput').value.trim();
   const qty=parseInt(document.getElementById('qtyInput').value)||0;
   if(!link){alert('Please enter your link.');return;}
@@ -1839,6 +1951,16 @@ function openPaymentModal(){
   document.getElementById('moService').textContent=curService.id+' - '+curService.name.split('|')[0].trim();
   document.getElementById('moQty').textContent=qty.toLocaleString();
   document.getElementById('moLink').textContent=link;
+
+  if(isCommentService){
+    const label = curCommentType==='custom'
+      ? `Custom — "${curCustomComment}"`
+      : COMMENT_TYPE_LABELS[curCommentType];
+    document.getElementById('moCommentType').textContent = label;
+    document.getElementById('moCommentTypeRow').style.display='flex';
+  } else {
+    document.getElementById('moCommentTypeRow').style.display='none';
+  }
 
   document.getElementById('verifyError').style.display='none';
   document.getElementById('verifyTxn').value='';
@@ -1913,6 +2035,10 @@ function submitVerification(){
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
 
   // Order + payment details are only sent now, after verification submission
+  const commentTypeText = /comment/i.test(curService.name)
+    ? (curCommentType==='custom' ? `Custom — "${curCustomComment}"` : (COMMENT_TYPE_LABELS[curCommentType]||'—'))
+    : '';
+
   const templateParams = {
     order_id: currentOrderId,
     platform: curPlatform.charAt(0).toUpperCase()+curPlatform.slice(1),
@@ -1920,7 +2046,8 @@ function submitVerification(){
     quantity: qty.toLocaleString(),
     link: link,
     amount_paid: '₹'+price,
-    utr_transaction_id: txn
+    utr_transaction_id: txn,
+    comment_type: commentTypeText
   };
 
   emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
