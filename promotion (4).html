@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit Promotion | Astropulse</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#ffffff;
+  --surface:#fff5f5;
+  --surface-2:#ffe8e8;
+  --line:rgba(220,30,30,0.13);
+  --pulse:#E8000D;
+  --pulse-2:#ff3333;
+  --text:#1a0505;
+  --text-dim:#6b3333;
+  --text-faint:#b07070;
+  --green:#16a34a;
+}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.5;overflow-x:hidden;font-size:15px;
+  min-height:100vh;
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 14px 60px;
+}
+h1,h2,.card-title{font-family:'Space Grotesk',sans-serif}
+
+/* ── Ambient background ─────────────────────────────────────────── */
+.bg-orb{
+  position:fixed;border-radius:50%;filter:blur(70px);
+  pointer-events:none;z-index:0;opacity:0.55;
+}
+.bg-orb.o1{
+  width:480px;height:480px;top:-220px;left:-160px;
+  background:radial-gradient(circle,rgba(232,0,13,0.16),transparent 70%);
+  animation:driftA 16s ease-in-out infinite;
+}
+.bg-orb.o2{
+  width:420px;height:420px;top:-120px;right:-180px;
+  background:radial-gradient(circle,rgba(255,61,110,0.13),transparent 70%);
+  animation:driftB 20s ease-in-out infinite;
+}
+.bg-orb.o3{
+  width:360px;height:360px;bottom:-160px;left:40%;
+  background:radial-gradient(circle,rgba(232,0,13,0.09),transparent 70%);
+  animation:driftA 24s ease-in-out infinite reverse;
+}
+@keyframes driftA{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(30px,20px) scale(1.06)}
+}
+@keyframes driftB{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-24px,26px) scale(1.08)}
+}
+
+#confettiCanvas{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:50;display:none}
+
+.top-bar,.promo-card{position:relative;z-index:1}
+
+.top-bar{
+  width:100%;max-width:520px;display:flex;align-items:center;gap:12px;margin-bottom:22px;
+  opacity:0;animation:fadeInDown 0.6s ease forwards;
+}
+.back-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:12px;
+  background:var(--surface-2);border:1.5px solid var(--line);
+  color:var(--pulse);text-decoration:none;flex-shrink:0;
+  transition:border-color 0.15s,transform 0.15s,background 0.2s;
+}
+.back-btn:hover{border-color:var(--pulse);transform:translateX(-3px);background:#ffdede}
+.top-title{font-size:1.05rem;font-weight:800;color:var(--text)}
+.top-sub{font-size:0.72rem;color:var(--text-dim)}
+
+.promo-card{
+  width:100%;max-width:520px;
+  background:var(--surface);
+  border:1.5px solid var(--line);
+  border-radius:20px;
+  padding:22px 20px 24px;
+  box-shadow:0 20px 40px -20px rgba(232,0,13,0.15);
+  opacity:0;animation:fadeInUp 0.65s ease 0.1s forwards;
+}
+
+@keyframes fadeInDown{
+  from{opacity:0;transform:translateY(-14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.promo-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  background-size:200% 200%;
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:1.3rem;margin-bottom:14px;
+  animation:iconPulse 4s ease-in-out infinite, gradientShift 6s ease infinite;
+  box-shadow:0 8px 20px -6px rgba(232,0,13,0.55);
+}
+@keyframes iconPulse{
+  0%,100%{transform:scale(1) rotate(0deg)}
+  50%{transform:scale(1.06) rotate(-3deg)}
+}
+@keyframes gradientShift{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+
+.promo-title{font-size:1.15rem;font-weight:800;margin-bottom:6px}
+.promo-desc{font-size:0.82rem;color:var(--text-dim);margin-bottom:20px;line-height:1.55}
+
+.form-field{
+  margin-bottom:16px;
+  opacity:0;transform:translateY(10px);
+  animation:fieldIn 0.5s ease forwards;
+}
+.form-field:nth-of-type(1){animation-delay:0.22s}
+.form-field:nth-of-type(2){animation-delay:0.3s}
+.form-field:nth-of-type(3){animation-delay:0.38s}
+@keyframes fieldIn{
+  to{opacity:1;transform:translateY(0)}
+}
+
+.f-label{font-size:0.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.f-label .req{color:var(--pulse)}
+.f-input,.f-select{
+  width:100%;
+  background:var(--surface-2);
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  padding:12px 14px;
+  font-family:'Inter',sans-serif;
+  font-size:0.88rem;color:var(--text);
+  outline:none;
+  transition:border-color 0.18s,box-shadow 0.18s,transform 0.18s;
+}
+.f-input:hover,.f-select:hover{border-color:rgba(232,0,13,0.35)}
+.f-input:focus,.f-select:focus{
+  border-color:var(--pulse);
+  box-shadow:0 0 0 4px rgba(232,0,13,0.12);
+  transform:translateY(-1px);
+}
+.f-hint{font-size:0.7rem;color:var(--text-faint);margin-top:6px}
+
+.f-readonly{
+  width:100%;
+  background:var(--surface-2);
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  padding:12px 14px;
+  font-family:'Inter',sans-serif;
+  font-size:0.88rem;color:var(--text);font-weight:700;
+  display:flex;align-items:center;gap:8px;
+}
+.f-readonly i{color:var(--green)}
+
+.tg-note{
+  display:flex;gap:9px;align-items:flex-start;
+  background:var(--surface-2);
+  border:1px dashed var(--line);
+  border-radius:12px;
+  padding:11px 13px;
+  font-size:0.74rem;color:var(--text-dim);
+  margin-bottom:18px;
+  opacity:0;animation:fieldIn 0.5s ease 0.46s forwards;
+}
+.tg-note i{color:var(--pulse);margin-top:2px;flex-shrink:0}
+
+.field-error{
+  color:#ff5c5c;font-size:0.75rem;margin-top:7px;
+  display:none;align-items:center;
+}
+.field-error i{margin-right:5px}
+.field-error.show{display:flex;animation:shake 0.4s ease}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-5px)}
+  40%{transform:translateX(4px)}
+  60%{transform:translateX(-3px)}
+  80%{transform:translateX(2px)}
+}
+.f-input.error-state{border-color:#ff5c5c;box-shadow:0 0 0 4px rgba(255,92,92,0.12);animation:shake 0.4s ease}
+
+.submit-btn{
+  width:100%;
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  background-size:200% 200%;
+  color:#fff;border:none;border-radius:13px;
+  padding:14px;font-size:0.92rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
+  transition:transform 0.15s,opacity 0.15s,box-shadow 0.15s;
+  position:relative;overflow:hidden;
+  opacity:0;animation:fieldIn 0.5s ease 0.54s forwards, gradientShift 5s ease infinite;
+  box-shadow:0 10px 24px -10px rgba(232,0,13,0.55);
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 14px 28px -10px rgba(232,0,13,0.65)}
+.submit-btn:active{transform:translateY(0) scale(0.98)}
+.submit-btn:disabled{opacity:0.65;cursor:not-allowed;transform:none;box-shadow:none}
+.submit-btn::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,0.35) 50%,transparent 70%);
+  transform:translateX(-120%);
+}
+.submit-btn:hover::after{transform:translateX(120%);transition:transform 0.7s ease}
+
+.top-error{
+  display:none;
+  background:#fff0f0;border:1px solid rgba(232,0,13,0.35);
+  color:var(--pulse);font-size:0.8rem;
+  border-radius:12px;padding:11px 13px;margin-bottom:16px;
+  align-items:center;gap:8px;
+}
+.top-error.show{display:flex;animation:shake 0.4s ease, fieldIn 0.3s ease}
+
+/* Success screen */
+.success-screen{display:none;text-align:center;padding:10px 0 4px}
+.success-screen.show{display:block}
+.success-icon-wrap{width:64px;height:64px;margin:0 auto 16px}
+.success-icon-wrap svg{width:100%;height:100%}
+.success-circle{
+  stroke:var(--green);stroke-width:4;fill:none;
+  stroke-dasharray:220;stroke-dashoffset:220;
+  animation:drawCircle 0.5s ease forwards;
+}
+.success-check{
+  stroke:var(--green);stroke-width:5;fill:none;
+  stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:40;stroke-dashoffset:40;
+  animation:drawCheck 0.35s ease 0.45s forwards;
+}
+.success-bg-circle{fill:rgba(22,163,74,0.1)}
+@keyframes drawCircle{to{stroke-dashoffset:0}}
+@keyframes drawCheck{to{stroke-dashoffset:0}}
+
+.success-title{
+  font-size:1.1rem;font-weight:800;margin-bottom:8px;
+  opacity:0;animation:fieldIn 0.5s ease 0.55s forwards;
+}
+.success-desc{
+  font-size:0.82rem;color:var(--text-dim);margin-bottom:18px;line-height:1.55;
+  opacity:0;animation:fieldIn 0.5s ease 0.65s forwards;
+}
+.ref-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface-2);border:1.5px solid var(--line);
+  border-radius:11px;padding:9px 15px;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--pulse);
+  font-size:0.85rem;margin-bottom:20px;
+  opacity:0;animation:fieldIn 0.5s ease 0.75s forwards;
+}
+.home-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--surface-2);border:1.5px solid var(--line);
+  color:var(--text);text-decoration:none;
+  padding:11px 20px;border-radius:12px;font-size:0.85rem;font-weight:600;
+  transition:transform 0.15s,border-color 0.15s,background 0.15s;
+  opacity:0;animation:fieldIn 0.5s ease 0.85s forwards;
+}
+.home-btn:hover{transform:translateY(-2px);border-color:var(--pulse);background:#ffdede}
+
+/* ── Get Promo step ─────────────────────────────────────────────── */
+.get-promo-step{text-align:center}
+.get-promo-step .promo-icon{margin-left:auto;margin-right:auto}
+.gp-lead{font-size:0.82rem;color:var(--text-dim);margin-bottom:20px;line-height:1.55}
+
+.gp-cta{
+  width:100%;
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  background-size:200% 200%;
+  color:#fff;border:none;border-radius:13px;
+  padding:14px;font-size:0.92rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
+  transition:transform 0.15s,box-shadow 0.15s;
+  box-shadow:0 10px 24px -10px rgba(232,0,13,0.55);
+  animation:gradientShift 5s ease infinite;
+}
+.gp-cta:hover{transform:translateY(-2px);box-shadow:0 14px 28px -10px rgba(232,0,13,0.65)}
+.gp-cta:active{transform:translateY(0) scale(0.98)}
+.gp-cta:disabled{opacity:0.65;cursor:not-allowed;transform:none;box-shadow:none}
+
+.promo-banner-wrap{
+  display:none;margin-top:18px;text-align:left;
+  opacity:0;animation:fieldIn 0.5s ease forwards;
+}
+.promo-banner-wrap.show{display:block}
+#promoBannerCanvas{
+  width:100%;height:auto;border-radius:14px;
+  border:1.5px solid var(--line);
+  box-shadow:0 14px 30px -16px rgba(232,0,13,0.45);
+  display:block;
+}
+.gp-actions{display:flex;gap:10px;margin-top:14px}
+.gp-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  background:var(--surface-2);border:1.5px solid var(--line);
+  color:var(--text);text-decoration:none;
+  padding:11px 12px;border-radius:12px;font-size:0.8rem;font-weight:700;
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:transform 0.15s,border-color 0.15s,background 0.15s;
+}
+.gp-btn:hover{transform:translateY(-2px);border-color:var(--pulse);background:#ffdede}
+.gp-btn.gp-primary{
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  color:#fff;border:none;
+}
+.gp-btn.gp-primary:hover{background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%)}
+
+.caption-box{
+  margin-top:16px;background:var(--surface-2);
+  border:1.5px solid var(--line);border-radius:12px;
+  padding:12px 13px;font-size:0.78rem;color:var(--text-dim);
+  line-height:1.55;position:relative;
+}
+.caption-box .cap-label{font-size:0.68rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:6px;display:block}
+.caption-box #promoCaptionText{white-space:pre-wrap;display:block}
+.gp-fields{text-align:left;margin-bottom:16px}
+.gp-fields .form-field{margin-bottom:14px}
+.copy-cap-btn{
+  margin-top:10px;width:100%;
+  background:var(--surface);border:1.5px dashed var(--line);
+  color:var(--pulse);font-weight:700;font-size:0.78rem;
+  padding:9px 10px;border-radius:10px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  font-family:'Inter',sans-serif;transition:background 0.15s,border-color 0.15s;
+}
+.copy-cap-btn:hover{background:#ffdede;border-color:var(--pulse)}
+.copy-cap-btn.copied{color:var(--green);border-color:var(--green)}
+
+.share-row{display:flex;gap:9px;margin-top:10px}
+.share-icon-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--surface);border:1.5px solid var(--line);
+  color:var(--text);border-radius:11px;padding:10px;font-size:0.95rem;
+  cursor:pointer;font-family:'Inter',sans-serif;
+  transition:transform 0.15s,border-color 0.15s,background 0.15s,color 0.15s;
+}
+.share-icon-btn:hover{transform:translateY(-2px)}
+.share-icon-btn.native:hover{border-color:var(--pulse);background:#ffdede;color:var(--pulse)}
+.share-icon-btn.wa:hover{border-color:#25D366;background:#e9fbf0;color:#1fae52}
+.share-icon-btn.tg:hover{border-color:#229ED9;background:#e8f6fd;color:#1c86b8}
+.share-icon-btn.x:hover{border-color:#000;background:#f0f0f0;color:#000}
+
+.gp-continue{
+  width:100%;margin-top:18px;
+  background:transparent;border:1.5px solid var(--line);
+  color:var(--text);border-radius:13px;
+  padding:13px;font-size:0.85rem;font-weight:700;
+  cursor:pointer;display:none;align-items:center;justify-content:center;gap:8px;
+  font-family:'Inter',sans-serif;
+  transition:border-color 0.15s,color 0.15s,transform 0.15s;
+}
+.gp-continue.show{display:flex;animation:fieldIn 0.4s ease forwards}
+.gp-continue:hover{border-color:var(--pulse);color:var(--pulse);transform:translateY(-2px)}
+
+#promoFormStep{display:none}
+#promoFormStep.show{display:block}
+
+@media(min-width:600px){
+  body{padding:40px 14px 70px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+  }
+  .top-bar,.promo-card,.form-field,.tg-note,.submit-btn,.success-title,.success-desc,.ref-chip,.home-btn{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<canvas id="confettiCanvas"></canvas>
+
+<div class="bg-orb o1"></div>
+<div class="bg-orb o2"></div>
+<div class="bg-orb o3"></div>
+
+<div class="top-bar">
+  <a href="index.html" class="back-btn" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+  <div>
+    <div class="top-title">Submit a Promotion</div>
+    <div class="top-sub">Astropulse SMM Panel</div>
+  </div>
+</div>
+
+<div class="promo-card">
+
+  <!-- GET PROMO STEP -->
+  <div class="get-promo-step" id="getPromoStep">
+    <div class="promo-icon"><i class="fas fa-bullhorn"></i></div>
+    <div class="promo-title">Get Your Promo Kit</div>
+    <div class="gp-lead">
+      Tap the button to generate an AstroPulse banner image and a ready-to-use caption.
+      Post it anywhere, then come back and submit the link to claim your reward.
+    </div>
+
+    <div class="top-error" id="gpTopError">
+      <i class="fas fa-circle-exclamation"></i>
+      <span id="gpTopErrorText">Please select an option.</span>
+    </div>
+
+    <div class="gp-fields">
+      <div class="form-field">
+        <div class="f-label">Platform You'll Upload To <span class="req">*</span></div>
+        <select class="f-select" id="gpPlatform">
+          <option value="">Select platform...</option>
+          <option value="Instagram">Instagram</option>
+          <option value="Facebook">Facebook</option>
+          <option value="Telegram">Telegram</option>
+          <option value="YouTube">YouTube</option>
+          <option value="Twitter / X">Twitter / X</option>
+          <option value="WhatsApp">WhatsApp</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <div class="f-label">What Are You Uploading? <span class="req">*</span></div>
+        <select class="f-select" id="gpPostType">
+          <option value="">Select content type...</option>
+          <option value="Post">Post</option>
+          <option value="Reel">Reel / Short Video</option>
+          <option value="Story">Story</option>
+        </select>
+        <div class="f-hint" id="gpPostTypeHint" style="display:none">Telegram only supports Posts and Stories — Reels/Shorts aren't available there.</div>
+      </div>
+    </div>
+
+    <button class="gp-cta" id="getPromoBtn" onclick="generatePromoBanner()">
+      <i class="fas fa-image"></i> Get Promo
+    </button>
+
+    <div class="promo-banner-wrap" id="promoBannerWrap">
+      <canvas id="promoBannerCanvas" width="1200" height="675"></canvas>
+
+      <div class="gp-actions">
+        <button class="gp-btn gp-primary" id="downloadBannerBtn" onclick="downloadPromoBanner()">
+          <i class="fas fa-download"></i> Download Image
+        </button>
+        <button class="gp-btn" onclick="generatePromoBanner()">
+          <i class="fas fa-rotate"></i> Regenerate
+        </button>
+      </div>
+
+      <div class="caption-box">
+        <span class="cap-label">Suggested Caption</span>
+        <span id="promoCaptionText">🚀 Growing my socials with AstroPulse — fast, reliable SMM services for Instagram, YouTube, Telegram & more.
+🔗 astropulsesmm.vercel.app
+
+#AstroPulse #SMMPanel #GrowYourSocials</span>
+        <button class="copy-cap-btn" id="copyCapBtn" onclick="copyPromoCaption()">
+          <i class="fas fa-copy"></i> Copy Caption
+        </button>
+      </div>
+
+      <div class="share-row">
+        <button class="share-icon-btn native" id="nativeShareBtn" onclick="nativeSharePromo()" title="Share directly">
+          <i class="fas fa-share-nodes"></i> Share
+        </button>
+        <button class="share-icon-btn wa" onclick="shareToWhatsApp()" title="Share to WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+        </button>
+        <button class="share-icon-btn tg" onclick="shareToTelegram()" title="Share to Telegram">
+          <i class="fab fa-telegram"></i>
+        </button>
+        <button class="share-icon-btn x" onclick="shareToX()" title="Share to X">
+          <i class="fab fa-x-twitter"></i>
+        </button>
+      </div>
+
+      <button class="gp-continue" id="gpContinueBtn" onclick="goToPromoForm()">
+        Continue to Submit Promotion <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- FORM STEP -->
+  <div id="promoFormStep">
+    <div class="promo-icon"><i class="fas fa-bullhorn"></i></div>
+    <div class="promo-title">Promote Astropulse & Get Rewarded</div>
+    <div class="promo-desc">
+      Promoted us somewhere? Tell us where and share the link below. Our team will review it
+      and get in touch with you on Telegram.
+    </div>
+
+    <div class="top-error" id="promoTopError">
+      <i class="fas fa-circle-exclamation"></i>
+      <span id="promoTopErrorText">Something went wrong.</span>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Platform</div>
+      <div class="f-readonly" id="promoPlatformDisplay">
+        <i class="fas fa-circle-check"></i> <span id="promoPlatformDisplayText">—</span>
+      </div>
+      <input type="hidden" id="promoPlatform" value="">
+      <div class="f-hint">This is the platform you selected earlier — go back to change it.</div>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Promotion Link <span class="req">*</span></div>
+      <input type="text" class="f-input" id="promoLink" placeholder="Link to your post, story, video, or channel where you promoted us">
+      <div class="f-hint">Paste the exact link/profile where the promotion is visible.</div>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Your Telegram ID <span class="req">*</span></div>
+      <input type="text" class="f-input" id="promoTelegram" placeholder="e.g. @yourusername">
+      <div class="field-error" id="tgError"><i class="fas fa-circle-exclamation"></i>Telegram ID is required. Promotions can't be submitted without it.</div>
+    </div>
+
+    <div class="tg-note">
+      <i class="fas fa-info-circle"></i>
+      <span>A Telegram ID is required for every promotion submission. We use it to contact you and confirm your reward — if you don't have Telegram, we won't be able to process a promotion.</span>
+    </div>
+
+    <button class="submit-btn" id="promoSubmitBtn" onclick="submitPromotion()">
+      <i class="fas fa-paper-plane"></i> Submit Promotion
+    </button>
+  </div>
+
+  <!-- SUCCESS STEP -->
+  <div class="success-screen" id="promoSuccessStep">
+    <div class="success-icon-wrap">
+      <svg viewBox="0 0 80 80">
+        <circle class="success-bg-circle" cx="40" cy="40" r="36"></circle>
+        <circle class="success-circle" cx="40" cy="40" r="34" transform="rotate(-90 40 40)"></circle>
+        <path class="success-check" d="M24 41 L35 52 L57 28"></path>
+      </svg>
+    </div>
+    <div class="success-title">Promotion Submitted!</div>
+    <div class="success-desc">Thanks for spreading the word. Our team will review your submission and reach out to you on Telegram.</div>
+    <div class="ref-chip"><i class="fas fa-hashtag"></i><span id="promoRefId">PROMO00000000</span></div>
+    <br>
+    <a href="index.html" class="home-btn"><i class="fas fa-house"></i> Back to Home</a>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG: EDIT THIS VALUE BEFORE GOING LIVE ───────────────────────────────
+// FormSubmit.co needs no signup or API key — just your destination email.
+// The FIRST submission from this page will trigger a one-time confirmation
+// email from FormSubmit that you must click to activate delivery.
+// Docs: https://formsubmit.co/
+const FORMSUBMIT_EMAIL = 'astropulsesmmpanel@gmail.com';   // ← put your inbox here
+const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORMSUBMIT_EMAIL}`;
+
+// ─── GET PROMO: caption engine ───────────────────────────────────────────────
+const PROMO_LINK = 'astropulsesmm.vercel.app';
+
+// Larger, attractive caption pool for Posts / Reels — picked at random every time.
+const POST_REEL_CAPTIONS = [
+  "🚀 Levelling up my socials with AstroPulse — real growth, real fast! If you're tired of slow numbers, this is the panel to try.",
+  "✨ Just found the easiest way to grow on social media. AstroPulse delivers fast, reliable results across Instagram, YouTube, Telegram & more — all in one place!",
+  "📈 Growth doesn't have to be slow. AstroPulse helped me boost my socials in no time — trusted, fast, and ridiculously easy to use.",
+  "🔥 Say goodbye to slow growth! AstroPulse is the SMM panel I trust to grow my socials fast, safe, and completely hassle-free.",
+  "💥 My secret to fast social media growth? AstroPulse. Fast delivery, real results, 24/7 support — highly recommend giving it a shot.",
+  "🌟 Watching my numbers climb has never been this easy. Big thanks to AstroPulse for the fast, trusted boost across all my platforms!",
+  "🚀 From zero hustle to real growth — AstroPulse made it happen for my socials. Fast, reliable, and worth every bit of trust.",
+  "📊 Real growth, real fast. AstroPulse is powering up my socials right now — check them out if you're serious about growing online!",
+  "💫 Tired of stuck numbers? AstroPulse turned things around for me in days, not months. Smooth, fast, and totally worth it.",
+  "🎯 Growing smarter, not slower. AstroPulse is my go-to for fast, genuine-feeling growth across every platform I use."
+];
+
+// Short, punchy captions for Stories — small on purpose, always paired with the link.
+const STORY_CAPTIONS = [
+  "Growing fast with AstroPulse 🚀",
+  "This is how I'm boosting my socials 🔥",
+  "Fast growth, zero hassle ✨",
+  "My growth secret 👀",
+  "Trusted panel, real results 📈",
+  "Levelling up with AstroPulse 💫",
+  "Tap the link — this is worth it 🚀"
+];
+
+const GENERAL_HASHTAGS = ['#AstroPulse','#SMMPanel','#GrowYourSocials','#SocialMediaGrowth','#SocialMediaMarketing','#GrowWithAstroPulse','#BoostYourAccount','#SocialGrowthHacks','#OnlineGrowth','#DigitalGrowth'];
+
+const PLATFORM_HASHTAGS = {
+  'Instagram':    ['#InstagramGrowth','#InstagramReels','#IGGrowth','#ExplorePage','#InstaFamous'],
+  'Facebook':     ['#FacebookPage','#FBGrowth','#FacebookMarketing'],
+  'Telegram':     ['#TelegramChannel','#TelegramGrowth','#TGChannel'],
+  'YouTube':      ['#YouTubeShorts','#YTGrowth','#SubscribeNow','#YouTubeGrowth'],
+  'Twitter / X':  ['#XGrowth','#TwitterGrowth','#TrendingNow'],
+  'WhatsApp':     ['#WhatsAppStatus','#WAMarketing']
+};
+
+// Platforms that don't support Reel/Short-style content in this flow.
+const NO_REEL_PLATFORMS = ['Telegram'];
+
+function refreshPostTypeOptions(){
+  const platform = document.getElementById('gpPlatform').value;
+  const postTypeSelect = document.getElementById('gpPostType');
+  const hint = document.getElementById('gpPostTypeHint');
+  const current = postTypeSelect.value;
+  const restrict = NO_REEL_PLATFORMS.includes(platform);
+
+  const allOptions = [
+    ['', 'Select content type...'],
+    ['Post', 'Post'],
+    ['Reel', 'Reel / Short Video'],
+    ['Story', 'Story']
+  ];
+  const options = restrict
+    ? allOptions.filter(([val]) => val !== 'Reel')
+    : allOptions;
+
+  postTypeSelect.innerHTML = '';
+  options.forEach(([val, label]) => {
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = label;
+    postTypeSelect.appendChild(opt);
+  });
+
+  // Keep the previous selection if it's still valid for this platform, otherwise reset.
+  postTypeSelect.value = options.some(([val]) => val === current) ? current : '';
+
+  hint.style.display = restrict ? 'block' : 'none';
+}
+
+function shuffleArray(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pickRandom(arr){
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function buildHashtags(platform, count){
+  const platformTags = PLATFORM_HASHTAGS[platform] || [];
+  const pool = [...new Set(shuffleArray([...platformTags, ...GENERAL_HASHTAGS]))];
+  return pool.slice(0, count).join(' ');
+}
+
+function buildPromoCaption(platform, postType){
+  if(postType === 'Story'){
+    const base = pickRandom(STORY_CAPTIONS);
+    return `${base}\n👉 ${PROMO_LINK}`;
+  }
+  const base = pickRandom(POST_REEL_CAPTIONS);
+  if(platform === 'Telegram'){
+    return `${base}\n🔗 ${PROMO_LINK}`;
+  }
+  const hashtags = buildHashtags(platform, 8);
+  return `${base}\n🔗 ${PROMO_LINK}\n\n${hashtags}`;
+}
+
+// ─── GET PROMO: external sharing (native share sheet + direct platform links) ─
+function getShareCaption(){
+  return document.getElementById('promoCaptionText').textContent;
+}
+
+async function nativeSharePromo(){
+  const caption = getShareCaption();
+  const canvas = document.getElementById('promoBannerCanvas');
+  if(!navigator.share){
+    copyPromoCaption();
+    showGpError('Direct sharing isn\'t supported on this browser — caption copied instead, paste it anywhere!');
+    return;
+  }
+  try{
+    if(canvas && canvas.toBlob && navigator.canShare){
+      canvas.toBlob(async (blob) => {
+        try{
+          const file = new File([blob], 'astropulse-promo-banner.png', {type:'image/png'});
+          if(navigator.canShare({files:[file]})){
+            await navigator.share({text: caption, files:[file]});
+          } else {
+            await navigator.share({text: caption, url:'https://' + PROMO_LINK});
+          }
+        }catch(e){ /* user cancelled the share sheet — nothing to do */ }
+      }, 'image/png');
+    } else {
+      await navigator.share({text: caption, url:'https://' + PROMO_LINK});
+    }
+  }catch(e){ /* user cancelled the share sheet — nothing to do */ }
+}
+
+function shareToWhatsApp(){
+  const text = encodeURIComponent(getShareCaption());
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+function shareToTelegram(){
+  const text = encodeURIComponent(getShareCaption());
+  window.open(`https://t.me/share/url?url=${encodeURIComponent('https://' + PROMO_LINK)}&text=${text}`, '_blank');
+}
+function shareToX(){
+  const text = encodeURIComponent(getShareCaption());
+  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+}
+
+// ─── Confetti celebration on successful submission ───────────────────────────
+function triggerConfetti(){
+  const canvas = document.getElementById('confettiCanvas');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  const colors = ['#E8000D','#ff3d6e','#ffb3b3','#16a34a','#ffffff'];
+  const pieces = Array.from({length: 130}, () => ({
+    x: Math.random() * canvas.width,
+    y: -30 - Math.random() * canvas.height * 0.6,
+    w: 6 + Math.random() * 6,
+    h: 8 + Math.random() * 10,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    speedY: 2.5 + Math.random() * 3,
+    speedX: -1.5 + Math.random() * 3,
+    rotation: Math.random() * 360,
+    rotSpeed: -8 + Math.random() * 16
+  }));
+  let frame = 0;
+  const maxFrames = 220;
+  function animate(){
+    frame++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.x += p.speedX; p.y += p.speedY; p.rotation += p.rotSpeed;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    if(frame < maxFrames){
+      requestAnimationFrame(animate);
+    } else {
+      canvas.style.display = 'none';
+    }
+  }
+  animate();
+}
+
+function showGpError(msg){
+  const el = document.getElementById('gpTopError');
+  document.getElementById('gpTopErrorText').textContent = msg;
+  el.classList.add('show');
+}
+function hideGpError(){
+  document.getElementById('gpTopError').classList.remove('show');
+}
+
+// ─── GET PROMO: generates a shareable AstroPulse banner image ───────────────
+function drawRoundedRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+document.getElementById('gpPlatform').addEventListener('change', refreshPostTypeOptions);
+refreshPostTypeOptions();
+
+function generatePromoBanner(){
+  hideGpError();
+  const platform = document.getElementById('gpPlatform').value;
+  const postType = document.getElementById('gpPostType').value;
+
+  if(!platform || !postType){
+    showGpError('Please select the platform and what you\'re uploading first.');
+    return;
+  }
+
+  const btn = document.getElementById('getPromoBtn');
+  const originalHTML = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating…';
+
+  requestAnimationFrame(() => {
+    const canvas = document.getElementById('promoBannerCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    // Background gradient (deep red to near-black red)
+    const bg = ctx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,'#2a0303');
+    bg.addColorStop(0.5,'#5c0808');
+    bg.addColorStop(1,'#a10d0d');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0,0,W,H);
+
+    // Soft glow orbs
+    let glow = ctx.createRadialGradient(W*0.85,H*0.15,10,W*0.85,H*0.15,420);
+    glow.addColorStop(0,'rgba(255,60,60,0.45)');
+    glow.addColorStop(1,'rgba(255,60,60,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
+
+    glow = ctx.createRadialGradient(W*0.1,H*0.9,10,W*0.1,H*0.9,380);
+    glow.addColorStop(0,'rgba(255,255,255,0.12)');
+    glow.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
+
+    // Pulse wave line accent
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    const waveY = H*0.24;
+    ctx.moveTo(0,waveY);
+    for(let x=0;x<=W;x+=40){
+      const y = waveY + Math.sin(x/60)*10;
+      ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.restore();
+
+    // Small label pill
+    ctx.font = '600 22px Inter, sans-serif';
+    const pillText = 'SMM PANEL';
+    const pillPad = 22;
+    const pillW = ctx.measureText(pillText).width + pillPad*2;
+    const pillX = W/2 - pillW/2, pillY = H*0.30, pillH = 46;
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    drawRoundedRect(ctx,pillX,pillY,pillW,pillH,23);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 1.5;
+    drawRoundedRect(ctx,pillX,pillY,pillW,pillH,23);
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.letterSpacing = '2px';
+    ctx.fillText(pillText, W/2, pillY + pillH/2 + 1);
+    ctx.letterSpacing = '0px';
+
+    // Main title "AstroPulse" — Astro in white, Pulse in red
+    const titleY = H*0.47;
+    ctx.font = '800 108px "Space Grotesk", sans-serif';
+    ctx.textBaseline = 'alphabetic';
+    const w1 = ctx.measureText('Astro').width;
+    const w2 = ctx.measureText('Pulse').width;
+    const totalW = w1 + w2;
+    const startX = W/2 - totalW/2;
+
+    ctx.textAlign = 'left';
+    ctx.shadowColor = 'rgba(0,0,0,0.35)';
+    ctx.shadowBlur = 14;
+    ctx.shadowOffsetY = 4;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('Astro', startX, titleY);
+    ctx.fillStyle = '#ff2e2e';
+    ctx.fillText('Pulse', startX + w1, titleY);
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Tagline
+    ctx.font = '500 30px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.textAlign = 'center';
+    ctx.fillText('Grow Instagram, YouTube, Telegram & more', W/2, titleY + 60);
+
+    // Divider dot
+    ctx.fillStyle = '#ff2e2e';
+    ctx.beginPath();
+    ctx.arc(W/2, titleY + 100, 4, 0, Math.PI*2);
+    ctx.fill();
+
+    // Website link chip
+    ctx.font = '700 32px "Space Grotesk", sans-serif';
+    const link = 'astropulsesmm.vercel.app';
+    const linkW = ctx.measureText(link).width + 60;
+    const linkX = W/2 - linkW/2, linkY = titleY + 128, linkH = 62;
+    ctx.fillStyle = '#ffffff';
+    drawRoundedRect(ctx,linkX,linkY,linkW,linkH,31);
+    ctx.fill();
+    ctx.fillStyle = '#a10d0d';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(link, W/2, linkY + linkH/2 + 2);
+
+    // Footer note
+    ctx.font = '500 20px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.65)';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('Fast delivery • Trusted panel • 24/7 support', W/2, H - 40);
+
+    document.getElementById('promoCaptionText').textContent = buildPromoCaption(platform, postType);
+
+    document.getElementById('promoBannerWrap').classList.add('show');
+    document.getElementById('gpContinueBtn').classList.add('show');
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-rotate"></i> Regenerate Image';
+
+    document.getElementById('promoBannerWrap').scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
+}
+
+function downloadPromoBanner(){
+  const canvas = document.getElementById('promoBannerCanvas');
+  const link = document.createElement('a');
+  link.download = 'astropulse-promo-banner.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function copyPromoCaption(){
+  const text = document.getElementById('promoCaptionText').textContent;
+  const btn = document.getElementById('copyCapBtn');
+  const finish = () => {
+    const original = '<i class="fas fa-copy"></i> Copy Caption';
+    btn.classList.add('copied');
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = original; }, 1800);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(finish).catch(finish);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    finish();
+  }
+}
+
+function goToPromoForm(){
+  const platform = document.getElementById('gpPlatform').value;
+  document.getElementById('promoPlatform').value = platform;
+  document.getElementById('promoPlatformDisplayText').textContent = platform;
+
+  document.getElementById('getPromoStep').style.display = 'none';
+  document.getElementById('promoFormStep').classList.add('show');
+}
+
+function showTopError(msg){
+  const el = document.getElementById('promoTopError');
+  document.getElementById('promoTopErrorText').textContent = msg;
+  el.classList.add('show');
+}
+function hideTopError(){
+  document.getElementById('promoTopError').classList.remove('show');
+}
+
+function submitPromotion(){
+  hideTopError();
+  const tgErrorEl = document.getElementById('tgError');
+  const tgInputEl = document.getElementById('promoTelegram');
+  tgErrorEl.classList.remove('show');
+  tgInputEl.classList.remove('error-state');
+
+  const platform = document.getElementById('promoPlatform').value;
+  const link     = document.getElementById('promoLink').value.trim();
+  const tgId     = document.getElementById('promoTelegram').value.trim();
+
+  if(!platform){ showTopError('Please select the platform where you promoted us.'); return; }
+  if(!link){ showTopError('Please enter your promotion link.'); return; }
+
+  // Hard requirement: no Telegram ID → no promotion submission.
+  if(!tgId){
+    tgErrorEl.classList.add('show');
+    tgInputEl.classList.add('error-state');
+    tgInputEl.focus();
+    return;
+  }
+
+  const btn = document.getElementById('promoSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+  const promoId = 'PROMO' + Date.now().toString().slice(-8);
+
+  const payload = {
+    promo_id:       promoId,
+    platform:       platform,
+    promotion_link: link,
+    telegram_id:    tgId,
+    submitted_at:   new Date().toLocaleString(),
+    _subject:       `New Promotion Submission — ${promoId}`,
+    _template:      'table',
+    _captcha:       'false'
+  };
+
+  fetch(FORMSUBMIT_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+  .then((res) => {
+    if(!res.ok){ throw new Error('FormSubmit request failed'); }
+    return res.json();
+  })
+  .then(() => {
+    document.getElementById('promoRefId').textContent = promoId;
+    document.getElementById('promoFormStep').style.display = 'none';
+    document.getElementById('promoSuccessStep').classList.add('show');
+    triggerConfetti();
+  })
+  .catch(() => {
+    showTopError('Could not submit. Please check your connection and try again.');
+  })
+  .finally(() => {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Promotion';
+  });
+}
+</script>
+
+</body>
+</html>
