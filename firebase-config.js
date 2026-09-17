@@ -35,7 +35,7 @@ const ADMIN_EMAILS = [
 const EMAILJS_CONFIG = {
   publicKey: 'h2FoVFBLSzD-sxr_4',     // Your EmailJS Public Key
   serviceId: 'service_ow6t97n',       // Your EmailJS Service ID
-  statusTemplateId: 'template_jfmukfy' // Your EmailJS Template ID for customer status updates
+  statusTemplateId: 'template_axj0qsl' // Your EmailJS Template ID for customer status updates
 };
 
 // ── 3.5. GOOGLE GEMINI API CONFIGURATION (FREE TIER) ────────────────────────
