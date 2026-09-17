@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOGIN & SIGN UP | ASTROPULSE SMM PANEL</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#ffffff;
+  --surface:#fff5f5;
+  --surface-2:#ffe8e8;
+  --line:rgba(220,30,30,0.13);
+  --pulse:#E8000D;
+  --pulse-2:#ff3333;
+  --text:#1a0505;
+  --text-dim:#6b3333;
+  --text-faint:#b07070;
+  --green:#16a34a;
+}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.5;overflow-x:hidden;font-size:15px;
+  min-height:100vh;
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  padding:20px 14px 60px;
+}
+h1,h2,.card-title{font-family:'Space Grotesk',sans-serif}
+
+/* ── Ambient background ── */
+.bg-orb{
+  position:fixed;border-radius:50%;filter:blur(70px);
+  pointer-events:none;z-index:0;opacity:0.55;
+}
+.bg-orb.o1{
+  width:480px;height:480px;top:-220px;left:-160px;
+  background:radial-gradient(circle,rgba(232,0,13,0.16),transparent 70%);
+  animation:driftA 16s ease-in-out infinite;
+}
+.bg-orb.o2{
+  width:420px;height:420px;top:-120px;right:-180px;
+  background:radial-gradient(circle,rgba(255,61,110,0.13),transparent 70%);
+  animation:driftB 20s ease-in-out infinite;
+}
+.bg-orb.o3{
+  width:360px;height:360px;bottom:-160px;left:40%;
+  background:radial-gradient(circle,rgba(232,0,13,0.09),transparent 70%);
+  animation:driftA 24s ease-in-out infinite reverse;
+}
+@keyframes driftA{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(30px,20px) scale(1.06)}
+}
+@keyframes driftB{
+  0%,100%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(-24px,26px) scale(1.08)}
+}
+
+.top-bar,.auth-card{position:relative;z-index:1}
+
+.login-banner{
+  width:100%;max-width:440px;overflow:hidden;margin-bottom:14px;
+  border:1.5px solid rgba(232,0,13,0.2);border-radius:12px;
+  background:linear-gradient(100deg,#fff0f0,#fff8f8);color:var(--pulse);
+  box-shadow:0 8px 18px -12px rgba(232,0,13,0.45);
+  opacity:0;animation:fadeInDown 0.6s ease 0.05s forwards;
+}
+.login-banner-track{
+  display:inline-block;min-width:100%;padding:9px 0;text-align:center;
+  font-family:'Space Grotesk',sans-serif;font-size:0.78rem;font-weight:700;
+  white-space:nowrap;animation:bannerSlide 10s linear infinite;
+}
+@keyframes bannerSlide{
+  from{transform:translateX(-100%)}
+  to{transform:translateX(100%)}
+}
+
+.top-bar{
+  width:100%;max-width:440px;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;
+  opacity:0;animation:fadeInDown 0.6s ease forwards;
+}
+.back-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:12px;
+  background:var(--surface-2);border:1.5px solid var(--line);
+  color:var(--pulse);text-decoration:none;flex-shrink:0;
+  font-size:0.84rem;font-weight:600;
+  transition:border-color 0.15s,transform 0.15s,background 0.2s;
+}
+.back-btn:hover{border-color:var(--pulse);transform:translateX(-3px);background:#ffdede}
+.brand-pill{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;padding:4px 10px;border-radius:10px;
+  box-shadow:0 2px 8px rgba(232,0,13,0.12);border:1px solid var(--line);
+}
+.brand-pill img{height:22px;width:auto}
+
+.auth-card{
+  width:100%;max-width:440px;
+  background:var(--surface);
+  border:1.5px solid var(--line);
+  border-radius:24px;
+  padding:26px 22px 28px;
+  box-shadow:0 20px 40px -20px rgba(232,0,13,0.18);
+  opacity:0;animation:fadeInUp 0.65s ease 0.1s forwards;
+}
+
+@keyframes fadeInDown{
+  from{opacity:0;transform:translateY(-14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.auth-header{text-align:center;margin-bottom:20px}
+.auth-icon{
+  width:54px;height:54px;border-radius:15px;
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:1.35rem;margin:0 auto 12px;
+  box-shadow:0 8px 20px -6px rgba(232,0,13,0.55);
+}
+.auth-title{font-size:1.3rem;font-weight:800;color:var(--text);margin-bottom:4px}
+.auth-desc{font-size:0.8rem;color:var(--text-dim)}
+
+/* ── Auth Tabs ── */
+.auth-tabs{
+  display:flex;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:14px;
+  padding:4px;margin-bottom:20px;gap:4px;
+}
+.auth-tab{
+  flex:1;padding:10px 0;text-align:center;
+  font-family:'Space Grotesk',sans-serif;font-size:0.88rem;font-weight:700;
+  border-radius:10px;cursor:pointer;border:none;background:transparent;
+  color:var(--text-dim);transition:all 0.2s ease;
+}
+.auth-tab.active{
+  background:#fff;color:var(--pulse);
+  box-shadow:0 2px 8px rgba(232,0,13,0.15);
+}
+
+/* ── Form Fields ── */
+.form-field{margin-bottom:15px}
+.f-label{
+  font-size:0.7rem;font-weight:700;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;
+  display:flex;align-items:center;gap:6px;
+}
+.f-input-wrap{position:relative}
+.f-input-wrap i.field-icon{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  color:var(--text-faint);font-size:0.88rem;pointer-events:none;
+}
+.f-input{
+  width:100%;
+  background:var(--surface-2);
+  border:1.5px solid var(--line);
+  border-radius:12px;
+  padding:12px 44px 12px 38px;
+  font-family:'Inter',sans-serif;
+  font-size:0.88rem;color:var(--text);
+  outline:none;
+  transition:border-color 0.18s,box-shadow 0.18s,transform 0.18s;
+}
+.f-input:hover{border-color:rgba(232,0,13,0.35)}
+.f-input:focus{
+  border-color:var(--pulse);
+  box-shadow:0 0 0 4px rgba(232,0,13,0.12);
+  transform:translateY(-1px);
+}
+.toggle-pwd{
+  position:absolute;right:7px;top:50%;transform:translateY(-50%);
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  background:none;border:none;color:var(--text-faint);
+  cursor:pointer;padding:0;font-size:0.88rem;border-radius:8px;
+  z-index:1;
+}
+.toggle-pwd:hover,.toggle-pwd:focus-visible{color:var(--pulse);background:rgba(232,0,13,0.08);outline:none}
+
+.forgot-link{
+  display:block;text-align:right;font-size:0.75rem;
+  color:var(--pulse);font-weight:600;text-decoration:none;
+  margin-top:-6px;margin-bottom:16px;cursor:pointer;
+}
+.forgot-link:hover{text-decoration:underline}
+
+/* ── Buttons ── */
+.submit-btn{
+  width:100%;
+  background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);
+  color:#fff;border:none;border-radius:13px;
+  padding:13px;font-size:0.92rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
+  transition:transform 0.15s,opacity 0.15s,box-shadow 0.15s;
+  box-shadow:0 10px 24px -10px rgba(232,0,13,0.55);
+}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 14px 28px -10px rgba(232,0,13,0.65)}
+.submit-btn:active{transform:translateY(0) scale(0.98)}
+.submit-btn:disabled{opacity:0.65;cursor:not-allowed;transform:none}
+
+.divider{
+  display:flex;align-items:center;margin:18px 0;
+  font-size:0.72rem;font-weight:600;color:var(--text-faint);
+  text-transform:uppercase;letter-spacing:0.08em;
+}
+.divider::before,.divider::after{
+  content:'';flex:1;height:1px;background:var(--line);
+}
+.divider span{padding:0 10px}
+
+.google-btn{
+  width:100%;
+  background:#fff;border:1.5px solid var(--line);
+  color:var(--text);border-radius:13px;
+  padding:12px;font-size:0.88rem;font-weight:600;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:all 0.18s ease;box-shadow:0 2px 6px rgba(0,0,0,0.04);
+}
+.google-btn:hover{
+  border-color:var(--pulse);background:#fff5f5;
+  transform:translateY(-1px);box-shadow:0 6px 14px -4px rgba(232,0,13,0.18);
+}
+.google-btn svg{width:18px;height:18px}
+
+/* ── Error & Alert Box ── */
+.auth-alert{
+  display:none;padding:11px 13px;border-radius:12px;
+  font-size:0.78rem;margin-bottom:14px;
+  align-items:center;gap:9px;
+}
+.auth-alert.error{
+  background:#fff0f0;border:1px solid rgba(232,0,13,0.35);
+  color:var(--pulse);animation:shake 0.4s ease;
+}
+.auth-alert.success{
+  background:#f0fdf4;border:1px solid rgba(22,163,74,0.35);
+  color:var(--green);
+}
+.auth-alert.show{display:flex}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-5px)}
+  40%{transform:translateX(4px)}
+  60%{transform:translateX(-3px)}
+  80%{transform:translateX(2px)}
+}
+
+/* ── Modal for Reset Password ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(10,3,3,0.65);
+  backdrop-filter:blur(3px);z-index:999;
+  display:none;align-items:center;justify-content:center;padding:14px;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:#fff;border-radius:20px;border:1.5px solid var(--line);
+  max-width:380px;width:100%;padding:22px 20px;
+  box-shadow:0 20px 40px -10px rgba(0,0,0,0.3);
+  position:relative;animation:fadeInUp 0.3s ease;
+}
+.modal-close{
+  position:absolute;top:14px;right:14px;
+  background:none;border:none;color:var(--text-dim);
+  font-size:1.1rem;cursor:pointer;padding:4px;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orb o1"></div>
+<div class="bg-orb o2"></div>
+<div class="bg-orb o3"></div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="index.html" class="back-btn">
+    <i class="fas fa-arrow-left"></i> Home
+  </a>
+  <div class="brand-pill">
+    <img src="astropulse-logo.png" alt="AstroPulse">
+  </div>
+</div>
+
+<div class="login-banner" aria-label="Store announcement">
+  <div class="login-banner-track" id="loginBannerText">Astropulse Smm Panel India's Number 1 Smm Panel</div>
+</div>
+
+<!-- AUTH CARD -->
+<div class="auth-card">
+  <div class="auth-header">
+    <div class="auth-icon"><i class="fas fa-user-shield"></i></div>
+    <h1 class="auth-title">Welcome Back</h1>
+    <p class="auth-desc" id="authSubtitle">Sign in to your account to place & track orders</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="auth-tabs">
+    <button class="auth-tab active" id="tabSignIn" onclick="switchTab('signin')">Sign In</button>
+    <button class="auth-tab" id="tabSignUp" onclick="switchTab('signup')">Create Account</button>
+  </div>
+
+  <!-- ALERT BOX -->
+  <div class="auth-alert" id="authAlert">
+    <i class="fas fa-circle-exclamation" id="alertIcon"></i>
+    <span id="alertMsg"></span>
+  </div>
+
+  <!-- SIGN IN FORM -->
+  <form id="signInForm" onsubmit="handleSignIn(event)">
+    <div class="form-field">
+      <div class="f-label">Email Address</div>
+      <div class="f-input-wrap">
+        <i class="fas fa-envelope field-icon"></i>
+        <input type="email" class="f-input" id="loginEmail" placeholder="yourname@gmail.com" required autocomplete="email">
+      </div>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Password</div>
+      <div class="f-input-wrap">
+        <i class="fas fa-lock field-icon"></i>
+        <input type="password" class="f-input" id="loginPassword" placeholder="••••••••" required autocomplete="current-password">
+        <button type="button" class="toggle-pwd" aria-label="Show password" title="Show password" onclick="togglePasswordVisibility('loginPassword', this)">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <a class="forgot-link" onclick="openForgotModal()">Forgot Password?</a>
+
+    <button type="submit" class="submit-btn" id="loginSubmitBtn">
+      <i class="fas fa-arrow-right-to-bracket"></i> Sign In
+    </button>
+  </form>
+
+  <!-- SIGN UP FORM -->
+  <form id="signUpForm" style="display:none" onsubmit="handleSignUp(event)">
+    <div class="form-field">
+      <div class="f-label">Full Name / Username</div>
+      <div class="f-input-wrap">
+        <i class="fas fa-user field-icon"></i>
+        <input type="text" class="f-input" id="regName" placeholder="Narendra Modi" required autocomplete="name">
+      </div>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Email Address</div>
+      <div class="f-input-wrap">
+        <i class="fas fa-envelope field-icon"></i>
+        <input type="email" class="f-input" id="regEmail" placeholder="yourname@gmail.com" required autocomplete="email">
+      </div>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Password (Min 6 Characters)</div>
+      <div class="f-input-wrap">
+        <i class="fas fa-lock field-icon"></i>
+        <input type="password" class="f-input" id="regPassword" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+        <button type="button" class="toggle-pwd" aria-label="Show password" title="Show password" onclick="togglePasswordVisibility('regPassword', this)">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <div class="f-label">Confirm Password</div>
+      <div class="f-input-wrap">
+        <i class="fas fa-check-double field-icon"></i>
+        <input type="password" class="f-input" id="regConfirmPassword" placeholder="••••••••" minlength="6" required autocomplete="new-password">
+        <button type="button" class="toggle-pwd" aria-label="Show confirmed password" title="Show confirmed password" onclick="togglePasswordVisibility('regConfirmPassword', this)">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="regSubmitBtn">
+      <i class="fas fa-user-plus"></i> Create Account
+    </button>
+  </form>
+
+  <div class="divider"><span>or continue with</span></div>
+
+  <!-- GOOGLE 1-CLICK SIGN IN -->
+  <button type="button" class="google-btn" onclick="handleGoogleSignIn()">
+    <svg viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+    <span>Sign in with Google</span>
+  </button>
+</div>
+
+<!-- FORGOT PASSWORD MODAL -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeForgotModal()"><i class="fas fa-times"></i></button>
+    <div style="text-align:center;margin-bottom:14px">
+      <div class="auth-icon" style="width:44px;height:44px;font-size:1.1rem;margin-bottom:8px">
+        <i class="fas fa-key"></i>
+      </div>
+      <h3 style="font-size:1.1rem;font-weight:700">Reset Password</h3>
+      <p style="font-size:0.78rem;color:var(--text-dim);margin-top:4px">
+        Enter your registered email address and we'll send you a password reset link.
+      </p>
+    </div>
+    <form onsubmit="handleForgotPassword(event)">
+      <div class="form-field">
+        <div class="f-label">Your Email</div>
+        <div class="f-input-wrap">
+          <i class="fas fa-envelope field-icon"></i>
+          <input type="email" class="f-input" id="forgotEmail" placeholder="yourname@gmail.com" required>
+        </div>
+      </div>
+      <button type="submit" class="submit-btn" id="forgotSubmitBtn">
+        <i class="fas fa-paper-plane"></i> Send Reset Link
+      </button>
+    </form>
+  </div>
+</div>
+
+<!-- FIREBASE COMPAT SDK (100% FREE TIER / CDN, NO BUILD TOOL NEEDED) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<script>
+let currentMode = 'signin';
+
+async function loadLoginBanner() {
+  const banner = document.getElementById('loginBannerText');
+  if (!banner || typeof getStoreSettings !== 'function') return;
+  try {
+    const settings = await getStoreSettings();
+    if (settings.loginBannerText) banner.textContent = settings.loginBannerText;
+  } catch (error) {
+    console.warn('Login banner could not be loaded:', error);
+  }
+}
+
+loadLoginBanner();
+
+// Read redirect URL if provided
+const urlParams = new URLSearchParams(window.location.search);
+const redirectUrl = urlParams.get('redirect') || 'index.html';
+
+// Watch auth state - if user already logged in, redirect
+if (auth) {
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      // If admin and redirect target is admin, or already admin
+      if (isUserAdmin(user) && redirectUrl.includes('admin')) {
+        window.location.replace('admin.html');
+      } else {
+        window.location.replace(redirectUrl);
+      }
+    }
+  });
+}
+
+function switchTab(mode) {
+  currentMode = mode;
+  hideAlert();
+  const tabIn = document.getElementById('tabSignIn');
+  const tabUp = document.getElementById('tabSignUp');
+  const formIn = document.getElementById('signInForm');
+  const formUp = document.getElementById('signUpForm');
+  const title = document.querySelector('.auth-title');
+  const sub = document.getElementById('authSubtitle');
+
+  if (mode === 'signin') {
+    tabIn.classList.add('active');
+    tabUp.classList.remove('active');
+    formIn.style.display = 'block';
+    formUp.style.display = 'none';
+    title.textContent = 'Welcome Back';
+    sub.textContent = 'Sign in to your account to place & track orders';
+  } else {
+    tabUp.classList.add('active');
+    tabIn.classList.remove('active');
+    formIn.style.display = 'none';
+    formUp.style.display = 'block';
+    title.textContent = 'Create Account';
+    sub.textContent = 'Join Astropulse to order premium SMM services';
+  }
+}
+
+function showAlert(msg, isSuccess = false) {
+  const box = document.getElementById('authAlert');
+  const txt = document.getElementById('alertMsg');
+  const ico = document.getElementById('alertIcon');
+
+  txt.textContent = msg;
+  box.className = 'auth-alert show ' + (isSuccess ? 'success' : 'error');
+  ico.className = 'fas ' + (isSuccess ? 'fa-circle-check' : 'fa-circle-exclamation');
+}
+
+function hideAlert() {
+  document.getElementById('authAlert').className = 'auth-alert';
+}
+
+function togglePasswordVisibility(fieldId, btn) {
+  const inp = document.getElementById(fieldId);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+  } else {
+    inp.type = 'password';
+    btn.innerHTML = '<i class="fas fa-eye"></i>';
+  }
+}
+
+// ── Sign In with Email/Password ──
+async function handleSignIn(e) {
+  e.preventDefault();
+  hideAlert();
+
+  if (!auth) {
+    showAlert('Firebase is not configured yet. Please enter your keys in firebase-config.js');
+    return;
+  }
+
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginSubmitBtn');
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
+
+  try {
+    const cred = await auth.signInWithEmailAndPassword(email, pwd);
+    showAlert('Success! Redirecting…', true);
+    setTimeout(() => {
+      if (isUserAdmin(cred.user) && (redirectUrl.includes('admin') || !redirectUrl || redirectUrl === 'index.html')) {
+        // Offer admin redirect or requested redirect
+        window.location.replace(redirectUrl === 'admin.html' ? 'admin.html' : redirectUrl);
+      } else {
+        window.location.replace(redirectUrl);
+      }
+    }, 600);
+  } catch (err) {
+    console.error(err);
+    let msg = 'Failed to sign in. Please check your credentials.';
+    if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+      msg = 'Invalid email or password. Please try again.';
+    } else if (err.code === 'auth/too-many-requests') {
+      msg = 'Too many attempts. Please wait a moment or reset your password.';
+    } else if (err.code === 'auth/invalid-email') {
+      msg = 'Please enter a valid email address.';
+    }
+    showAlert(msg);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-arrow-right-to-bracket"></i> Sign In';
+  }
+}
+
+// ── Sign Up with Email/Password ──
+async function handleSignUp(e) {
+  e.preventDefault();
+  hideAlert();
+
+  if (!auth) {
+    showAlert('Firebase is not configured yet. Please enter your keys in firebase-config.js');
+    return;
+  }
+
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pwd = document.getElementById('regPassword').value;
+  const cpwd = document.getElementById('regConfirmPassword').value;
+  const btn = document.getElementById('regSubmitBtn');
+
+  if (pwd !== cpwd) {
+    showAlert('Passwords do not match. Please verify.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account…';
+
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pwd);
+    if (name && cred.user) {
+      await cred.user.updateProfile({ displayName: name });
+    }
+    showAlert('Account created successfully! Redirecting…', true);
+    setTimeout(() => {
+      window.location.replace(redirectUrl);
+    }, 600);
+  } catch (err) {
+    console.error(err);
+    let msg = 'Failed to create account.';
+    if (err.code === 'auth/email-already-in-use') {
+      msg = 'This email is already registered. Please Sign In.';
+    } else if (err.code === 'auth/weak-password') {
+      msg = 'Password is too weak. Please use at least 6 characters.';
+    } else if (err.code === 'auth/invalid-email') {
+      msg = 'Please provide a valid email address.';
+    }
+    showAlert(msg);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+  }
+}
+
+// ── Google 1-Click Sign In ──
+async function handleGoogleSignIn() {
+  hideAlert();
+  if (!['http:', 'https:'].includes(window.location.protocol)) {
+    showAlert('Google Sign-In works only when the site is opened through a web server. Open the deployed HTTPS website or run Firebase Hosting locally.');
+    return;
+  }
+  if (!auth) {
+    showAlert('Firebase is not configured yet. Please enter your keys in firebase-config.js');
+    return;
+  }
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    const result = await auth.signInWithPopup(provider);
+    showAlert('Signed in with Google! Redirecting…', true);
+    setTimeout(() => {
+      window.location.replace(redirectUrl);
+    }, 600);
+  } catch (err) {
+    console.error(err);
+    if (err.code !== 'auth/popup-closed-by-user') {
+      showAlert('Google sign-in failed. ' + (err.message || ''));
+    }
+  }
+}
+
+// ── Forgot Password ──
+function openForgotModal() {
+  document.getElementById('forgotModal').classList.add('open');
+  const loginEmailVal = document.getElementById('loginEmail').value.trim();
+  if (loginEmailVal) {
+    document.getElementById('forgotEmail').value = loginEmailVal;
+  }
+}
+function closeForgotModal() {
+  document.getElementById('forgotModal').classList.remove('open');
+}
+async function handleForgotPassword(e) {
+  e.preventDefault();
+  const email = document.getElementById('forgotEmail').value.trim();
+  const btn = document.getElementById('forgotSubmitBtn');
+
+  if (!email || !auth) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending…';
+
+  try {
+    await auth.sendPasswordResetEmail(email);
+    closeForgotModal();
+    showAlert('Password reset link sent to ' + email + '. Check your inbox/spam folder.', true);
+  } catch (err) {
+    console.error(err);
+    showAlert('Could not send reset email. ' + (err.message || ''));
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset Link';
+  }
+}
+</script>
+
+</body>
+</html>
