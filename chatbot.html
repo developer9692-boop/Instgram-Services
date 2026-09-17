@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASTROPULSE AI ASSISTANT</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--red:#e8000d;--deep:#8b0000;--ink:#1a0505;--muted:#765353;--line:rgba(220,30,30,.14);--surface:#fff5f5}
+body{height:100vh;height:100dvh;overflow:hidden;background:radial-gradient(circle at 12% 0%,#ffe3e3,transparent 38%),#fff;color:var(--ink);font-family:Inter,sans-serif;display:flex;flex-direction:column}
+.topbar{min-height:72px;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:rgba(255,255,255,.86);backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:10px;font:700 1.05rem 'Space Grotesk',sans-serif;color:var(--deep)}
+.brand img{height:28px;width:auto}.back{color:var(--red);text-decoration:none;font-size:.82rem;font-weight:700}
+.shell{width:min(640px,100%);flex:1;min-height:0;margin:0 auto;display:flex;flex-direction:column;padding:30px 16px 20px}
+.intro{text-align:center;margin-bottom:18px}.intro h1{font:700 clamp(1.55rem,4vw,2.2rem) 'Space Grotesk',sans-serif}.intro p{color:var(--muted);font-size:.86rem;margin-top:5px}
+.chat{height:min(680px,calc(100dvh - 178px));min-height:0;flex:1;background:rgba(255,245,245,.78);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 18px 40px rgba(139,0,0,.1)}
+.head{background:linear-gradient(120deg,var(--red),var(--deep));color:#fff;padding:18px 20px;display:flex;align-items:center;gap:12px}.head-icon{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:1.2rem}.head strong{display:block;font:700 1rem 'Space Grotesk',sans-serif}.head small{display:block;color:#ffe0e0;margin-top:2px}
+.messages{flex:1;min-height:0;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:10px}.msg{max-width:82%;padding:11px 14px;border-radius:14px;font-size:.86rem;line-height:1.55;white-space:normal}.bot{background:#fff;border:1px solid var(--line);border-bottom-left-radius:4px}.user{align-self:flex-end;background:linear-gradient(120deg,var(--red),var(--deep));color:#fff;border-bottom-right-radius:4px}.typing{color:var(--muted);font-size:.78rem}
+.quick{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;background:#fff;border-top:1px solid var(--line)}.quick button{border:1px solid var(--line);background:var(--surface);color:var(--red);border-radius:50px;padding:8px 12px;white-space:nowrap;cursor:pointer;font:600 .74rem Inter}
+.form{display:flex;gap:8px;padding:12px 14px;background:#fff;border-top:1px solid var(--line)}.input{min-width:0;flex:1;border:1px solid var(--line);border-radius:50px;background:var(--surface);padding:12px 16px;outline:none;font:.86rem Inter}.input:focus{border-color:var(--red)}.mic,.send{width:44px;height:44px;border:0;border-radius:50%;color:#fff;cursor:pointer;flex:0 0 44px}.mic{background:#5a646f}.mic.listening{background:#16a34a;box-shadow:0 0 0 5px rgba(22,163,74,.15)}.send{background:var(--red)}.mic:disabled{opacity:.45;cursor:not-allowed}
+.escalation{margin:2px 0 4px;padding:14px;border:1px solid rgba(232,0,13,.25);border-radius:14px;background:linear-gradient(135deg,rgba(232,0,13,.08),rgba(255,179,71,.12));color:var(--ink);font-size:.78rem;line-height:1.5}.escalation strong{display:block;font:700 .9rem 'Space Grotesk',sans-serif;color:var(--deep);margin-bottom:3px}.telegram-link{display:inline-flex;align-items:center;gap:6px;margin-top:9px;padding:8px 11px;border-radius:8px;background:var(--red);color:#fff;text-decoration:none;font-size:.72rem;font-weight:700}
+@media(max-width:520px){.topbar{padding:12px 14px}.brand span{display:none}.shell{padding:20px 10px 10px}.intro{margin-bottom:14px}.chat{height:auto;min-height:0;border-radius:16px}.messages{padding:14px}.msg{max-width:90%}.form{gap:6px;padding:10px}.input{padding-left:14px;padding-right:12px}.mic,.send{width:42px;height:42px;flex-basis:42px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="back" href="index.html"><i class="fas fa-arrow-left"></i> Back to Astropulse</a><div class="brand"><img src="astropulse-logo.png" alt="Astropulse"><span>AI Assistant</span></div></header>
+<main class="shell">
+  <div class="intro"><h1>AstroPulse AI</h1></div>
+  <section class="chat" aria-label="AstroPulse AI chat">
+    <div class="head"><div class="head-icon"><i class="fas fa-robot"></i></div><div><strong>AstroPulse AI</strong><small><i class="fas fa-circle" style="font-size:.5rem;color:#4ade80"></i> Online and ready to help</small></div></div>
+    <div class="messages" id="messages"></div>
+    <div class="quick"><button type="button" data-message="How fast do orders start?">Order speed</button><button type="button" data-message="How do I pay?">Payments</button><button type="button" data-message="How do I get a refill?">Refill</button><button type="button" data-message="Is it safe to use?">Safety</button></div>
+    <form class="form" id="chatForm"><input class="input" id="chatInput" maxlength="500" autocomplete="off" placeholder="Ask AstroPulse AI..."><button class="mic" id="micButton" type="button" aria-label="Speak to AstroPulse AI" title="Speak"><i class="fas fa-microphone"></i></button><button class="send" type="submit" aria-label="Send message"><i class="fas fa-paper-plane"></i></button></form>
+  </section>
+</main>
+<script>
+const messages = document.getElementById('messages');
+const input = document.getElementById('chatInput');
+const micButton = document.getElementById('micButton');
+let history = [];
+let questionCount = 0;
+let escalationShown = false;
+function escapeHtml(value){return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function addMessage(sender,text){const item=document.createElement('div');item.className='msg '+sender;item.innerHTML=escapeHtml(text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');messages.appendChild(item);messages.scrollTop=messages.scrollHeight;history.push({sender,text});}
+async function sendMessage(text){const clean=(text||'').trim();if(!clean)return;questionCount++;input.value='';addMessage('user',clean);const typing=document.createElement('div');typing.className='typing';typing.textContent='AstroPulse AI is typing...';messages.appendChild(typing);messages.scrollTop=messages.scrollHeight;try{const refillMatch=clean.match(/\brefill\s+(ASTR\d{6,10})\b/i);if(refillMatch){typing.remove();if(!auth||!auth.currentUser){addMessage('bot','Please sign in first, then send **Refill ASTR12345678** again so I can send the request to admin.')}else{const result=await processOrderRefill(refillMatch[1]);addMessage('bot',result.success?'✅ '+result.message:'⚠️ '+result.error)}return}const reply=await askGeminiAI(clean,history);typing.remove();addMessage('bot',reply);if(questionCount>=10&&!escalationShown)showTelegramEscalation()}catch(error){typing.remove();addMessage('bot','Sorry, I could not respond right now. Please contact us on Telegram.')}}
+function showTelegramEscalation(){escalationShown=true;const card=document.createElement('div');card.className='escalation';card.innerHTML='<strong>Need a more personal answer?</strong>Our support team can review your SMM requirements, service choice, or order directly.<br><a class="telegram-link" href="https://t.me/astropulsesmm" target="_blank" rel="noopener"><i class="fab fa-telegram-plane"></i> Join us on Telegram</a>';messages.appendChild(card);messages.scrollTop=messages.scrollHeight}
+document.getElementById('chatForm').addEventListener('submit',event=>{event.preventDefault();sendMessage(input.value)});
+document.querySelectorAll('.quick button').forEach(button=>button.addEventListener('click',()=>sendMessage(button.dataset.message)));
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SpeechRecognition) {
+  micButton.disabled = true;
+  micButton.title = 'Voice input is not supported in this browser';
+} else {
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'en-IN';
+  recognition.interimResults = false;
+  recognition.continuous = false;
+  recognition.onstart = () => {
+    micButton.classList.add('listening');
+    micButton.title = 'Listening...';
+  };
+  recognition.onresult = event => {
+    input.value = event.results[0][0].transcript;
+    input.focus();
+  };
+  recognition.onerror = () => micButton.classList.remove('listening');
+  recognition.onend = () => {
+    micButton.classList.remove('listening');
+    micButton.title = 'Speak';
+  };
+  micButton.addEventListener('click', () => recognition.start());
+}
+addMessage('bot',"Hi! I'm **AstroPulse AI**. Ask me about services, delivery speed, payments, order tracking, or refills.");
+</script>
+</body>
+</html>
