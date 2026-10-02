@@ -458,17 +458,52 @@ loadLoginBanner();
 const urlParams = new URLSearchParams(window.location.search);
 const redirectUrl = urlParams.get('redirect') || 'index.html';
 
+// True while a sign-in / sign-up / Google flow is running, so the auth
+// listener below doesn't redirect before the flow finishes (e.g. before
+// the display name is saved on sign-up).
+let authBusy = false;
+
+// Maps Firebase error codes to messages that tell you what to fix
+function friendlyAuthError(err, fallback) {
+  const code = (err && err.code) || '';
+  const map = {
+    'auth/operation-not-allowed': 'This sign-in method is not enabled. In Firebase Console go to Authentication > Sign-in method and enable it.',
+    'auth/unauthorized-domain': 'This website domain is not authorized. In Firebase Console go to Authentication > Settings > Authorized domains and add: ' + window.location.hostname,
+    'auth/network-request-failed': 'Network error. Check your internet connection and try again.',
+    'auth/api-key-not-valid.-please-pass-a-valid-api-key.': 'Firebase API key is invalid. Check firebase-config.js.',
+    'auth/invalid-api-key': 'Firebase API key is invalid. Check firebase-config.js.',
+    'auth/popup-blocked': 'Popup was blocked by your browser. Allow popups for this site and try again.',
+    'auth/too-many-requests': 'Too many attempts. Please wait a few minutes and try again.',
+    'auth/email-already-in-use': 'This email is already registered. Please Sign In.',
+    'auth/weak-password': 'Password is too weak. Please use at least 6 characters.',
+    'auth/invalid-email': 'Please provide a valid email address.',
+    'auth/account-exists-with-different-credential': 'An account already exists with this email using a different sign-in method.',
+    'auth/internal-error': 'Firebase internal error. Check that the sign-in method is enabled and the domain is authorized.'
+  };
+  const msg = map[code] || ((err && err.message) ? err.message : fallback);
+  return code ? msg + ' (' + code + ')' : msg;
+}
+
 // Watch auth state - if user already logged in, redirect
-if (auth) {
+if (typeof auth !== 'undefined' && auth) {
   auth.onAuthStateChanged((user) => {
-    if (user) {
-      // If admin and redirect target is admin, or already admin
+    if (user && !authBusy) {
       if (isUserAdmin(user) && redirectUrl.includes('admin')) {
         window.location.replace('admin.html');
       } else {
         window.location.replace(redirectUrl);
       }
     }
+  });
+
+  // Finish Google sign-in if the browser used the redirect flow
+  auth.getRedirectResult().then((result) => {
+    if (result && result.user) {
+      window.location.replace(redirectUrl);
+    }
+  }).catch((err) => {
+    console.error(err);
+    showAlert(friendlyAuthError(err, 'Google sign-in failed.'));
   });
 }
 
@@ -541,6 +576,7 @@ async function handleSignIn(e) {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in…';
 
+  authBusy = true;
   try {
     const cred = await auth.signInWithEmailAndPassword(email, pwd);
     showAlert('Success! Redirecting…', true);
@@ -561,7 +597,10 @@ async function handleSignIn(e) {
       msg = 'Too many attempts. Please wait a moment or reset your password.';
     } else if (err.code === 'auth/invalid-email') {
       msg = 'Please enter a valid email address.';
+    } else {
+      msg = friendlyAuthError(err, msg);
     }
+    authBusy = false;
     showAlert(msg);
   } finally {
     btn.disabled = false;
@@ -592,11 +631,13 @@ async function handleSignUp(e) {
 
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account…';
+  authBusy = true;
 
   try {
     const cred = await auth.createUserWithEmailAndPassword(email, pwd);
     if (name && cred.user) {
-      await cred.user.updateProfile({ displayName: name });
+      try { await cred.user.updateProfile({ displayName: name }); }
+      catch (profileErr) { console.warn('Could not save display name:', profileErr); }
     }
     showAlert('Account created successfully! Redirecting…', true);
     setTimeout(() => {
@@ -604,15 +645,8 @@ async function handleSignUp(e) {
     }, 600);
   } catch (err) {
     console.error(err);
-    let msg = 'Failed to create account.';
-    if (err.code === 'auth/email-already-in-use') {
-      msg = 'This email is already registered. Please Sign In.';
-    } else if (err.code === 'auth/weak-password') {
-      msg = 'Password is too weak. Please use at least 6 characters.';
-    } else if (err.code === 'auth/invalid-email') {
-      msg = 'Please provide a valid email address.';
-    }
-    showAlert(msg);
+    authBusy = false;
+    showAlert(friendlyAuthError(err, 'Failed to create account.'));
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
@@ -626,22 +660,36 @@ async function handleGoogleSignIn() {
     showAlert('Google Sign-In works only when the site is opened through a web server. Open the deployed HTTPS website or run Firebase Hosting locally.');
     return;
   }
-  if (!auth) {
+  if (typeof auth === 'undefined' || !auth) {
     showAlert('Firebase is not configured yet. Please enter your keys in firebase-config.js');
     return;
   }
 
   const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: 'select_account' });
+  authBusy = true;
+
   try {
-    const result = await auth.signInWithPopup(provider);
+    await auth.signInWithPopup(provider);
     showAlert('Signed in with Google! Redirecting…', true);
     setTimeout(() => {
       window.location.replace(redirectUrl);
     }, 600);
   } catch (err) {
     console.error(err);
-    if (err.code !== 'auth/popup-closed-by-user') {
-      showAlert('Google sign-in failed. ' + (err.message || ''));
+    // Popup blocked / unsupported (common on mobile & in-app browsers): use full-page redirect
+    if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
+      try {
+        await auth.signInWithRedirect(provider);
+        return;
+      } catch (redirectErr) {
+        console.error(redirectErr);
+        err = redirectErr;
+      }
+    }
+    authBusy = false;
+    if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+      showAlert(friendlyAuthError(err, 'Google sign-in failed.'));
     }
   }
 }
