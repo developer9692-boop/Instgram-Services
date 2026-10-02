@@ -50,7 +50,55 @@ let questionCount = 0;
 let escalationShown = false;
 function escapeHtml(value){return String(value || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
 function addMessage(sender,text){const item=document.createElement('div');item.className='msg '+sender;item.innerHTML=escapeHtml(text).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');messages.appendChild(item);messages.scrollTop=messages.scrollHeight;history.push({sender,text});}
-async function sendMessage(text){const clean=(text||'').trim();if(!clean)return;questionCount++;input.value='';addMessage('user',clean);const typing=document.createElement('div');typing.className='typing';typing.textContent='AstroPulse AI is typing...';messages.appendChild(typing);messages.scrollTop=messages.scrollHeight;try{const refillMatch=clean.match(/\brefill\s+(ASTR\d{6,10})\b/i);if(refillMatch){typing.remove();if(!auth||!auth.currentUser){addMessage('bot','Please sign in first, then send **Refill ASTR12345678** again so I can send the request to admin.')}else{const result=await processOrderRefill(refillMatch[1]);addMessage('bot',result.success?'✅ '+result.message:'⚠️ '+result.error)}return}const reply=await askGeminiAI(clean,history);typing.remove();addMessage('bot',reply);if(questionCount>=10&&!escalationShown)showTelegramEscalation()}catch(error){typing.remove();addMessage('bot','Sorry, I could not respond right now. Please contact us on Telegram.')}}
+async function sendMessage(text){
+  const clean=(text||'').trim();
+  if(!clean)return;
+  questionCount++;
+  input.value='';
+  addMessage('user',clean);
+
+  const typing=document.createElement('div');
+  typing.className='typing';
+  typing.textContent='AstroPulse AI is typing...';
+  messages.appendChild(typing);
+  messages.scrollTop=messages.scrollHeight;
+
+  try{
+    const orderId = typeof extractOrderId === 'function' ? extractOrderId(clean) : (clean.match(/\bASTR\s*[-#:]?\s*\d{6,12}\b/i)||[])[0]?.replace(/\s+/g,'').toUpperCase();
+    const refillIntent = typeof isRefillIntent === 'function' && isRefillIntent(clean);
+
+    // A refill request is an action, not a normal AI question. Always route it
+    // through the real Firestore refill function so the AI cannot merely claim
+    // that it submitted a request when it did not.
+    if(refillIntent && orderId){
+      typing.remove();
+      if(!auth || !auth.currentUser){
+        addMessage('bot','Please sign in first. After signing in, send your Order ID again and I will process the refill request.');
+      }else{
+        const result=await processOrderRefill(orderId);
+        addMessage('bot',result.success
+          ? '✅ '+result.message
+          : '⚠️ '+result.error);
+      }
+      return;
+    }
+
+    if(refillIntent && !orderId){
+      typing.remove();
+      addMessage('bot','🔄 I can process the refill request for you. Please send your Order ID, for example **ASTR38572197**. I will verify the order, refill eligibility, and existing refill requests before submitting it.');
+      return;
+    }
+
+    const reply=await askGeminiAI(clean,history);
+    typing.remove();
+    addMessage('bot',reply);
+    if(questionCount>=10&&!escalationShown)showTelegramEscalation();
+  }catch(error){
+    console.error('AstroPulse AI error:',error);
+    typing.remove();
+    addMessage('bot','Sorry, I could not complete that request right now. Please try again or contact AstroPulse support on Telegram.');
+  }
+}
 function showTelegramEscalation(){escalationShown=true;const card=document.createElement('div');card.className='escalation';card.innerHTML='<strong>Need a more personal answer?</strong>Our support team can review your SMM requirements, service choice, or order directly.<br><a class="telegram-link" href="https://t.me/astropulsesmm" target="_blank" rel="noopener"><i class="fab fa-telegram-plane"></i> Join us on Telegram</a>';messages.appendChild(card);messages.scrollTop=messages.scrollHeight}
 document.getElementById('chatForm').addEventListener('submit',event=>{event.preventDefault();sendMessage(input.value)});
 document.querySelectorAll('.quick button').forEach(button=>button.addEventListener('click',()=>sendMessage(button.dataset.message)));
