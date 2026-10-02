@@ -1,13 +1,14 @@
-/**
- * ASTROPULSE SMM PANEL - FIREBASE & EMAILJS CONFIGURATION
- * 
- * 100% FREE TIER (Firebase Spark Plan + EmailJS Free Plan)
- * Zero paid hosting required. Works with Firebase Hosting, GitHub Pages, Vercel, Netlify.
- */
+// ============================================================
+// AstroPulse SMM Panel - Firebase Configuration
+// ============================================================
 
-// ── 1. FIREBASE CONFIGURATION ───────────────────────────────────────────────
-// Replace the values below with your Firebase Project Configuration from:
-// Firebase Console (https://console.firebase.google.com/) -> Project Settings -> General -> Your apps -> Web app
+// Firebase SDK imports are expected to be loaded in your HTML
+// before this file.
+
+// ============================================================
+// FIREBASE CONFIG
+// ============================================================
+
 const firebaseConfig = {
   apiKey: "AIzaSyAmvcyfpgFsFY_JLtC2T3t36KnUKyLQL0o",
   authDomain: "astropulsesmm.firebaseapp.com",
@@ -16,425 +17,979 @@ const firebaseConfig = {
   messagingSenderId: "24067828012",
   appId: "1:24067828012:web:ede9ad262bae059006a489",
   measurementId: "G-YCEKPEDNR6"
+
 };
 
-// ── 2. ADMIN ACCOUNTS LIST ──────────────────────────────────────────────────
-// Add your admin email address(es) here. Any user logging in with these emails
-// will automatically get access to the Admin Panel (admin.html).
-const ADMIN_EMAILS = [
-  'astropulsesmmpanel@gmail.com',
-  'admin@astropulse.com',
-  'developer9692@gmail.com'
-];
+// Prevent Firebase from being initialized twice
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 
-// ── 3. EMAILJS CONFIGURATION FOR STATUS NOTIFICATIONS ──────────────────────
-// Used to send "Order Completed" & "Order Declined" emails to customers for free.
-// In your EmailJS dashboard (https://dashboard.emailjs.com/):
-// - Create an email service (or use the one already in index.html: service_rpk6219)
-// - Create a template with "To Email" set to: {{to_email}}
-const EMAILJS_CONFIG = {
-  publicKey: 'h2FoVFBLSzD-sxr_4',     // Your EmailJS Public Key
-  serviceId: 'service_ow6t97n',       // Your EmailJS Service ID
-  statusTemplateId: 'template_axj0qsl' // Your EmailJS Template ID for customer status updates
-};
+const db = firebase.firestore();
+const auth = firebase.auth();
 
-// ── 3.5. GOOGLE GEMINI API CONFIGURATION (FREE TIER) ────────────────────────
-// Add your Google Gemini API key from https://aistudio.google.com/
-// The AI Chatbot has built-in smart fallback so it works even if this key is blank!
+
+// ============================================================
+// GEMINI CONFIGURATION
+// ============================================================
+
+// IMPORTANT:
+// Use a NEW/ROTATED Gemini API key.
+// Do not use a key that was previously exposed publicly.
+
 const GEMINI_API_KEY = "AQ.Ab8RN6KSjLpUS1niHGOQXT9G80QEHQdXNj5QlANiLy6sD19DeA";
 
-// ── 4. FIREBASE INITIALIZATION ──────────────────────────────────────────────
-let app, auth, db;
+const GEMINI_MODEL = "gemini-2.0-flash";
 
-try {
-  if (typeof firebase !== 'undefined') {
-    if (!firebase.apps.length) {
-      app = firebase.initializeApp(firebaseConfig);
-    } else {
-      app = firebase.app();
-    }
-    auth = firebase.auth();
-    db = firebase.firestore();
-  }
-} catch (e) {
-  console.warn("Firebase initialization notice:", e.message);
-}
 
-// ── 5. HELPER FUNCTIONS ─────────────────────────────────────────────────────
+// ============================================================
+// ADMIN CHECK
+// ============================================================
 
-/**
- * Check if a given user (or current user) is an admin.
- */
 function isUserAdmin(user) {
-  if (!user || !user.email) return false;
-  return ADMIN_EMAILS.map(e => e.toLowerCase()).includes(user.email.toLowerCase());
-}
+    if (!user) return false;
 
-async function getStoreSettings() {
-  if (!db) return {};
-  const snapshot = await db.collection('settings').doc('store').get();
-  return snapshot.exists ? snapshot.data() : {};
-}
+    const adminEmails = [
+        "astropulsesmmpanel@gmail.com"
+    ];
 
-async function saveStoreSettings(settings) {
-  if (!db) return { success: false, error: 'Database not connected' };
-  try {
-    await db.collection('settings').doc('store').set(settings, { merge: true });
-    return { success: true };
-  } catch (error) {
-    console.error('Error saving store settings:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-async function getStoreServices() {
-  if (!db) return [];
-  const snapshot = await db.collection('services').where('active', '==', true).get();
-  return snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
-}
-
-async function saveStoreService(service) {
-  if (!db) return { success: false, error: 'Database not connected' };
-  try {
-    const payload = { ...service, active: true, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
-    if (service.firestoreId) {
-      const firestoreId = service.firestoreId;
-      delete payload.firestoreId;
-      await db.collection('services').doc(firestoreId).set(payload, { merge: true });
-      return { success: true, id: firestoreId };
-    }
-    delete payload.firestoreId;
-    const docRef = await db.collection('services').add(payload);
-    return { success: true, id: docRef.id };
-  } catch (error) {
-    console.error('Error saving service:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-async function removeStoreService(serviceId) {
-  if (!db) return { success: false, error: 'Database not connected' };
-  try {
-    await db.collection('services').doc(serviceId).update({ active: false, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-    return { success: true };
-  } catch (error) {
-    console.error('Error removing service:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-async function removeServiceByPublicId(serviceId) {
-  if (!db) return { success: false, error: 'Database not connected' };
-  try {
-    const settings = await getStoreSettings();
-    const removedServiceIds = Array.isArray(settings.removedServiceIds) ? settings.removedServiceIds : [];
-    const numericId = Number(serviceId);
-    if (!removedServiceIds.includes(numericId)) removedServiceIds.push(numericId);
-    await saveStoreSettings({ removedServiceIds });
-    const snapshot = await db.collection('services').where('id', '==', numericId).get();
-    await Promise.all(snapshot.docs.map(doc => doc.ref.update({ active: false })));
-    return { success: true };
-  } catch (error) {
-    console.error('Error removing service by ID:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-/**
- * Get the currently authenticated user (promise-based).
- */
-function getAuthUser() {
-  return new Promise((resolve) => {
-    if (!auth) return resolve(null);
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      unsubscribe();
-      resolve(user);
-    });
-  });
-}
-
-/**
- * Save an order to Firestore `orders` collection.
- */
-async function saveOrderToFirestore(orderData) {
-  if (!db) {
-    console.error("Firestore is not initialized.");
-    return { success: false, error: "Database offline" };
-  }
-
-  try {
-    const docRef = await db.collection("orders").add({
-      ...orderData,
-      status: orderData.status || 'pending',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    return { success: true, id: docRef.id };
-  } catch (error) {
-    console.error("Error saving order to Firestore:", error);
-    return { success: false, error: error.message };
-  }
-}
-
-/**
- * Look up an order by its public order ID (e.g. ASTR12345678).
- */
-async function getOrderByPublicId(orderId) {
-  if (!db) return null;
-  try {
-    let query = db.collection("orders").where("orderId", "==", orderId.trim().toUpperCase());
-    if (auth && auth.currentUser && !isUserAdmin(auth.currentUser)) {
-      query = query.where("userId", "==", auth.currentUser.uid);
-    }
-    const snapshot = await query.limit(1).get();
-
-    if (snapshot.empty) return null;
-    const doc = snapshot.docs[0];
-    return { id: doc.id, ...doc.data() };
-  } catch (error) {
-    console.error("Error fetching order:", error);
-    return null;
-  }
-}
-
-function listenToUserOrders(userId, onData, onError) {
-  if (!db || !userId) return () => {};
-  return db.collection('orders')
-    .where('userId', '==', userId)
-    .onSnapshot(snapshot => {
-      const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      orders.sort((a, b) => {
-        const aTime = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
-        const bTime = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
-        return bTime - aTime;
-      });
-      onData(orders);
-    }, onError);
-}
-
-/**
- * Update an order's status in Firestore (Admin only).
- * @param {string} docId - Firestore document ID
- * @param {'completed'|'declined'|'pending'} newStatus
- * @param {string} adminEmail
- */
-async function updateOrderStatusInFirestore(docId, newStatus, adminEmail) {
-  if (!db) return { success: false, error: "Database not connected" };
-  try {
-    await db.collection("orders").doc(docId).update({
-      status: newStatus,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      updatedBy: adminEmail || 'admin'
-    });
-    return { success: true };
-  } catch (error) {
-    console.error("Error updating order status:", error);
-    return { success: false, error: error.message };
-  }
-}
-
-/**
- * Send an automated notification email to the user when their order is Completed or Declined.
- * Uses EmailJS free tier directly from client-side.
- */
-async function sendOrderStatusEmail(order, newStatus) {
-  if (!order || !order.userEmail) {
-    return { success: false, error: "No customer email found for this order" };
-  }
-
-  if (typeof emailjs === 'undefined') {
-    return { success: false, error: "EmailJS library not loaded" };
-  }
-
-  const isCompleted = newStatus.toLowerCase() === 'completed';
-  const statusHeadline = isCompleted ? 'ORDER COMPLETED' : 'ORDER DECLINED';
-  const messageBody = isCompleted
-    ? `Great news! Your order ${order.orderId} for "${order.service || 'Social Service'}" has been successfully completed and delivered.`
-    : `Notice: Your order ${order.orderId} for "${order.service || 'Social Service'}" could not be completed and has been marked as declined. If payment was deducted, please reply to this email or contact support with your UTR.`;
-
-  const templateParams = {
-    to_email: order.userEmail,
-    customer_name: order.userName || order.userEmail.split('@')[0],
-    order_id: order.orderId,
-    service_name: order.service || 'Service',
-    quantity: order.quantity || '—',
-    amount: order.amountPaid || '—',
-    target_link: order.link || '—',
-    order_status: statusHeadline,
-    status_message: messageBody,
-    date: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
-  };
-
-  try {
-    // Initialize EmailJS with key if not already initialized
-    emailjs.init({ publicKey: EMAILJS_CONFIG.publicKey });
-
-    const response = await emailjs.send(
-      EMAILJS_CONFIG.serviceId,
-      EMAILJS_CONFIG.statusTemplateId,
-      templateParams
+    return adminEmails.includes(
+        String(user.email || "").toLowerCase()
     );
-    return { success: true, response };
-  } catch (err) {
-    console.warn("EmailJS notification error:", err);
-    // Provide a graceful fallback so admin knows what happened
-    return { success: false, error: err.text || err.message || "Failed to dispatch email" };
-  }
 }
 
-/**
- * Check refill eligibility and process automated refill request for an order.
- */
+
+// ============================================================
+// ORDER ID NORMALIZATION
+// ============================================================
+
+function normalizeOrderId(value) {
+
+    const text = String(value || "").toUpperCase();
+
+    const match = text.match(
+        /\bASTR\s*[-#:]?\s*(\d{6,12})\b/
+    );
+
+    if (!match) return null;
+
+    return `ASTR${match[1]}`;
+}
+
+
+function extractOrderId(text) {
+    return normalizeOrderId(text);
+}
+
+
+// ============================================================
+// REFILL INTENT DETECTION
+// ============================================================
+
+function isRefillIntent(text) {
+
+    const message = String(text || "");
+
+    return /\b(
+        refill|
+        refil|
+        re-fill|
+        top\s*up|
+        dropped|
+        drop\s*followers|
+        drop\s*views|
+        drop\s*likes|
+        replacement
+    )\b/ix.test(message);
+}
+
+
+// ============================================================
+// CHECK WHETHER SERVICE SUPPORTS REFILL
+// ============================================================
+
+function serviceAllowsRefill(order) {
+
+    if (!order) return false;
+
+    // Explicit database settings have priority
+    if (order.refillEligible === true) return true;
+    if (order.refill === true) return true;
+    if (order.hasRefill === true) return true;
+
+    if (
+        order.refillEligible === false ||
+        order.refill === false ||
+        order.hasRefill === false
+    ) {
+        return false;
+    }
+
+    const serviceText = String(
+        order.service ||
+        order.serviceName ||
+        ""
+    ).toLowerCase();
+
+    // Explicitly non-refill services
+    if (
+        serviceText.includes("no refill") ||
+        serviceText.includes("without refill") ||
+        serviceText.includes("non-refill")
+    ) {
+        return false;
+    }
+
+    // Services containing refill information
+    if (
+        serviceText.includes("lifetime refill") ||
+        serviceText.includes("refill")
+    ) {
+        return true;
+    }
+
+    // If your database does not explicitly specify refill,
+    // allow the request to continue for admin verification.
+    return true;
+}
+
+
+// ============================================================
+// GET ORDER BY PUBLIC ORDER ID
+// ============================================================
+
+async function getOrderByPublicId(orderId) {
+
+    const normalizedId = normalizeOrderId(orderId);
+
+    if (!normalizedId) {
+        return null;
+    }
+
+    const user = auth.currentUser;
+
+    if (!user) {
+        throw new Error(
+            "Please login to check your order."
+        );
+    }
+
+
+    // --------------------------------------------------------
+    // ADMIN
+    // --------------------------------------------------------
+
+    if (isUserAdmin(user)) {
+
+        const snapshot = await db
+            .collection("orders")
+            .where("orderId", "==", normalizedId)
+            .limit(1)
+            .get();
+
+        if (snapshot.empty) {
+            return null;
+        }
+
+        const doc = snapshot.docs[0];
+
+        return {
+            id: doc.id,
+            ...doc.data()
+        };
+    }
+
+
+    // --------------------------------------------------------
+    // NORMAL USER
+    // --------------------------------------------------------
+    // We intentionally query by userId first.
+    //
+    // This avoids the compound Firestore query that was causing
+    // index/security-rule problems in the previous version.
+    // --------------------------------------------------------
+
+    const snapshot = await db
+        .collection("orders")
+        .where("userId", "==", user.uid)
+        .get();
+
+    let foundOrder = null;
+
+    snapshot.forEach(doc => {
+
+        const data = doc.data();
+
+        const dbOrderId = normalizeOrderId(
+            data.orderId
+        );
+
+        if (
+            dbOrderId &&
+            dbOrderId === normalizedId
+        ) {
+            foundOrder = {
+                id: doc.id,
+                ...data
+            };
+        }
+    });
+
+    return foundOrder;
+}
+
+
+// ============================================================
+// PROCESS REFILL REQUEST
+// ============================================================
+
 async function processOrderRefill(orderId) {
-  if (!db) return { success: false, error: "Database offline. Please check connection." };
-  const rawId = (orderId || '').trim().toUpperCase();
-  if (!rawId) return { success: false, error: "Please enter a valid Order ID (e.g. ASTR38572197)." };
 
-  try {
-    const order = await getOrderByPublicId(rawId);
-    if (!order) {
-      return {
-        success: false,
-        error: `Could not find any order with ID "${rawId}". Please double-check your Order ID.`
-      };
+    const normalizedId = normalizeOrderId(orderId);
+
+    if (!normalizedId) {
+
+        return {
+            success: false,
+            message:
+                "Please provide a valid AstroPulse Order ID, for example ASTR38572197."
+        };
     }
 
-    const status = (order.status || 'pending').toLowerCase();
-    if (status === 'pending') {
-      return {
-        success: false,
-        error: `Order ${rawId} is currently In Progress / Pending. Refills can only be requested after the order has been Completed.`
-      };
-    }
-    if (status === 'declined') {
-      return {
-        success: false,
-        error: `Order ${rawId} was Declined. Refills cannot be processed for declined orders. Please contact support if you need assistance.`
-      };
+
+    const user = auth.currentUser;
+
+    if (!user) {
+
+        return {
+            success: false,
+            message:
+                "Please login to request a refill."
+        };
     }
 
-    // Check refill eligibility based on service metadata
-    const serviceName = order.service || '';
-    const isNoRefill = /no\s*refill/i.test(serviceName);
-    const isLifetime = /lifetime/i.test(serviceName);
-    const isRefillWord = /refill/i.test(serviceName) && !isNoRefill;
 
-    if (isNoRefill || (!isLifetime && !isRefillWord)) {
-      return {
-        success: false,
-        error: `Order ${rawId} ("${serviceName}") was ordered with a No-Refill guarantee. Refills are not supported for this service.`
-      };
-    }
-
-    if (!auth || !auth.currentUser) {
-      return { success: false, error: 'Please sign in before requesting a refill.' };
-    }
-
-    const existing = await db.collection('refillRequests')
-      .where('orderId', '==', rawId)
-      .get();
-    const hasPendingRequest = existing.docs.some(doc => {
-      const request = doc.data();
-      return request.userId === auth.currentUser.uid && request.status === 'pending';
-    });
-    if (hasPendingRequest) {
-      return { success: false, error: `A refill request for ${rawId} is already pending.` };
-    }
-
-    await db.collection('refillRequests').add({
-      orderId: rawId,
-      orderDocId: order.id,
-      userId: auth.currentUser.uid,
-      userEmail: auth.currentUser.email || order.userEmail || '',
-      service: order.service || 'Service',
-      serviceId: order.serviceId || '',
-      quantity: order.quantity || 0,
-      status: 'pending',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    return {
-      success: true,
-      order: order,
-      message: `Refill request for Order ${rawId} has been sent to admin for review.`
-    };
-  } catch (err) {
-    console.error("Refill processing error:", err);
-    return { success: false, error: err.message || "Failed to process refill" };
-  }
-}
-
-/**
- * Intelligent domain chatbot engine with Google Gemini 1.5 Flash integration.
- */
-async function askGeminiAI(userMessage, chatHistory = []) {
-  // If Gemini API Key is provided, call Google Gemini 1.5 Flash endpoint
-  if (typeof GEMINI_API_KEY === 'string' && GEMINI_API_KEY.trim() && !GEMINI_API_KEY.includes('YOUR_GEMINI')) {
     try {
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY.trim()}`;
-      const systemInstruction = `You are AstroPulse AI, the 24/7 smart assistant for AstroPulse SMM Panel (India's premier social media growth provider).
-You assist users with:
-1. SMM services: Instagram (Reel Views, Likes, Followers, Comments), YouTube (Views, Subscribers, Likes), Telegram (Members, Views, Reactions), Facebook (Views, Page Likes, Followers), Twitter.
-2. Orders & Start time: Orders start automatically within 0–10 minutes.
-3. Payments: Done via UPI (PhonePe, GPay, Paytm) and verified instantly with the 12-digit UTR/Txn ID.
-4. Refills: Services with "Lifetime Refill" or "Refill" are guaranteed. If a user asks for a refill with an order ID, encourage them to submit the order ID in the chat so the automated system can process it.
-5. Telegram Support: @astropulsesmmsupport | Email: astropulsesmmpanel@gmail.com.
-Tone: Fast, polite, helpful, and concise (maximum 2-3 sentences). Format with bolding for clarity.`;
 
-      const contents = [
-        { role: "user", parts: [{ text: systemInstruction }] },
-        { role: "model", parts: [{ text: "Understood! I am AstroPulse AI, ready to assist users with fast social growth, orders, payments, and refills." }] },
-        ...chatHistory.slice(-4).map(m => ({
-          role: m.sender === 'user' ? 'user' : 'model',
-          parts: [{ text: m.text }]
-        })),
-        { role: "user", parts: [{ text: userMessage }] }
-      ];
+        // ----------------------------------------------------
+        // FIND ORDER
+        // ----------------------------------------------------
 
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents })
-      });
+        const order = await getOrderByPublicId(
+            normalizedId
+        );
 
-      if (res.ok) {
-        const json = await res.json();
-        const botReply = json.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (botReply) return botReply;
-      }
-    } catch (e) {
-      console.warn("Gemini API call failed, falling back to local smart engine:", e);
+
+        if (!order) {
+
+            return {
+                success: false,
+                message:
+                    `I could not find order ${normalizedId} in your account. Please check the Order ID.`
+            };
+        }
+
+
+        // ----------------------------------------------------
+        // ORDER STATUS
+        // ----------------------------------------------------
+
+        const status = String(
+            order.status ||
+            order.orderStatus ||
+            ""
+        )
+            .trim()
+            .toLowerCase();
+
+
+        const completedStatuses = [
+            "completed",
+            "complete",
+            "success",
+            "successful"
+        ];
+
+
+        const activeStatuses = [
+            "pending",
+            "processing",
+            "in progress",
+            "in-progress",
+            "partial"
+        ];
+
+
+        const failedStatuses = [
+            "declined",
+            "cancelled",
+            "canceled",
+            "failed"
+        ];
+
+
+        if (activeStatuses.includes(status)) {
+
+            return {
+                success: false,
+                message:
+                    `Order ${normalizedId} is currently ${status}. A refill can only be requested after the order is completed.`
+            };
+        }
+
+
+        if (failedStatuses.includes(status)) {
+
+            return {
+                success: false,
+                message:
+                    `Order ${normalizedId} has status "${status}". This order is not eligible for a refill request.`
+            };
+        }
+
+
+        if (
+            status &&
+            !completedStatuses.includes(status)
+        ) {
+
+            return {
+                success: false,
+                message:
+                    `Order ${normalizedId} currently has status "${status}". Please contact support if you believe it should be eligible for refill.`
+            };
+        }
+
+
+        // ----------------------------------------------------
+        // CHECK REFILL ELIGIBILITY
+        // ----------------------------------------------------
+
+        if (!serviceAllowsRefill(order)) {
+
+            return {
+                success: false,
+                message:
+                    `Order ${normalizedId} does not appear to be eligible for refill based on its service.`
+            };
+        }
+
+
+        // ----------------------------------------------------
+        // CHECK EXISTING REFILL REQUESTS
+        // ----------------------------------------------------
+        // Query only by userId to avoid permission/index issues.
+        // Then check orderId locally.
+        // ----------------------------------------------------
+
+        const existingSnapshot = await db
+            .collection("refillRequests")
+            .where("userId", "==", user.uid)
+            .get();
+
+
+        let existingRequest = null;
+
+
+        existingSnapshot.forEach(doc => {
+
+            const data = doc.data();
+
+            const requestOrderId =
+                normalizeOrderId(data.orderId);
+
+            const requestStatus =
+                String(data.status || "")
+                    .toLowerCase()
+                    .trim();
+
+
+            if (
+                requestOrderId === normalizedId &&
+                (
+                    requestStatus === "pending" ||
+                    requestStatus === "processing"
+                )
+            ) {
+
+                existingRequest = {
+                    id: doc.id,
+                    ...data
+                };
+            }
+        });
+
+
+        if (existingRequest) {
+
+            return {
+                success: false,
+                message:
+                    `A refill request for ${normalizedId} is already ${existingRequest.status}. Please wait for it to be processed.`,
+                requestId: existingRequest.id
+            };
+        }
+
+
+        // ----------------------------------------------------
+        // CREATE REFILL REQUEST
+        // ----------------------------------------------------
+
+        const refillData = {
+
+            orderId: normalizedId,
+
+            orderDocId: order.id,
+
+            userId: user.uid,
+
+            userEmail:
+                user.email || "",
+
+            userName:
+                user.displayName ||
+                order.userName ||
+                "",
+
+            service:
+                order.service ||
+                order.serviceName ||
+                "",
+
+            serviceId:
+                order.serviceId ||
+                "",
+
+            quantity:
+                order.quantity ||
+                order.amount ||
+                0,
+
+            originalOrderStatus:
+                order.status ||
+                "",
+
+            status:
+                "pending",
+
+            source:
+                "website",
+
+            createdAt:
+                firebase.firestore.FieldValue.serverTimestamp(),
+
+            updatedAt:
+                firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+
+        const requestRef = await db
+            .collection("refillRequests")
+            .add(refillData);
+
+
+        return {
+
+            success: true,
+
+            requestId:
+                requestRef.id,
+
+            orderId:
+                normalizedId,
+
+            message:
+                `Your refill request for order ${normalizedId} has been submitted successfully.`
+        };
+
+
+    } catch (error) {
+
+        console.error(
+            "Refill processing error:",
+            error
+        );
+
+
+        return {
+
+            success: false,
+
+            message:
+                error.message ||
+                "Unable to process the refill request right now."
+        };
     }
-  }
-
-  // Built-in intelligent domain responses (works 100% offline & without API key!)
-  return getLocalBotResponse(userMessage);
 }
 
-function getLocalBotResponse(msg) {
-  const text = (msg || '').toLowerCase();
 
-  if (/refill|dropped|drop|refil/.test(text)) {
-    return "🔄 **Order Refill Support**: To request a refill, simply type: `Refill ASTR12345678` (with your Order ID). Our system will automatically verify your order eligibility and process your refill!";
-  }
-  if (/track|status|where is my order|check order/.test(text)) {
-    return "📦 **Order History**: Open Order History from the menu to see your Order IDs, services, quantities, and live statuses.";
-  }
-  if (/pay|payment|upi|gpay|phonepe|paytm|utr|scanner|qr/.test(text)) {
-    return "💳 **UPI Payment & Verification**: Select your desired service, enter your link and quantity, then choose **Pay via App** or **Scan QR**. After payment, paste your 12-digit UTR/Transaction ID to immediately confirm your order!";
-  }
-  if (/speed|how fast|start time|how long|delivery/.test(text)) {
-    return "⚡ **Instant Start**: Over 95% of our orders start processing within **0–10 minutes** automatically! High-speed delivery continues at up to 10M views/day depending on the service selected.";
-  }
-  if (/safe|ban|password|login/.test(text)) {
-    return "🛡️ **100% Safe & Secure**: Astropulse **NEVER asks for your account password**. All services are delivered externally to your public links with zero risk to your account.";
-  }
-  if (/contact|human|admin|whatsapp|telegram|email|support/.test(text)) {
-    return "🤝 **Customer Support**: You can reach our dedicated team on **Telegram: @astropulsesmmsupport** or by email at **astropulsesmmpanel@gmail.com** for 24/7 assistance!";
-  }
-  if (/instagram|follower|like|reel|view/.test(text)) {
-    return "📸 **Instagram Growth**: We provide non-drop Reel Views from ₹0.30/1K, High Quality Likes from ₹10/1K, and targeted Indian engagement with instant start!";
-  }
+// ============================================================
+// GEMINI AI
+// ============================================================
 
-  return "👋 Hi! I am **AstroPulse AI**. How can I help you today? You can ask me about **services, delivery speed, payments, order tracking**, or request an **automated refill** for any completed order!";
+async function askGeminiAI(
+    userMessage,
+    conversationHistory = []
+) {
+
+    if (!GEMINI_API_KEY) {
+
+        return getLocalBotResponse(
+            userMessage
+        );
+    }
+
+
+    try {
+
+        const systemInstruction = `
+You are the official AstroPulse SMM Panel support assistant.
+
+Your job is to help users understand and use AstroPulse.
+
+IMPORTANT RULES:
+
+1. Never invent order information.
+2. Never invent order status.
+3. Never invent payment status.
+4. Never invent prices.
+5. Never claim that a refill was completed unless the actual refill function confirms it.
+6. Never pretend that you called an external SMM provider API.
+7. Never make up an Order ID.
+8. If the user asks for a refill but does not provide an Order ID, ask for their Order ID.
+9. Understand natural language, spelling mistakes, Hinglish, and different Order ID formats.
+10. Order IDs normally look like ASTR38572197.
+11. A user may write an Order ID as:
+   ASTR38572197
+   ASTR-38572197
+   ASTR 38572197
+   ASTR#38572197
+12. If a user asks about a specific order, identify the Order ID from their message.
+13. Refill requests are handled by the website's real refill function.
+14. Do not say "I have refilled your order" unless the application function actually confirms the request.
+15. If the user asks something outside AstroPulse knowledge, clearly say that you do not have verified information.
+16. Keep answers professional, concise and useful.
+17. Support English and simple Hinglish.
+
+AstroPulse supported platforms include:
+Instagram
+Telegram
+Facebook
+Twitter/X
+YouTube
+
+Support:
+Telegram: @astropulsesmmsupport
+Email: astropulsesmmpanel@gmail.com
+
+When talking about prices, only use prices that are actually supplied by the application/database.
+Do not invent prices or guarantees.
+`;
+
+
+        const contents = [];
+
+
+        // System instruction
+        contents.push({
+            role: "user",
+            parts: [
+                {
+                    text: systemInstruction
+                }
+            ]
+        });
+
+
+        // Previous conversation
+        if (
+            Array.isArray(conversationHistory)
+        ) {
+
+            conversationHistory
+                .slice(-10)
+                .forEach(item => {
+
+                    if (
+                        !item ||
+                        !item.text
+                    ) {
+                        return;
+                    }
+
+
+                    contents.push({
+
+                        role:
+                            item.role === "user"
+                                ? "user"
+                                : "model",
+
+                        parts: [
+                            {
+                                text:
+                                    String(item.text)
+                            }
+                        ]
+                    });
+
+                });
+        }
+
+
+        // Current message
+        contents.push({
+
+            role: "user",
+
+            parts: [
+                {
+                    text:
+                        String(userMessage)
+                }
+            ]
+        });
+
+
+        const response = await fetch(
+
+            `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`,
+
+            {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+
+                    contents,
+
+                    generationConfig: {
+
+                        temperature: 0.2,
+
+                        topP: 0.8,
+
+                        topK: 20,
+
+                        maxOutputTokens: 700
+                    }
+
+                })
+            }
+        );
+
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            console.error(
+                "Gemini API error:",
+                errorText
+            );
+
+            return getLocalBotResponse(
+                userMessage
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const answer =
+            data?.candidates?.[0]?.content?.parts
+                ?.map(part => part.text || "")
+                .join("")
+                .trim();
+
+
+        if (!answer) {
+
+            return getLocalBotResponse(
+                userMessage
+            );
+        }
+
+
+        return answer;
+
+
+    } catch (error) {
+
+        console.error(
+            "AI error:",
+            error
+        );
+
+        return getLocalBotResponse(
+            userMessage
+        );
+    }
 }
+
+
+// ============================================================
+// LOCAL FALLBACK AI
+// ============================================================
+
+function getLocalBotResponse(message) {
+
+    const text =
+        String(message || "")
+            .trim()
+            .toLowerCase();
+
+
+    const orderId =
+        extractOrderId(message);
+
+
+    // --------------------------------------------------------
+    // REFILL
+    // --------------------------------------------------------
+
+    if (
+        isRefillIntent(message)
+    ) {
+
+        if (!orderId) {
+
+            return `
+Sure. I can help with a refill request.
+
+Please send your AstroPulse Order ID.
+
+Example:
+ASTR38572197
+            `.trim();
+        }
+
+
+        return `
+I found Order ID ${orderId}.
+
+I will verify the order status and refill eligibility before submitting the refill request.
+        `.trim();
+    }
+
+
+    // --------------------------------------------------------
+    // ORDER TRACKING
+    // --------------------------------------------------------
+
+    if (
+        orderId &&
+        (
+            text.includes("status") ||
+            text.includes("track") ||
+            text.includes("order")
+        )
+    ) {
+
+        return `
+Your Order ID is ${orderId}.
+
+For the latest verified order status, please use the order history section of your AstroPulse account.
+        `.trim();
+    }
+
+
+    // --------------------------------------------------------
+    // GREETING
+    // --------------------------------------------------------
+
+    if (
+        /^(hi|hello|hey|hii|helo)\b/i.test(
+            text
+        )
+    ) {
+
+        return `
+Hello! 👋
+
+Welcome to AstroPulse Support.
+
+I can help you with:
+• Orders
+• Refills
+• Payments
+• Services
+• Order IDs
+• General panel support
+
+How can I help you?
+        `.trim();
+    }
+
+
+    // --------------------------------------------------------
+    // PRICE
+    // --------------------------------------------------------
+
+    if (
+        text.includes("price") ||
+        text.includes("pricing") ||
+        text.includes("cost") ||
+        text.includes("rate")
+    ) {
+
+        return `
+You can check the latest AstroPulse service prices directly in the Services section.
+
+Prices may vary by service, so I don't want to give you an incorrect price.
+        `.trim();
+    }
+
+
+    // --------------------------------------------------------
+    // PAYMENT
+    // --------------------------------------------------------
+
+    if (
+        text.includes("payment") ||
+        text.includes("upi") ||
+        text.includes("utr") ||
+        text.includes("paid")
+    ) {
+
+        return `
+For payment-related issues, please provide your payment/UTR details through the appropriate payment section.
+
+If the issue continues, contact:
+Telegram: @astropulsesmmsupport
+Email: astropulsesmmpanel@gmail.com
+        `.trim();
+    }
+
+
+    // --------------------------------------------------------
+    // START TIME
+    // --------------------------------------------------------
+
+    if (
+        text.includes("start") &&
+        (
+            text.includes("time") ||
+            text.includes("when")
+        )
+    ) {
+
+        return `
+Order start time depends on the selected service and provider.
+
+You can check the order details from your Order History.
+        `.trim();
+    }
+
+
+    // --------------------------------------------------------
+    // SECURITY
+    // --------------------------------------------------------
+
+    if (
+        text.includes("safe") ||
+        text.includes("security") ||
+        text.includes("secure")
+    ) {
+
+        return `
+Please use only your public social-media profile information when ordering services.
+
+Never share your social-media password, OTP, recovery code, or private login credentials.
+        `.trim();
+    }
+
+
+    // --------------------------------------------------------
+    // SUPPORT
+    // --------------------------------------------------------
+
+    if (
+        text.includes("support") ||
+        text.includes("contact") ||
+        text.includes("help")
+    ) {
+
+        return `
+AstroPulse Support:
+
+Telegram: @astropulsesmmsupport
+Email: astropulsesmmpanel@gmail.com
+
+Please include your Order ID when contacting support about an order.
+        `.trim();
+    }
+
+
+    // --------------------------------------------------------
+    // SERVICES
+    // --------------------------------------------------------
+
+    if (
+        text.includes("service") ||
+        text.includes("instagram") ||
+        text.includes("youtube") ||
+        text.includes("telegram") ||
+        text.includes("facebook") ||
+        text.includes("twitter")
+    ) {
+
+        return `
+AstroPulse provides SMM services for platforms including Instagram, Telegram, Facebook, Twitter/X and YouTube.
+
+Open the Services section to see the currently available services.
+        `.trim();
+    }
+
+
+    // --------------------------------------------------------
+    // DEFAULT
+    // --------------------------------------------------------
+
+    return `
+I'm AstroPulse Support Assistant.
+
+I can help with orders, refills, payments, services and general panel questions.
+
+If you need a refill, simply send your Order ID, for example:
+
+ASTR38572197
+    `.trim();
+}
+
+
+// ============================================================
+// OPTIONAL GLOBAL EXPORTS
+// ============================================================
+
+window.normalizeOrderId =
+    normalizeOrderId;
+
+window.extractOrderId =
+    extractOrderId;
+
+window.isRefillIntent =
+    isRefillIntent;
+
+window.getOrderByPublicId =
+    getOrderByPublicId;
+
+window.processOrderRefill =
+    processOrderRefill;
+
+window.askGeminiAI =
+    askGeminiAI;
+
+window.getLocalBotResponse =
+    getLocalBotResponse;
+
+window.isUserAdmin =
+    isUserAdmin;
