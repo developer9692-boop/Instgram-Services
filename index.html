@@ -2713,49 +2713,97 @@ function closeOrderHistory() {
 }
 function openRefillModal() {
   closeSidebar();
-  if (!auth || !auth.currentUser) {
+  const showLogin = () => {
     alert('Please sign in to request a refill.');
     window.location.href = 'login.html?redirect=index.html';
+  };
+
+  if (!auth) {
+    showLogin();
     return;
   }
+
+  // Firebase Auth can take a moment to restore the session after page load.
+  // Wait for it instead of treating a valid signed-in user as logged out.
+  if (!auth.currentUser) {
+    const unsubscribe = auth.onAuthStateChanged(user => {
+      unsubscribe();
+      if (!user) {
+        showLogin();
+        return;
+      }
+      openRefillModal();
+    });
+    return;
+  }
+
   document.getElementById('refillOrderInput').value = '';
   document.getElementById('refillError').style.display = 'none';
   document.getElementById('refillModal').classList.add('open');
   setTimeout(() => document.getElementById('refillOrderInput').focus(), 150);
 }
+
 function closeRefillModal() {
   document.getElementById('refillModal').classList.remove('open');
 }
+
 async function submitRefillRequest() {
   const input = document.getElementById('refillOrderInput');
   const error = document.getElementById('refillError');
   const button = document.getElementById('refillSubmitBtn');
-  const orderId = input.value.trim().toUpperCase();
-  if (!/^ASTR\d{6,10}$/.test(orderId)) {
+  if (!input || !error || !button) return;
+
+  // Accept normal human formatting such as "ASTR 38572197" or "ASTR-38572197".
+  const rawInput = input.value.trim().toUpperCase();
+  const normalized = rawInput.replace(/\s+/g, '').replace(/^ASTR[-#:]/, 'ASTR');
+  const orderId = typeof normalizeOrderId === 'function'
+    ? (normalizeOrderId(rawInput) || normalized)
+    : normalized;
+
+  if (!/^ASTR\d{6,12}$/.test(orderId)) {
     error.textContent = 'Enter a valid Order ID, for example ASTR38572197.';
+    error.style.display = 'block';
+    input.focus();
+    return;
+  }
+
+  if (!auth || !auth.currentUser) {
+    error.textContent = 'Your login session is not ready. Please sign in and try again.';
     error.style.display = 'block';
     return;
   }
+
   button.disabled = true;
-  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending request...';
+  input.disabled = true;
+  error.style.display = 'none';
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying order...';
+
   try {
+    if (typeof processOrderRefill !== 'function') {
+      throw new Error('Refill system is not loaded. Please refresh the page and try again.');
+    }
+
     const result = await processOrderRefill(orderId);
     if (!result.success) {
-      error.textContent = result.error;
+      error.textContent = result.error || 'The refill request could not be processed.';
       error.style.display = 'block';
       return;
     }
+
     error.style.display = 'none';
-    alert(result.message);
+    alert(result.message || `Refill request for ${orderId} was submitted successfully.`);
     closeRefillModal();
   } catch (requestError) {
-    error.textContent = 'Could not send the refill request. Please try again.';
+    console.error('Refill request error:', requestError);
+    error.textContent = requestError.message || 'Could not send the refill request. Please try again.';
     error.style.display = 'block';
   } finally {
     button.disabled = false;
+    input.disabled = false;
     button.innerHTML = '<i class="fas fa-paper-plane"></i> Send Refill Request';
   }
 }
+
 function startOrderHistory(user) {
   if (stopOrderHistoryListener) stopOrderHistoryListener();
   if (!user || typeof listenToUserOrders !== 'function') {
