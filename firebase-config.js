@@ -90,17 +90,7 @@ function isRefillIntent(text) {
 
     const message = String(text || "");
 
-    return /\b(
-        refill|
-        refil|
-        re-fill|
-        top\s*up|
-        dropped|
-        drop\s*followers|
-        drop\s*views|
-        drop\s*likes|
-        replacement
-    )\b/ix.test(message);
+    return /\b(refill|refil|re-fill|top\s*up|dropped|drop\s*followers|drop\s*views|drop\s*likes|replacement)\b/i.test(message);
 }
 
 
