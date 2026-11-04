@@ -99,7 +99,7 @@ async function sendMessage(text){
     addMessage('bot','Sorry, I could not complete that request right now. Please try again or contact AstroPulse support on Telegram.');
   }
 }
-function showTelegramEscalation(){escalationShown=true;const card=document.createElement('div');card.className='escalation';card.innerHTML='<strong>Need a more personal answer?</strong>Our support team can review your SMM requirements, service choice, or order directly.<br><a class="telegram-link" href="https://t.me/astropulsesmm" target="_blank" rel="noopener"><i class="fab fa-telegram-plane"></i> Join us on Telegram</a>';messages.appendChild(card);messages.scrollTop=messages.scrollHeight}
+function showTelegramEscalation(){escalationShown=true;const card=document.createElement('div');card.className='escalation';card.innerHTML='<strong>Need a more personal answer?</strong>Our support team can review your SMM requirements, service choice, or order directly.<br><a class="telegram-link" href="https://t.me/astropulsesmmsupport" target="_blank" rel="noopener"><i class="fab fa-telegram-plane"></i> Join us on Telegram</a>';messages.appendChild(card);messages.scrollTop=messages.scrollHeight}
 document.getElementById('chatForm').addEventListener('submit',event=>{event.preventDefault();sendMessage(input.value)});
 document.querySelectorAll('.quick button').forEach(button=>button.addEventListener('click',()=>sendMessage(button.dataset.message)));
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
