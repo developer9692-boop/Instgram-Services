@@ -335,14 +335,11 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
     <section class="manage-card">
       <h3><i class="fas fa-plug" style="color:var(--pulse)"></i> Backend Connection <span class="conn-status" id="connStatus" style="color:var(--text-dim)">Not connected</span></h3>
       <div class="manage-grid">
-        <label>Backend URL (blank = same server as this page)<input id="apiBaseInput" placeholder="https://your-backend.example.com" autocomplete="off"></label>
-        <label>Admin key (ADMIN_KEY on the server)<input id="adminKeyInput" type="password" placeholder="Your backend admin key" autocomplete="off"></label>
+        <label class="manage-wide">Backend URL (blank = same server as this page)<input id="apiBaseInput" placeholder="https://your-backend.example.com" autocomplete="off"></label>
       </div>
       <button type="button" class="manage-submit" id="saveBackendBtn" onclick="saveBackendUrl()"><i class="fas fa-save"></i> Save Backend URL</button>
-      <button type="button" class="remove-service" id="deleteBackendBtn" style="display:none;margin-top:12px;padding:10px 14px" onclick="deleteBackendUrl()"><i class="fas fa-trash"></i> Delete Backend URL</button>
-      <button type="button" class="manage-submit secondary" onclick="connectBackend()"><i class="fas fa-link"></i> Connect</button>
+      <button type="button" class="manage-submit secondary" id="reconnectBtn" onclick="refreshBackendData()" style="display:none"><i class="fas fa-rotate"></i> Reconnect</button>
       <p class="hint" id="backendLockHint"></p>
-      <p class="hint">The admin key is kept only for this browser session. API keys are stored on the server and are never shown again after saving.</p>
     </section>
 
     <section class="manage-card">
@@ -593,12 +590,12 @@ async function saveSettingsFromAdmin() {
 }
 
 // ── BACKEND CONNECTION ──────────────────────────────────────────────────────
-// The Backend URL is saved ONCE in Firestore (settings/backendConfig) so every
-// admin device sees the same value. Once saved it is read-only: only Delete.
-const ADMIN_KEY_KEY = 'astro_admin_key';
+// The Backend URL is saved ONCE in Firestore (settings/backendConfig). After that it is
+// fixed for every admin device and connects automatically. Admins are verified by
+// their Firebase login (ID token), so no admin key is needed.
 let providersCache = [];
 let servicesCache = [];
-let savedApiBase = null;   // null = no backend URL saved yet ('' = same server)
+let savedApiBase = null;   // null = not saved yet ('' = same server)
 
 function backendDoc() { return db.collection('settings').doc('backendConfig'); }
 
@@ -606,18 +603,15 @@ function getApiBase() {
   if (savedApiBase !== null) return savedApiBase;
   return (window.ASTRO_API_BASE || '').replace(/\/+$/, '');
 }
-function getAdminKey() {
-  try { return sessionStorage.getItem(ADMIN_KEY_KEY) || ''; } catch (e) { return ''; }
-}
 
 async function api(path, options = {}) {
-  const key = getAdminKey();
-  if (!key) throw new Error('Enter your backend admin key in Backend Connection first.');
+  if (!currentAdminUser) throw new Error('Please sign in first.');
+  const token = await currentAdminUser.getIdToken();
   let res;
   try {
     res = await fetch(getApiBase() + path, {
       method: options.method || 'GET',
-      headers: { 'Content-Type': 'application/json', 'x-admin-key': key },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: options.body ? JSON.stringify(options.body) : undefined
     });
   } catch (e) {
@@ -650,8 +644,7 @@ async function initBackendConnection() {
     showToast('Could not read saved backend URL: ' + e.message, true);
   }
   applyBackendLock();
-  document.getElementById('adminKeyInput').value = getAdminKey();
-  if (savedApiBase !== null && getAdminKey()) refreshBackendData();
+  if (savedApiBase !== null) refreshBackendData();   // auto-connect
 }
 
 function applyBackendLock() {
@@ -661,10 +654,10 @@ function applyBackendLock() {
   input.readOnly = locked;
   input.placeholder = locked && !savedApiBase ? 'Same server as this page' : 'https://your-backend.example.com';
   document.getElementById('saveBackendBtn').style.display = locked ? 'none' : '';
-  document.getElementById('deleteBackendBtn').style.display = locked ? '' : 'none';
+  document.getElementById('reconnectBtn').style.display = locked ? '' : 'none';
   document.getElementById('backendLockHint').textContent = locked
-    ? 'Backend URL is saved and locked for all admin devices. Enter your admin key and press Connect. It can only be deleted.'
-    : 'Save the backend URL once. After that it is fixed on every device and can only be deleted.';
+    ? 'Backend URL is saved and fixed for all admin devices. It connects automatically.'
+    : 'Save the backend URL once. After that it is fixed on every device.';
 }
 
 async function saveBackendUrl() {
@@ -689,34 +682,12 @@ async function saveBackendUrl() {
     });
     savedApiBase = base;
     applyBackendLock();
-    showToast('Backend URL saved and locked.');
+    showToast('Backend URL saved and fixed.');
+    refreshBackendData();
   } catch (e) {
     showToast(e.message, true);
     await initBackendConnection();
   }
-}
-
-async function deleteBackendUrl() {
-  if (!confirm('Delete the saved backend URL for ALL admin devices?')) return;
-  try {
-    await backendDoc().delete();
-    savedApiBase = null;
-    providersCache = []; servicesCache = [];
-    try { sessionStorage.removeItem(ADMIN_KEY_KEY); } catch (e) {}
-    document.getElementById('adminKeyInput').value = '';
-    document.getElementById('providerList').innerHTML = '<p style="color:var(--text-dim);font-size:.82rem">Connect to the backend to see the configured API.</p>';
-    setConnStatus('Not connected', false);
-    applyBackendLock();
-    showToast('Backend URL deleted.');
-  } catch (e) { showToast('Could not delete: ' + e.message, true); }
-}
-
-async function connectBackend() {
-  if (savedApiBase === null) { showToast('Save the backend URL first.', true); return; }
-  const key = document.getElementById('adminKeyInput').value.trim();
-  if (!key) { showToast('Enter the admin key.', true); return; }
-  try { sessionStorage.setItem(ADMIN_KEY_KEY, key); } catch (e) {}
-  await refreshBackendData();
 }
 
 async function refreshBackendData() {
@@ -726,7 +697,7 @@ async function refreshBackendData() {
     await loadProviders();
     await loadServices();
   } catch (e) {
-    setConnStatus(e.status === 401 ? 'Wrong admin key' : 'Not connected', false);
+    setConnStatus(e.status === 401 ? 'Not authorized' : 'Not connected', false);
     showToast(e.message, true);
   }
 }
