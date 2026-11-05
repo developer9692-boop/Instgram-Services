@@ -243,7 +243,7 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
 }
 .admin-toast.show{display:flex}
 .manage-card{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:18px;margin-bottom:18px}
-.manage-card h3{font-size:1.05rem;margin-bottom:12px}.manage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.manage-grid label{font-size:.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em}.manage-grid input,.manage-grid select{width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;font:inherit}.manage-wide{grid-column:1/-1}.manage-submit{margin-top:12px;border:0;border-radius:9px;padding:10px 14px;background:var(--pulse);color:#fff;font-weight:700;cursor:pointer}.manage-submit.secondary{background:#6b3333}.service-list{display:grid;gap:8px;margin-top:14px}.service-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:10px}.service-row small{display:block;color:var(--text-dim);margin-top:2px}.service-actions{display:flex;gap:6px}.edit-service,.remove-service{border:0;border-radius:7px;padding:7px 9px;color:#fff;cursor:pointer}.edit-service{background:#2563eb}.remove-service{background:var(--red)}@media(max-width:620px){.manage-grid{grid-template-columns:1fr}.manage-wide{grid-column:auto}.service-row{align-items:flex-start;flex-direction:column}.service-actions{align-self:flex-end}}
+.manage-card h3{font-size:1.05rem;margin-bottom:12px}.manage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.manage-grid label{font-size:.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em}.manage-grid input,.manage-grid select{width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;font:inherit}.manage-grid input[readonly]{background:var(--surface-2);color:var(--text-dim);cursor:not-allowed}.manage-wide{grid-column:1/-1}.manage-submit{margin-top:12px;border:0;border-radius:9px;padding:10px 14px;background:var(--pulse);color:#fff;font-weight:700;cursor:pointer}.manage-submit.secondary{background:#6b3333}.service-list{display:grid;gap:8px;margin-top:14px}.service-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:10px}.service-row small{display:block;color:var(--text-dim);margin-top:2px}.service-actions{display:flex;gap:6px}.edit-service,.remove-service{border:0;border-radius:7px;padding:7px 9px;color:#fff;cursor:pointer}.edit-service{background:#2563eb}.remove-service{background:var(--red)}@media(max-width:620px){.manage-grid{grid-template-columns:1fr}.manage-wide{grid-column:auto}.service-row{align-items:flex-start;flex-direction:column}.service-actions{align-self:flex-end}}
 .refill-card{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:16px;margin-bottom:18px}.refill-list{display:grid;gap:8px}.refill-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 12px}.refill-row small{display:block;color:var(--text-dim);font-size:.7rem;margin-top:3px}.refill-actions{display:flex;gap:6px}.refill-actions button{border:0;border-radius:7px;padding:7px 9px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer}.refill-complete{background:#16a34a}.refill-decline{background:#dc2626}@media(max-width:620px){.refill-row{grid-template-columns:1fr}.refill-actions{justify-content:flex-end}}
 /* provider management */
 .btn-provider{background:#2563eb;color:#fff;box-shadow:0 3px 8px -2px rgba(37,99,235,0.4)}.btn-provider:hover{background:#1d4ed8;transform:translateY(-1px)}
@@ -338,23 +338,17 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
         <label>Backend URL (blank = same server as this page)<input id="apiBaseInput" placeholder="https://your-backend.example.com" autocomplete="off"></label>
         <label>Admin key (ADMIN_KEY on the server)<input id="adminKeyInput" type="password" placeholder="Your backend admin key" autocomplete="off"></label>
       </div>
-      <button type="button" class="manage-submit" onclick="connectBackend()"><i class="fas fa-link"></i> Connect</button>
+      <button type="button" class="manage-submit" id="saveBackendBtn" onclick="saveBackendUrl()"><i class="fas fa-save"></i> Save Backend URL</button>
+      <button type="button" class="remove-service" id="deleteBackendBtn" style="display:none;margin-top:12px;padding:10px 14px" onclick="deleteBackendUrl()"><i class="fas fa-trash"></i> Delete Backend URL</button>
+      <button type="button" class="manage-submit secondary" onclick="connectBackend()"><i class="fas fa-link"></i> Connect</button>
+      <p class="hint" id="backendLockHint"></p>
       <p class="hint">The admin key is kept only for this browser session. API keys are stored on the server and are never shown again after saving.</p>
     </section>
 
     <section class="manage-card">
-      <h3><i class="fas fa-network-wired" style="color:var(--pulse)"></i> SMM API Providers</h3>
-      <div class="manage-grid">
-        <label>Provider name<input id="provName" placeholder="CheapSMMMarket" autocomplete="off"></label>
-        <label>API URL<input id="provUrl" placeholder="https://cheapsmmmarket.com/api/v2" autocomplete="off"></label>
-        <label>API key<input id="provKey" type="password" placeholder="Paste provider API key" autocomplete="off"></label>
-        <label>Status<select id="provActive"><option value="true">Active</option><option value="false">Disabled</option></select></label>
-      </div>
-      <input type="hidden" id="editingProviderId">
-      <button type="button" class="manage-submit" onclick="saveProviderFromAdmin()"><i class="fas fa-save"></i> <span id="providerSubmitLabel">Add API</span></button>
-      <button type="button" class="manage-submit secondary" id="cancelEditProvider" onclick="clearProviderForm()" style="display:none">Cancel Edit</button>
-      <p class="hint" id="providerKeyHint" style="display:none">Leave the API key blank to keep the current key.</p>
-      <div class="service-list" id="providerList"><p style="color:var(--text-dim);font-size:.82rem">Connect to the backend to manage APIs.</p></div>
+      <h3><i class="fas fa-network-wired" style="color:var(--pulse)"></i> SMM API Provider <span class="pill on" style="margin-left:8px"><i class="fas fa-lock"></i> Set in server .env</span></h3>
+      <div class="service-list" id="providerList"><p style="color:var(--text-dim);font-size:.82rem">Connect to the backend to see the configured API.</p></div>
+      <p class="hint">The SMM API link and key are set in the backend <code>.env</code> file (<code>SMM_API_URL</code>, <code>SMM_API_KEY</code>, <code>SMM_API_NAME</code>). They cannot be added, edited or deleted here.</p>
     </section>
 
     <section class="manage-card">
@@ -599,13 +593,18 @@ async function saveSettingsFromAdmin() {
 }
 
 // ── BACKEND CONNECTION ──────────────────────────────────────────────────────
-const API_BASE_KEY = 'astro_api_base';
+// The Backend URL is saved ONCE in Firestore (settings/backendConfig) so every
+// admin device sees the same value. Once saved it is read-only: only Delete.
 const ADMIN_KEY_KEY = 'astro_admin_key';
 let providersCache = [];
 let servicesCache = [];
+let savedApiBase = null;   // null = no backend URL saved yet ('' = same server)
+
+function backendDoc() { return db.collection('settings').doc('backendConfig'); }
 
 function getApiBase() {
-  try { return (window.ASTRO_API_BASE || localStorage.getItem(API_BASE_KEY) || '').replace(/\/+$/, ''); } catch (e) { return ''; }
+  if (savedApiBase !== null) return savedApiBase;
+  return (window.ASTRO_API_BASE || '').replace(/\/+$/, '');
 }
 function getAdminKey() {
   try { return sessionStorage.getItem(ADMIN_KEY_KEY) || ''; } catch (e) { return ''; }
@@ -642,20 +641,81 @@ function setConnStatus(text, ok) {
   el.style.color = ok ? 'var(--green)' : 'var(--red)';
 }
 
-function initBackendConnection() {
-  document.getElementById('apiBaseInput').value = getApiBase();
+async function initBackendConnection() {
+  try {
+    const snap = await backendDoc().get();
+    savedApiBase = snap.exists ? String((snap.data() || {}).url || '') : null;
+  } catch (e) {
+    savedApiBase = null;
+    showToast('Could not read saved backend URL: ' + e.message, true);
+  }
+  applyBackendLock();
   document.getElementById('adminKeyInput').value = getAdminKey();
-  if (getAdminKey()) refreshBackendData();
+  if (savedApiBase !== null && getAdminKey()) refreshBackendData();
+}
+
+function applyBackendLock() {
+  const locked = savedApiBase !== null;
+  const input = document.getElementById('apiBaseInput');
+  input.value = locked ? savedApiBase : '';
+  input.readOnly = locked;
+  input.placeholder = locked && !savedApiBase ? 'Same server as this page' : 'https://your-backend.example.com';
+  document.getElementById('saveBackendBtn').style.display = locked ? 'none' : '';
+  document.getElementById('deleteBackendBtn').style.display = locked ? '' : 'none';
+  document.getElementById('backendLockHint').textContent = locked
+    ? 'Backend URL is saved and locked for all admin devices. Enter your admin key and press Connect. It can only be deleted.'
+    : 'Save the backend URL once. After that it is fixed on every device and can only be deleted.';
+}
+
+async function saveBackendUrl() {
+  if (savedApiBase !== null) return;
+  const base = document.getElementById('apiBaseInput').value.trim().replace(/\/+$/, '');
+  if (base) {
+    try {
+      const u = new URL(base);
+      if (!/^https?:$/.test(u.protocol)) throw new Error('bad');
+    } catch (e) { showToast('Enter a valid URL starting with http:// or https://', true); return; }
+  }
+  try {
+    const ref = backendDoc();
+    await db.runTransaction(async tx => {
+      const s = await tx.get(ref);
+      if (s.exists) throw new Error('A backend URL was already saved by another admin.');
+      tx.set(ref, {
+        url: base,
+        savedBy: currentAdminUser ? currentAdminUser.email : 'admin',
+        savedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+    savedApiBase = base;
+    applyBackendLock();
+    showToast('Backend URL saved and locked.');
+  } catch (e) {
+    showToast(e.message, true);
+    await initBackendConnection();
+  }
+}
+
+async function deleteBackendUrl() {
+  if (!confirm('Delete the saved backend URL for ALL admin devices?')) return;
+  try {
+    await backendDoc().delete();
+    savedApiBase = null;
+    providersCache = []; servicesCache = [];
+    try { sessionStorage.removeItem(ADMIN_KEY_KEY); } catch (e) {}
+    document.getElementById('adminKeyInput').value = '';
+    document.getElementById('providerList').innerHTML = '<p style="color:var(--text-dim);font-size:.82rem">Connect to the backend to see the configured API.</p>';
+    setConnStatus('Not connected', false);
+    applyBackendLock();
+    showToast('Backend URL deleted.');
+  } catch (e) { showToast('Could not delete: ' + e.message, true); }
 }
 
 async function connectBackend() {
-  const base = document.getElementById('apiBaseInput').value.trim().replace(/\/+$/, '');
+  if (savedApiBase === null) { showToast('Save the backend URL first.', true); return; }
   const key = document.getElementById('adminKeyInput').value.trim();
   if (!key) { showToast('Enter the admin key.', true); return; }
-  try {
-    localStorage.setItem(API_BASE_KEY, base);
-    sessionStorage.setItem(ADMIN_KEY_KEY, key);
-  } catch (e) {}
+  try { sessionStorage.setItem(ADMIN_KEY_KEY, key); } catch (e) {}
   await refreshBackendData();
 }
 
@@ -671,66 +731,24 @@ async function refreshBackendData() {
   }
 }
 
-// ── API PROVIDERS ───────────────────────────────────────────────────────────
+// ── API PROVIDER (read-only: configured in the backend .env) ────────────────
 async function loadProviders() {
   providersCache = await api('/api/admin/providers');
   const list = document.getElementById('providerList');
   list.innerHTML = providersCache.length ? providersCache.map(p => `
     <div class="service-row">
-      <div><strong>${escapeHtml(p.name)}</strong><span class="pill ${p.active ? 'on' : 'off'}">${p.active ? 'Active' : 'Disabled'}</span>
+      <div><strong>${escapeHtml(p.name)}</strong><span class="pill on"><i class="fas fa-lock"></i> From .env</span>
         <small>${escapeHtml(p.url)} · Key ${escapeHtml(p.keyHint)} · ${Number(p.serviceCount)} service(s)</small>
       </div>
       <div class="service-actions">
         <button type="button" class="test-provider" onclick="testProvider('${escapeHtml(p.id)}')"><i class="fas fa-vial"></i> Test</button>
-        <button type="button" class="edit-service" onclick="editProvider('${escapeHtml(p.id)}')"><i class="fas fa-pen"></i> Edit</button>
-        <button type="button" class="remove-service" onclick="deleteProvider('${escapeHtml(p.id)}')"><i class="fas fa-trash"></i> Delete</button>
       </div>
-    </div>`).join('') : '<p style="color:var(--text-dim);font-size:.82rem">No API added yet. Add your SMM provider above.</p>';
+    </div>`).join('') : '<p style="color:var(--red);font-size:.82rem">SMM API is not configured. Set SMM_API_URL and SMM_API_KEY in the backend .env file and restart the server.</p>';
 
   const sel = document.getElementById('serviceProviderId');
   const prev = sel.value;
-  sel.innerHTML = providersCache.map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}${p.active ? '' : ' (disabled)'}</option>`).join('');
+  sel.innerHTML = providersCache.map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`).join('');
   if (prev && providersCache.some(p => p.id === prev)) sel.value = prev;
-}
-
-async function saveProviderFromAdmin() {
-  const id = document.getElementById('editingProviderId').value;
-  const body = {
-    name: document.getElementById('provName').value.trim(),
-    url: document.getElementById('provUrl').value.trim(),
-    key: document.getElementById('provKey').value.trim(),
-    active: document.getElementById('provActive').value === 'true'
-  };
-  if (!body.name || !body.url) { showToast('Enter provider name and API URL.', true); return; }
-  if (!id && !body.key) { showToast('Enter the API key.', true); return; }
-  try {
-    await api(id ? '/api/admin/providers/' + encodeURIComponent(id) : '/api/admin/providers', { method: id ? 'PUT' : 'POST', body });
-    showToast(id ? 'API updated.' : 'API added.');
-    clearProviderForm();
-    await loadProviders();
-  } catch (e) { showToast(e.message, true); }
-}
-
-function editProvider(id) {
-  const p = providersCache.find(x => x.id === id);
-  if (!p) return;
-  document.getElementById('editingProviderId').value = p.id;
-  document.getElementById('provName').value = p.name;
-  document.getElementById('provUrl').value = p.url;
-  document.getElementById('provKey').value = '';
-  document.getElementById('provActive').value = String(p.active);
-  document.getElementById('providerSubmitLabel').textContent = 'Update API';
-  document.getElementById('cancelEditProvider').style.display = 'inline-block';
-  document.getElementById('providerKeyHint').style.display = 'block';
-  document.getElementById('provName').focus();
-}
-
-function clearProviderForm() {
-  ['editingProviderId', 'provName', 'provUrl', 'provKey'].forEach(i => { document.getElementById(i).value = ''; });
-  document.getElementById('provActive').value = 'true';
-  document.getElementById('providerSubmitLabel').textContent = 'Add API';
-  document.getElementById('cancelEditProvider').style.display = 'none';
-  document.getElementById('providerKeyHint').style.display = 'none';
 }
 
 async function testProvider(id) {
@@ -739,23 +757,6 @@ async function testProvider(id) {
     const r = await api('/api/admin/providers/' + encodeURIComponent(id) + '/test', { method: 'POST' });
     showToast('API works. Balance: ' + (r.balance ?? '?') + ' ' + (r.currency || ''));
   } catch (e) { showToast('API test failed: ' + e.message, true); }
-}
-
-async function deleteProvider(id) {
-  const p = providersCache.find(x => x.id === id);
-  if (!confirm('Delete API "' + (p ? p.name : id) + '"?')) return;
-  try {
-    await api('/api/admin/providers/' + encodeURIComponent(id), { method: 'DELETE' });
-  } catch (e) {
-    if (e.status === 409) {
-      if (!confirm(e.message + '\n\nDelete the API and its services?')) return;
-      try { await api('/api/admin/providers/' + encodeURIComponent(id) + '?force=true', { method: 'DELETE' }); }
-      catch (e2) { showToast(e2.message, true); return; }
-    } else { showToast(e.message, true); return; }
-  }
-  showToast('API deleted.');
-  await loadProviders();
-  await loadServices();
 }
 
 // ── SERVICES (stored on the backend, linked to provider service IDs) ────────
