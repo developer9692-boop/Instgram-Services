@@ -2253,59 +2253,14 @@ document.getElementById('qrModal').addEventListener('click', function(e){
 <script>
 
 const DATA = {
-  instagram:[
-    {id:3450,name:'Instagram Reel Views | 10M/Day | Non Drop | Lifetime Refill',start:'0-2 Mins',speed:'10M/Day',refill:'Lifetime',drop:'Non Drop',quality:'High Quality',rate:0.3,min:500,max:10000000},
-    {id:3452,name:'Instagram Likes | Non Drop | Fast Start',start:'0-2 Mins',speed:'100K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:10,min:100,max:50000},
-    {id:3453,name:'Instagram Story Views | Real Looking',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'Medium',rate:16,min:100,max:10000},
-    {id:3455,name:'Instagram Likes | Country Targeted | India',start:'0-5 Mins',speed:'20K/Day',refill:'No Refill',drop:'Non Drop',quality:'Indian',rate:20,min:100,max:20000},
-    {id:3456,name:'Instagram Reach & Impression | Post',start:'0-2 Mins',speed:'1M/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:8,min:1000,max:10000000},
-    {id:3457,name:'Instagram Comments | Custom | Fast',start:'0-30 Mins',speed:'500/Day',refill:'No Refill',drop:'Non Drop',quality:'Real Looking',rate:20,min:10,max:500},
-  ],
-  facebook:[
-    {id:3122,name:'Facebook Video/Reel Views | 200K/Day Speed | Start: 0-10 Mins',start:'0-10 Mins',speed:'200K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:6,min:100,max:10000000},
-    {id:3200,name:'Facebook Page Likes | Non Drop | Fast',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:40,min:100,max:50000},
-    {id:3201,name:'Facebook Post Likes | Instant Start',start:'0-2 Mins',speed:'50K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:40,min:100,max:50000},
-    {id:3202,name:'Facebook Followers | Profile | Non Drop',start:'0-5 Mins',speed:'5K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:60,min:100,max:50000},
-    {id:3203,name:'Facebook Story Views | Fast',start:'0-5 Mins',speed:'20K/Day',refill:'No Refill',drop:'Non Drop',quality:'Medium',rate:50,min:100,max:100000},
-    {id:3204,name:'Facebook Group Members | Real',start:'0-10 Mins',speed:'2K/Day',refill:'No Refill',drop:'Non Drop',quality:'Real Looking',rate:45,min:100,max:10000},
-    {id:3205,name:'Facebook Post Shares | Fast',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:120,min:100,max:10000},
-  ],
-  telegram:[
-    {id:3300,name:'Telegram Channel Members | Real Looking | Non Drop',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:50,min:500,max:100000},
-    {id:3301,name:'Telegram Post Views | Instant | 1M/Day',start:'0-1 Min',speed:'1M/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:7,min:100,max:10000000},
-    {id:3302,name:'Telegram Reactions | All Emoji | Fast',start:'0-2 Mins',speed:'50K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:5,min:100,max:50000},
-    {id:3303,name:'Telegram Channel Views | Last 5 Posts',start:'0-2 Mins',speed:'500K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:5,min:1000,max:10000000},
-    {id:3304,name:'Telegram Group Members | Slow | Non Drop',start:'0-15 Mins',speed:'2K/Day',refill:'No Refill',drop:'Non Drop',quality:'Medium',rate:50,min:500,max:20000},
-    {id:3305,name:'Telegram Post Forwards | Fast',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:5,min:100,max:50000},
-    {id:3306,name:'Telegram Channel Members | Premium | Lifetime + Refill',start:'Not Enough Data',speed:'10K/Day',refill:'Lifetime Refill',drop:'Non Drop',quality:'Premium Quality',rate:4000,min:10,max:50000}
-  ],
-  youtube:[
-    {id:3321,name:'YouTube Native Ads Views | Non Drop | 200K/Day | Lifetime Refill | Start: 0-4 Hour',start:'0-4 Hours',speed:'200K/Day',refill:'Lifetime',drop:'Non Drop',quality:'High Quality',rate:155,min:40000,max:1000000},
-    {id:3477,name:'YouTube Subscribers | Non Drop | 1K-3K/Day | Lifetime Refill | Start: 0-1 Hour',start:'0-1 Hour',speed:'1K-3K/Day',refill:'Lifetime',drop:'Non Drop',quality:'High Quality',rate:5926,min:100,max:10000},
-    {id:3479,name:'YouTube Subscribers | Non Drop | 2K-5K/Day | Lifetime Refill | Fast Speed | Start: 0-1 Hour',start:'0-1 Hour',speed:'2K-5K/Day',refill:'Lifetime',drop:'Non Drop',quality:'High Quality',rate:300,min:100,max:20000},
-    {id:3410,name:'YouTube Video Views | High Retention | Non Drop',start:'0-30 Mins',speed:'100K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Retention',rate:100,min:1000,max:1000000},
-    {id:3411,name:'YouTube Likes | Non Drop | Fast',start:'0-5 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:270,min:100,max:10000},
-  ],
-  twitter:[
-    {id:678,name:'Twitter Impression — [Non Drop][Speed: 50M/Day] — Start: 0-1 Hour',start:'0-1 Hour',speed:'50M/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:300,min:1000,max:100000000},
-    {id:679,name:'Twitter Followers | Non Drop | High Quality',start:'0-5 Mins',speed:'5K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:350,min:100,max:50000},
-    {id:680,name:'Twitter Likes | Fast | Non Drop',start:'0-2 Mins',speed:'20K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:300,min:100,max:20000},
-    {id:681,name:'Twitter Retweets | Fast',start:'0-5 Mins',speed:'5K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:200,min:100,max:10000},
-  ],
-  snapchat:[
-    {id:3500,name:'Snapchat Story Views | Fast Start | Non Drop',start:'0-10 Mins',speed:'50K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:18,min:100,max:100000},
-    {id:3501,name:'Snapchat Spotlight Views | Real Looking',start:'0-15 Mins',speed:'100K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:12,min:500,max:1000000},
-    {id:3502,name:'Snapchat Subscribers | Public Profile',start:'0-30 Mins',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'Premium Quality',rate:45,min:100,max:50000},
-  ],
-  spotify:[
-    {id:3600,name:'Spotify Plays | Fast Start | Non Drop',start:'0-30 Mins',speed:'100K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:18,min:100,max:1000000},
-    {id:3601,name:'Spotify Followers | Real Looking | Fast',start:'0-1 Hour',speed:'10K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:75,min:100,max:50000},
-    {id:3602,name:'Spotify Playlist Followers | Targeted',start:'0-2 Hours',speed:'5K/Day',refill:'No Refill',drop:'Non Drop',quality:'Premium Quality',rate:120,min:100,max:20000},
-  ],
-  pinterest:[
-    {id:3800,name:'Pinterest Followers | Drop',start:'0-30 Mins',speed:'5K/Day',refill:'No Refill',drop:'Drop',quality:'High Quality',rate:150,min:100,max:50000},
-    {id:3801,name:'Pinterest Followers | Non Drop',start:'0-1 Hour',speed:'5K/Day',refill:'No Refill',drop:'Non Drop',quality:'High Quality',rate:250,min:100,max:50000},
-  ],
+  instagram: [],
+  facebook: [],
+  telegram: [],
+  youtube: [],
+  twitter: [],
+  snapchat: [],
+  spotify: [],
+  pinterest: []
 };
 
 let curPlatform      = 'instagram';
@@ -2497,19 +2452,53 @@ function updateHeroRate(){
 }
 
 async function loadStoreCatalog(){
-  if (typeof getStoreSettings !== 'function' || !db) { updateHeroRate(); return; }
   try {
-    currentStoreSettings = await getStoreSettings();
+    if (typeof getStoreSettings === 'function') {
+      currentStoreSettings = await getStoreSettings();
+    }
     if (currentStoreSettings.upiId) UPI_ID = currentStoreSettings.upiId;
-    const remoteServices = await getStoreServices();
-    const removedIds = (currentStoreSettings.removedServiceIds || []).map(Number);
-    Object.keys(DATA).forEach(platform => { DATA[platform] = DATA[platform].filter(service => !removedIds.includes(Number(service.id))); });
+
+    let backendUrl = (window.ASTRO_API_BASE || '').replace(/\/+$/, '');
+    if (typeof db !== 'undefined' && db) {
+      try {
+        const backendConfig = await db.collection('settings').doc('backendConfig').get();
+        if (backendConfig.exists) {
+          backendUrl = String((backendConfig.data() || {}).url || '').trim().replace(/\/+$/, '');
+        }
+      } catch (configError) {
+        console.warn('Saved backend URL could not be loaded; using the current server:', configError);
+      }
+    }
+
+    let remoteServices;
+    try {
+      const response = await fetch(backendUrl + '/api/services');
+      if (!response.ok) throw new Error('Backend returned HTTP ' + response.status);
+      remoteServices = await response.json();
+      if (!Array.isArray(remoteServices)) throw new Error('Backend returned an invalid services list');
+    } catch (backendError) {
+      console.warn('Backend service catalog could not be loaded; trying Firestore:', backendError);
+      if (typeof getStoreServices !== 'function') throw backendError;
+      remoteServices = await getStoreServices();
+    }
+
+    Object.keys(DATA).forEach(platform => { DATA[platform] = []; });
     remoteServices.forEach(service => {
       const platform = String(service.platform || '').trim().toLowerCase();
-      if (!platform || platform === 'discord' || removedIds.includes(Number(service.id))) return;
-      if (!DATA[platform]) DATA[platform] = [];
-      DATA[platform] = DATA[platform].filter(existing => String(existing.id) !== String(service.id));
-      DATA[platform].push({ ...service, id: Number(service.id) || service.id, platform });
+      if (!Object.prototype.hasOwnProperty.call(DATA, platform)) return;
+      DATA[platform].push({
+        ...service,
+        id: Number(service.id) || service.id,
+        name: String(service.name || ''),
+        start: service.start || '—',
+        speed: service.speed || '—',
+        refill: service.refill || 'No Refill',
+        quality: service.quality || '—',
+        rate: Number(service.rate) || 0,
+        min: Number(service.min) || 0,
+        max: Number(service.max) || 0,
+        platform
+      });
     });
     buildDropdown(curPlatform);
     buildPriceTable(curPtPlatform);
