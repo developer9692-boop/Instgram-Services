@@ -207,6 +207,12 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
 .btn-decline:hover{background:#b91c1c;transform:translateY(-1px)}
 .btn-action:disabled{opacity:0.5;cursor:not-allowed;transform:none}
 
+.done-label{
+  display:inline-flex;align-items:center;gap:6px;
+  color:var(--green);font-size:0.76rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.04em;
+}
+
 .utr-chip{
   display:inline-flex;align-items:center;gap:6px;
   background:#fff;border:1px solid var(--line);
@@ -244,6 +250,8 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
 .admin-toast.show{display:flex}
 .manage-card{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:18px;margin-bottom:18px}
 .manage-card h3{font-size:1.05rem;margin-bottom:12px}.manage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.manage-grid label{font-size:.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em}.manage-grid input,.manage-grid select{width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;font:inherit}.manage-grid input[readonly]{background:var(--surface-2);color:var(--text-dim);cursor:not-allowed}.manage-wide{grid-column:1/-1}.manage-submit{margin-top:12px;border:0;border-radius:9px;padding:10px 14px;background:var(--pulse);color:#fff;font-weight:700;cursor:pointer}.manage-submit.secondary{background:#6b3333}.service-list{display:grid;gap:8px;margin-top:14px}.service-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--line);border-radius:10px}.service-row small{display:block;color:var(--text-dim);margin-top:2px}.service-actions{display:flex;gap:6px}.edit-service,.remove-service{border:0;border-radius:7px;padding:7px 9px;color:#fff;cursor:pointer}.edit-service{background:#2563eb}.remove-service{background:var(--red)}@media(max-width:620px){.manage-grid{grid-template-columns:1fr}.manage-wide{grid-column:auto}.service-row{align-items:flex-start;flex-direction:column}.service-actions{align-self:flex-end}}
+.remove-service:disabled,.manage-submit:disabled{opacity:.55;cursor:not-allowed}
+.danger-zone{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
 .refill-card{background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:16px;margin-bottom:18px}.refill-list{display:grid;gap:8px}.refill-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 12px}.refill-row small{display:block;color:var(--text-dim);font-size:.7rem;margin-top:3px}.refill-actions{display:flex;gap:6px}.refill-actions button{border:0;border-radius:7px;padding:7px 9px;color:#fff;font-size:.72rem;font-weight:700;cursor:pointer}.refill-complete{background:#16a34a}.refill-decline{background:#dc2626}@media(max-width:620px){.refill-row{grid-template-columns:1fr}.refill-actions{justify-content:flex-end}}
 /* provider management */
 .btn-provider{background:#2563eb;color:#fff;box-shadow:0 3px 8px -2px rgba(37,99,235,0.4)}.btn-provider:hover{background:#1d4ed8;transform:translateY(-1px)}
@@ -382,10 +390,18 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
       <input type="hidden" id="editingServiceId">
       <button type="button" class="manage-submit" onclick="addServiceFromAdmin()"><i class="fas fa-save"></i> <span id="serviceSubmitLabel">Add Service</span></button>
       <button type="button" class="manage-submit secondary" id="cancelEditService" onclick="clearServiceForm()" style="display:none">Cancel Edit</button>
-      <div style="display:flex;gap:8px;align-items:end;margin-top:14px;max-width:360px">
-        <label style="flex:1;font-size:.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase">Remove by Service ID<input id="removeServiceId" type="number" placeholder="3450" style="width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;font:inherit"></label>
-        <button type="button" class="remove-service" onclick="removeServiceIdFromAdmin()"><i class="fas fa-trash"></i> Remove</button>
+
+      <div class="danger-zone">
+        <div style="display:flex;gap:8px;align-items:end;max-width:360px;flex:1;min-width:240px">
+          <label style="flex:1;font-size:.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase">Remove by Service ID<input id="removeServiceId" type="number" placeholder="3450" style="width:100%;margin-top:5px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff;font:inherit"></label>
+          <button type="button" class="remove-service" onclick="removeServiceIdFromAdmin()"><i class="fas fa-trash"></i> Remove</button>
+        </div>
+        <div>
+          <button type="button" class="remove-service" id="removeAllServicesBtn" onclick="removeAllServicesFromAdmin()" style="padding:10px 14px;font-weight:700"><i class="fas fa-trash-can"></i> Remove All Services (<span id="serviceCount">0</span>)</button>
+          <p class="hint" style="margin-top:6px">Removes every service at once. Platforms (Instagram, Facebook, etc.) are not deleted.</p>
+        </div>
       </div>
+
       <div class="service-list" id="serviceList"></div>
     </section>
 
@@ -733,6 +749,8 @@ async function testProvider(id) {
 // ── SERVICES (stored on the backend, linked to provider service IDs) ────────
 async function loadServices() {
   servicesCache = await api('/api/admin/services');
+  const countEl = document.getElementById('serviceCount');
+  if (countEl) countEl.textContent = servicesCache.length;
   const list = document.getElementById('serviceList');
   list.innerHTML = servicesCache.length ? servicesCache.map(s => {
     const prov = providersCache.find(p => p.id === s.providerId);
@@ -831,6 +849,46 @@ async function removeServiceIdFromAdmin() {
   document.getElementById('removeServiceId').value = '';
 }
 
+// Remove ALL services at once. Platforms are NOT touched: they are only the
+// fixed Platform dropdown options, so Instagram, Facebook, etc. stay available.
+async function removeAllServicesFromAdmin() {
+  const btn = document.getElementById('removeAllServicesBtn');
+  try {
+    await loadServices();                       // make sure the list is fresh
+  } catch (e) { showToast(e.message, true); return; }
+
+  const ids = servicesCache.map(s => s.id);
+  if (!ids.length) { showToast('There are no services to remove.', true); return; }
+
+  if (!confirm('Remove ALL ' + ids.length + ' services from the storefront?\n\nPlatforms will NOT be deleted. This cannot be undone.')) return;
+  const typed = prompt('Type DELETE to confirm removing all ' + ids.length + ' services:');
+  if (typed === null) return;
+  if (typed.trim() !== 'DELETE') { showToast('Cancelled. You must type DELETE exactly.', true); return; }
+
+  if (btn) btn.disabled = true;
+  let removed = 0, failed = 0, lastError = '';
+  const BATCH = 5;                              // a few at a time so the backend is not flooded
+
+  for (let i = 0; i < ids.length; i += BATCH) {
+    const chunk = ids.slice(i, i + BATCH);
+    const results = await Promise.allSettled(
+      chunk.map(id => api('/api/admin/services/' + encodeURIComponent(id), { method: 'DELETE' }))
+    );
+    results.forEach(r => {
+      if (r.status === 'fulfilled') removed++;
+      else { failed++; lastError = (r.reason && r.reason.message) || 'Unknown error'; }
+    });
+    showToast('Removing services… ' + Math.min(i + BATCH, ids.length) + '/' + ids.length);
+  }
+
+  clearServiceForm();
+  try { await loadServices(); } catch (e) {}
+  if (btn) btn.disabled = false;
+
+  if (failed) showToast('Removed ' + removed + ', failed ' + failed + (lastError ? ' (' + lastError + ')' : '') + '. Click again to retry the rest.', true);
+  else showToast('All ' + removed + ' services removed. Platforms are untouched.');
+}
+
 // ── SEND ORDERS TO THE PROVIDER ─────────────────────────────────────────────
 async function sendToProvider(docId) {
   const order = allOrders.find(o => o.id === docId);
@@ -907,7 +965,7 @@ function updateStats() {
     else if (s === 'completed') completed++;
     else if (s === 'declined') declined++;
 
-    // Calculate revenue from completed or pending orders
+    // Calculate revenue from completed orders
     const amt = parseFloat(String(o.amountPaid || '0').replace(/[^0-9.]/g, '')) || 0;
     if (s === 'completed') revenue += amt;
   });
@@ -1014,14 +1072,16 @@ function renderOrderRow(o) {
       </td>
       <td>${statusBadge}${o.providerOrderId ? `<div style="font-size:0.68rem;color:var(--text-dim);margin-top:4px">Provider #${escapeHtml(o.providerOrderId)}</div>` : ''}</td>
       <td style="text-align:right">
+        ${isCompleted ? `
+          <span class="done-label"><i class="fas fa-check-double"></i> Done</span>
+        ` : `
         <div class="action-btns" style="justify-content:flex-end;flex-wrap:wrap">
           ${o.providerOrderId
             ? `<button class="btn-action btn-provider" onclick="checkProviderStatus('${escapeHtml(o.id)}')"><i class="fas fa-rotate"></i> Provider Status</button>`
             : `<button class="btn-action btn-provider" onclick="sendToProvider('${escapeHtml(o.id)}')"><i class="fas fa-paper-plane"></i> Send to Provider</button>`}
           <button class="btn-action btn-complete"
-                  onclick="changeOrderStatus('${escapeHtml(o.id)}', 'completed')"
-                  ${isCompleted ? 'disabled title="Order already marked as completed"' : ''}>
-            <i class="fas fa-check"></i> ${isCompleted ? 'Completed' : 'Complete'}
+                  onclick="changeOrderStatus('${escapeHtml(o.id)}', 'completed')">
+            <i class="fas fa-check"></i> Complete
           </button>
           <button class="btn-action btn-decline"
                   onclick="changeOrderStatus('${escapeHtml(o.id)}', 'declined')"
@@ -1029,6 +1089,7 @@ function renderOrderRow(o) {
             <i class="fas fa-times"></i> ${isDeclined ? 'Declined' : 'Decline'}
           </button>
         </div>
+        `}
       </td>
     </tr>
   `;
@@ -1087,7 +1148,8 @@ function showToast(msg, isError = false) {
   ico.style.color = isError ? '#ef4444' : '#22c55e';
   toast.classList.add('show');
 
-  setTimeout(() => {
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => {
     toast.classList.remove('show');
   }, 4000);
 }
