@@ -884,16 +884,16 @@ async function testProvider(id) {
 async function loadServices() {
   servicesCache = await api('/api/admin/services');
   const countEl = document.getElementById('serviceCount');
-  if (countEl) countEl.textContent = servicesCache.length;
+  if (countEl) countEl.textContent = servicesCache.filter(s => !s.fixed).length;   // permanent services can't be bulk-removed
   const list = document.getElementById('serviceList');
   list.innerHTML = servicesCache.length ? servicesCache.map(s => {
     const prov = providersCache.find(p => p.id === s.providerId);
     return `
       <div class="service-row">
-        <div><strong>${escapeHtml(s.platform)} · ${escapeHtml(s.name)}</strong><span class="pill ${s.active !== false ? 'on' : 'off'}">${s.active !== false ? 'Active' : 'Hidden'}</span>
+        <div><strong>${escapeHtml(s.platform)} · ${escapeHtml(s.name)}</strong><span class="pill ${s.active !== false ? 'on' : 'off'}">${s.active !== false ? 'Active' : 'Hidden'}</span>${s.fixed ? '<span class="pill on" style="background:rgba(124,92,255,.15);color:#a995ff"><i class="fas fa-lock"></i> Permanent</span>' : ''}
           <small>ID ${escapeHtml(s.id)} · ₹${escapeHtml(s.rate)}/1K · ${escapeHtml(s.min)}-${escapeHtml(s.max)} · ${escapeHtml(prov ? prov.name : 'Unknown API')} #${escapeHtml(s.providerServiceId)}</small>
         </div>
-        <div class="service-actions"><button type="button" class="edit-service" onclick="editServiceFromAdmin(${Number(s.id)})"><i class="fas fa-pen"></i> Edit</button><button type="button" class="remove-service" onclick="removeServiceFromAdmin(${Number(s.id)})"><i class="fas fa-trash"></i> Remove</button></div>
+        <div class="service-actions"><button type="button" class="edit-service" onclick="editServiceFromAdmin(${Number(s.id)})"><i class="fas fa-pen"></i> Edit</button>${s.fixed ? '<button type="button" class="remove-service" disabled style="opacity:.45;cursor:not-allowed" title="Permanent service: edit it and set Status to Hidden to hide it"><i class="fas fa-lock"></i> Locked</button>' : `<button type="button" class="remove-service" onclick="removeServiceFromAdmin(${Number(s.id)})"><i class="fas fa-trash"></i> Remove</button>`}</div>
       </div>`;
   }).join('') : '<p style="color:var(--text-dim);font-size:.82rem">No services added yet.</p>';
 }
@@ -1105,6 +1105,8 @@ function clearServiceForm() {
 }
 
 async function removeServiceFromAdmin(serviceId) {
+  const target = servicesCache.find(x => Number(x.id) === Number(serviceId));
+  if (target && target.fixed) { showToast('Service ' + serviceId + ' is permanent and cannot be removed. Edit it and set Status to Hidden instead.', true); return; }
   if (!confirm('Remove service ' + serviceId + ' from the storefront?')) return;
   try {
     await api('/api/admin/services/' + encodeURIComponent(serviceId), { method: 'DELETE' });
@@ -1125,9 +1127,9 @@ async function removeServiceIdFromAdmin() {
 async function removeAllServicesFromAdmin() {
   const btn = document.getElementById('removeAllServicesBtn');
   try { await loadServices(); } catch (e) { showToast(e.message, true); return; }
-  const n = servicesCache.length;
-  if (!n) { showToast('There are no services to remove.', true); return; }
-  if (!confirm('Remove ALL ' + n + ' services from the storefront?\n\nThis cannot be undone.')) return;
+  const n = servicesCache.filter(s => !s.fixed).length;
+  if (!n) { showToast('No admin-added services to remove. Permanent services cannot be removed.', true); return; }
+  if (!confirm('Remove ALL ' + n + ' services you added?\n\nPermanent services stay. This cannot be undone.')) return;
   const typed = prompt('Type DELETE to confirm removing all ' + n + ' services:');
   if (typed === null) return;
   if (typed.trim() !== 'DELETE') { showToast('Cancelled. You must type DELETE exactly.', true); return; }
