@@ -256,6 +256,24 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
 /* provider management */
 .btn-provider{background:#2563eb;color:#fff;box-shadow:0 3px 8px -2px rgba(37,99,235,0.4)}.btn-provider:hover{background:#1d4ed8;transform:translateY(-1px)}
 .manage-card .hint{font-size:.74rem;color:var(--text-dim);margin-top:8px}.inline-row{display:flex;gap:8px;align-items:flex-start}.inline-row input{flex:1}.inline-row .manage-submit{margin-top:5px;white-space:nowrap}.pill{display:inline-block;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:middle}.pill.on{background:var(--green-bg);color:var(--green);border:1px solid rgba(22,163,74,.3)}.pill.off{background:var(--red-bg);color:var(--red);border:1px solid rgba(220,38,38,.3)}.test-provider{border:0;border-radius:7px;padding:7px 9px;color:#fff;cursor:pointer;background:#16a34a}.conn-status{font-size:.78rem;font-weight:600;margin-left:10px}
+.svc-toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}.svc-toolbar .manage-submit{margin-top:0}
+.prov-form{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}.prov-form .manage-grid{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:700px){.prov-form .manage-grid{grid-template-columns:1fr}}
+.bmodal{display:none;position:fixed;inset:0;z-index:2000;background:rgba(26,5,5,.55);align-items:center;justify-content:center;padding:12px}.bmodal.open{display:flex}
+.bmodal-sheet{background:#fff;border-radius:18px;width:min(980px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.bmodal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:linear-gradient(120deg,#E8000D,#8b0000);color:#fff}.bmodal-head h3{font-size:1rem}
+.bmodal-x{border:0;background:rgba(255,255,255,.2);color:#fff;width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:1rem}
+.bmodal-controls,.bmodal-opts{display:flex;flex-wrap:wrap;gap:8px;padding:10px 18px;align-items:flex-end}
+.bmodal-controls input,.bmodal-controls select,.bmodal-opts input,.bmodal-opts select{padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;font:inherit;font-size:.82rem}
+.bmodal-controls input{flex:1;min-width:180px}.bmodal-opts label{font-size:.66rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;display:flex;flex-direction:column;gap:4px}
+.bmodal-opts input{width:110px}.bmodal .hint{padding:0 18px;font-size:.74rem;color:var(--text-dim)}
+.bmodal-list{flex:1;overflow:auto;padding:8px 18px;display:grid;gap:6px;min-height:160px}
+.brow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;cursor:pointer}
+.brow.sel{border-color:var(--pulse);background:#fff5f5}.brow.added{opacity:.55;cursor:default}
+.brow small{display:block;color:var(--text-dim);font-size:.7rem;margin-top:2px}.brow .bid{font-family:monospace;font-size:.7rem;background:var(--surface-2);padding:1px 6px;border-radius:5px;margin-right:6px}
+.brow .brate{text-align:right;font-size:.74rem;white-space:nowrap}.brow .brate b{color:var(--pulse)}
+.bmodal-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--line);background:var(--surface)}
+.bmodal-foot .manage-submit{margin-top:0}
 @keyframes toastIn{
   from{transform:translateY(20px);opacity:0}
   to{transform:translateY(0);opacity:1}
@@ -351,13 +369,29 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
     </section>
 
     <section class="manage-card">
-      <h3><i class="fas fa-network-wired" style="color:var(--pulse)"></i> SMM API Provider <span class="pill on" style="margin-left:8px"><i class="fas fa-lock"></i> Set in server .env</span></h3>
-      <div class="service-list" id="providerList"><p style="color:var(--text-dim);font-size:.82rem">Connect to the backend to see the configured API.</p></div>
-      <p class="hint">The SMM API link and key are set in the backend <code>.env</code> file (<code>SMM_API_URL</code>, <code>SMM_API_KEY</code>, <code>SMM_API_NAME</code>). They cannot be added, edited or deleted here.</p>
+      <h3><i class="fas fa-network-wired" style="color:var(--pulse)"></i> SMM API Providers <span class="pill on" id="providerCount">0/5</span></h3>
+      <div class="service-list" id="providerList"><p style="color:var(--text-dim);font-size:.82rem">Connect to the backend to see your API providers.</p></div>
+      <div class="prov-form" id="providerFormWrap">
+        <div class="manage-grid">
+          <label>Provider name<input id="providerName" placeholder="e.g. CheapSMM" autocomplete="off"></label>
+          <label>API URL<input id="providerUrl" placeholder="https://provider.com/api/v2" autocomplete="off"></label>
+          <label>API key<input id="providerKey" type="password" placeholder="Paste API key" autocomplete="new-password"></label>
+        </div>
+        <input type="hidden" id="editingProviderId">
+        <button type="button" class="manage-submit" onclick="saveProvider()"><i class="fas fa-plus"></i> <span id="providerSubmitLabel">Add Provider</span></button>
+        <button type="button" class="manage-submit secondary" id="cancelEditProvider" onclick="clearProviderForm()" style="display:none">Cancel Edit</button>
+      </div>
+      <p class="hint" id="providerHint">You can add from 1 up to 5 providers. API keys are stored on your server only; the panel shows just the last 4 characters.</p>
     </section>
 
     <section class="manage-card">
       <h3><i class="fas fa-list-check" style="color:var(--pulse)"></i> Manage Services</h3>
+      <div class="svc-toolbar">
+        <button type="button" class="manage-submit" onclick="openBrowseModal()"><i class="fas fa-plus"></i> Add Service</button>
+        <button type="button" class="manage-submit secondary" onclick="downloadServices('csv')"><i class="fas fa-download"></i> Download Services (CSV)</button>
+        <button type="button" class="manage-submit secondary" onclick="downloadServices('json')"><i class="fas fa-file-code"></i> JSON</button>
+      </div>
+      <p class="hint" style="margin:0 0 10px">Use <b>Add Service</b> to pick services straight from a provider. The form below is for editing a service or adding one manually.</p>
       <div class="manage-grid">
         <label>API provider<select id="serviceProviderId"></select></label>
         <label>Provider service ID
@@ -388,7 +422,7 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
       </div>
       <p class="hint" id="providerRateHint"></p>
       <input type="hidden" id="editingServiceId">
-      <button type="button" class="manage-submit" onclick="addServiceFromAdmin()"><i class="fas fa-save"></i> <span id="serviceSubmitLabel">Add Service</span></button>
+      <button type="button" class="manage-submit" onclick="addServiceFromAdmin()"><i class="fas fa-save"></i> <span id="serviceSubmitLabel">Add Manually</span></button>
       <button type="button" class="manage-submit secondary" id="cancelEditService" onclick="clearServiceForm()" style="display:none">Cancel Edit</button>
 
       <div class="danger-zone">
@@ -454,6 +488,36 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
 
   </div><!-- /adminDashboard -->
 
+</div>
+
+<!-- BROWSE PROVIDER SERVICES -->
+<div class="bmodal" id="browseModal">
+  <div class="bmodal-sheet">
+    <div class="bmodal-head"><h3><i class="fas fa-plus-circle"></i> Add services from a provider</h3><button type="button" class="bmodal-x" onclick="closeBrowseModal()" aria-label="Close"><i class="fas fa-xmark"></i></button></div>
+    <div class="bmodal-controls">
+      <select id="browseProvider" onchange="loadBrowseServices()"></select>
+      <button type="button" class="manage-submit secondary" style="margin-top:0" onclick="loadBrowseServices(true)"><i class="fas fa-rotate"></i> Refresh</button>
+      <input id="browseSearch" placeholder="Search by name, ID or category…" oninput="renderBrowse()" autocomplete="off">
+      <select id="browseCategory" onchange="renderBrowse()"><option value="">All categories</option></select>
+    </div>
+    <div class="bmodal-opts">
+      <label>Rate multiplier<input id="browseMultiplier" type="number" step="0.01" min="0.01" value="1" oninput="renderBrowse()"></label>
+      <label>Platform<select id="browsePlatform"><option value="auto">Auto-detect</option>
+        <option value="instagram">Instagram</option><option value="facebook">Facebook</option><option value="telegram">Telegram</option><option value="youtube">YouTube</option>
+        <option value="twitter">Twitter</option><option value="snapchat">Snapchat</option><option value="spotify">Spotify</option><option value="pinterest">Pinterest</option></select></label>
+      <label>Status<select id="browseActive"><option value="true">Active</option><option value="false">Hidden</option></select></label>
+    </div>
+    <p class="hint" id="browseHint">Your rate = provider rate × multiplier. Provider rates are often in USD, so use the multiplier to convert to ₹ and add your profit (e.g. 90 ≈ ₹90 per $1).</p>
+    <div class="bmodal-list" id="browseList"></div>
+    <div class="bmodal-foot">
+      <span id="browseSelCount" style="font-size:.8rem;font-weight:700">0 selected</span>
+      <span style="display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="manage-submit secondary" onclick="browseSelectVisible()">Select visible</button>
+        <button type="button" class="manage-submit secondary" onclick="browseClear()">Clear</button>
+        <button type="button" class="manage-submit" id="browseAddBtn" onclick="addSelectedServices()"><i class="fas fa-plus"></i> Add selected</button>
+      </span>
+    </div>
+  </div>
 </div>
 
 <!-- ADMIN NOTIFICATION TOAST -->
@@ -718,24 +782,94 @@ async function refreshBackendData() {
   }
 }
 
-// ── API PROVIDER (read-only: configured in the backend .env) ────────────────
+// ── API PROVIDERS (1 to 5, managed here) ────────────────────────────────────
+const MAX_PROVIDERS = 5;
+
 async function loadProviders() {
   providersCache = await api('/api/admin/providers');
   const list = document.getElementById('providerList');
   list.innerHTML = providersCache.length ? providersCache.map(p => `
     <div class="service-row">
-      <div><strong>${escapeHtml(p.name)}</strong><span class="pill on"><i class="fas fa-lock"></i> From .env</span>
+      <div><strong>${escapeHtml(p.name)}</strong>${p.locked ? '<span class="pill on"><i class="fas fa-lock"></i> From .env</span>' : ''}${p.active === false ? '<span class="pill off">Disabled</span>' : ''}
         <small>${escapeHtml(p.url)} · Key ${escapeHtml(p.keyHint)} · ${Number(p.serviceCount)} service(s)</small>
       </div>
       <div class="service-actions">
         <button type="button" class="test-provider" onclick="testProvider('${escapeHtml(p.id)}')"><i class="fas fa-vial"></i> Test</button>
+        ${p.locked ? '' : `<button type="button" class="edit-service" onclick="editProvider('${escapeHtml(p.id)}')"><i class="fas fa-pen"></i> Edit</button>
+        <button type="button" class="remove-service" onclick="deleteProvider('${escapeHtml(p.id)}')"><i class="fas fa-trash"></i> Delete</button>`}
       </div>
-    </div>`).join('') : '<p style="color:var(--red);font-size:.82rem">SMM API is not configured. Set SMM_API_URL and SMM_API_KEY in the backend .env file and restart the server.</p>';
+    </div>`).join('') : '<p style="color:var(--red);font-size:.82rem">No API provider yet. Add your first one below.</p>';
+
+  const full = providersCache.length >= MAX_PROVIDERS && !document.getElementById('editingProviderId').value;
+  document.getElementById('providerCount').textContent = providersCache.length + '/' + MAX_PROVIDERS;
+  document.getElementById('providerFormWrap').style.display = full ? 'none' : '';
+  document.getElementById('providerHint').textContent = full
+    ? 'Maximum of ' + MAX_PROVIDERS + ' providers reached. Delete one to add another.'
+    : 'You can add from 1 up to ' + MAX_PROVIDERS + ' providers. API keys are stored on your server only; the panel shows just the last 4 characters.';
 
   const sel = document.getElementById('serviceProviderId');
   const prev = sel.value;
   sel.innerHTML = providersCache.map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`).join('');
   if (prev && providersCache.some(p => p.id === prev)) sel.value = prev;
+}
+
+function clearProviderForm() {
+  ['providerName', 'providerUrl', 'providerKey', 'editingProviderId'].forEach(id => { document.getElementById(id).value = ''; });
+  document.getElementById('providerKey').placeholder = 'Paste API key';
+  document.getElementById('providerSubmitLabel').textContent = 'Add Provider';
+  document.getElementById('cancelEditProvider').style.display = 'none';
+  if (providersCache.length) loadProviders().catch(() => {});
+}
+
+function editProvider(id) {
+  const p = providersCache.find(x => x.id === id);
+  if (!p || p.locked) return;
+  document.getElementById('editingProviderId').value = p.id;
+  document.getElementById('providerName').value = p.name;
+  document.getElementById('providerUrl').value = p.url;
+  document.getElementById('providerKey').value = '';
+  document.getElementById('providerKey').placeholder = 'Leave blank to keep current key (' + p.keyHint + ')';
+  document.getElementById('providerSubmitLabel').textContent = 'Update Provider';
+  document.getElementById('cancelEditProvider').style.display = 'inline-block';
+  document.getElementById('providerFormWrap').style.display = '';
+  document.getElementById('providerName').focus();
+}
+
+async function saveProvider() {
+  const editId = document.getElementById('editingProviderId').value;
+  const body = {
+    name: document.getElementById('providerName').value.trim(),
+    url: document.getElementById('providerUrl').value.trim(),
+    key: document.getElementById('providerKey').value.trim()
+  };
+  if (!body.name || !body.url) { showToast('Enter the provider name and API URL.', true); return; }
+  if (!editId && !body.key) { showToast('Enter the API key.', true); return; }
+  try {
+    await api(editId ? '/api/admin/providers/' + encodeURIComponent(editId) : '/api/admin/providers', { method: editId ? 'PUT' : 'POST', body });
+    showToast(editId ? 'Provider updated.' : 'Provider added.');
+    ['providerName', 'providerUrl', 'providerKey', 'editingProviderId'].forEach(id => { document.getElementById(id).value = ''; });
+    document.getElementById('providerKey').placeholder = 'Paste API key';
+    document.getElementById('providerSubmitLabel').textContent = 'Add Provider';
+    document.getElementById('cancelEditProvider').style.display = 'none';
+    await loadProviders();
+    await loadServices();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function deleteProvider(id) {
+  const p = providersCache.find(x => x.id === id);
+  if (!p) return;
+  const n = Number(p.serviceCount) || 0;
+  const msg = n
+    ? 'Delete provider "' + p.name + '" AND its ' + n + ' service(s) from the storefront? This cannot be undone.'
+    : 'Delete provider "' + p.name + '"?';
+  if (!confirm(msg)) return;
+  try {
+    await api('/api/admin/providers/' + encodeURIComponent(id) + (n ? '?removeServices=true' : ''), { method: 'DELETE' });
+    showToast('Provider deleted.');
+    await loadProviders();
+    await loadServices();
+  } catch (e) { showToast(e.message, true); }
 }
 
 async function testProvider(id) {
@@ -764,10 +898,147 @@ async function loadServices() {
   }).join('') : '<p style="color:var(--text-dim);font-size:.82rem">No services added yet.</p>';
 }
 
+// ── BROWSE PROVIDER SERVICES + ADD ──────────────────────────────────────────
+let browseAll = [], browseSel = new Set(), browseShown = [];
+const BROWSE_CAP = 300;
+const PLATFORM_RULES = [
+  ['instagram', /instagram|\big\b/], ['facebook', /facebook|\bfb\b/], ['telegram', /telegram/],
+  ['youtube', /youtube|\byt\b/], ['twitter', /twitter|tweet|x\.com/], ['snapchat', /snapchat/],
+  ['spotify', /spotify/], ['pinterest', /pinterest/]
+];
+function detectPlatform(s) {
+  const t = ((s.category || '') + ' ' + (s.name || '')).toLowerCase();
+  for (const [p, re] of PLATFORM_RULES) if (re.test(t)) return p;
+  return '';
+}
+const addedKeys = () => new Set(servicesCache.map(s => s.providerId + ':' + s.providerServiceId));
+const browseRate = s => Math.max(0.01, Math.round((Number(s.rate) || 0) * (Number(document.getElementById('browseMultiplier').value) || 1) * 100) / 100);
+
+async function openBrowseModal() {
+  if (!providersCache.length) { showToast('Add an API provider first.', true); return; }
+  document.getElementById('browseProvider').innerHTML = providersCache.map(p => `<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)}</option>`).join('');
+  document.getElementById('browseModal').classList.add('open');
+  try { await loadServices(); } catch (e) {}
+  loadBrowseServices();
+}
+function closeBrowseModal() { document.getElementById('browseModal').classList.remove('open'); }
+
+async function loadBrowseServices(force) {
+  const id = document.getElementById('browseProvider').value;
+  const list = document.getElementById('browseList');
+  browseAll = []; browseSel.clear(); updateBrowseCount();
+  list.innerHTML = '<p style="color:var(--text-dim);font-size:.85rem;padding:14px">Loading services from the provider…</p>';
+  try {
+    browseAll = await api('/api/admin/providers/' + encodeURIComponent(id) + '/services' + (force ? '?refresh=true' : ''));
+    const cats = [...new Set(browseAll.map(s => s.category).filter(Boolean))].sort();
+    document.getElementById('browseCategory').innerHTML = '<option value="">All categories (' + cats.length + ')</option>' + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    renderBrowse();
+  } catch (e) {
+    list.innerHTML = '<p style="color:var(--red);font-size:.85rem;padding:14px">' + escapeHtml(e.message) + '</p>';
+  }
+}
+
+function renderBrowse() {
+  const q = document.getElementById('browseSearch').value.toLowerCase().trim();
+  const cat = document.getElementById('browseCategory').value;
+  const added = addedKeys(), pid = document.getElementById('browseProvider').value;
+  const matches = browseAll.filter(s => {
+    if (cat && s.category !== cat) return false;
+    if (!q) return true;
+    return String(s.service).includes(q) || (s.name || '').toLowerCase().includes(q) || (s.category || '').toLowerCase().includes(q);
+  });
+  const shown = matches.slice(0, BROWSE_CAP);
+  browseShown = shown.filter(s => !added.has(pid + ':' + s.service));
+  document.getElementById('browseList').innerHTML = shown.length ? shown.map(s => {
+    const isAdded = added.has(pid + ':' + s.service), sel = browseSel.has(String(s.service));
+    const plat = detectPlatform(s);
+    return `<label class="brow ${sel ? 'sel' : ''} ${isAdded ? 'added' : ''}">
+      <input type="checkbox" ${isAdded ? 'disabled' : ''} ${sel ? 'checked' : ''} onchange="toggleBrowse('${escapeHtml(s.service)}', this.checked)">
+      <div><span class="bid">${escapeHtml(s.service)}</span><strong style="font-size:.82rem">${escapeHtml(s.name)}</strong>
+        <small>${escapeHtml(s.category || '')} · ${escapeHtml(s.min)}-${escapeHtml(s.max)} · ${plat ? escapeHtml(plat) : 'platform not detected'}${s.refill ? ' · refill' : ''}</small></div>
+      <div class="brate">${isAdded ? '<span class="pill on">Added</span>' : `Provider ${escapeHtml(s.rate)}<br>You: <b>₹${browseRate(s)}</b>/1K`}</div>
+    </label>`;
+  }).join('') : '<p style="color:var(--text-dim);font-size:.85rem;padding:14px">No services match.</p>';
+  document.getElementById('browseHint').textContent = (matches.length > BROWSE_CAP ? 'Showing the first ' + BROWSE_CAP + ' of ' + matches.length + ' matches. Refine your search to see more. ' : matches.length + ' service(s). ') + 'Your rate = provider rate × multiplier (providers often charge in USD).';
+}
+function toggleBrowse(id, on) {
+  on ? browseSel.add(String(id)) : browseSel.delete(String(id));
+  updateBrowseCount();
+  const row = event && event.target && event.target.closest('.brow'); if (row) row.classList.toggle('sel', on);
+}
+function updateBrowseCount() { document.getElementById('browseSelCount').textContent = browseSel.size + ' selected'; }
+function browseSelectVisible() { browseShown.forEach(s => browseSel.add(String(s.service))); updateBrowseCount(); renderBrowse(); }
+function browseClear() { browseSel.clear(); updateBrowseCount(); renderBrowse(); }
+
+async function addSelectedServices() {
+  if (!browseSel.size) { showToast('Select at least one service.', true); return; }
+  const providerId = document.getElementById('browseProvider').value;
+  const forced = document.getElementById('browsePlatform').value;
+  const active = document.getElementById('browseActive').value === 'true';
+  const items = [], noPlatform = [];
+  browseAll.filter(s => browseSel.has(String(s.service))).forEach(s => {
+    const platform = forced === 'auto' ? detectPlatform(s) : forced;
+    if (!platform) { noPlatform.push(s.service); return; }
+    const min = Math.max(1, Number(s.min) || 1);
+    items.push({
+      providerId, providerServiceId: String(s.service), platform, name: s.name,
+      rate: browseRate(s), min, max: Math.max(min, Number(s.max) || min),
+      refill: s.refill ? 'Refill' : 'No Refill',
+      type: /comment/i.test((s.type || '') + ' ' + (s.name || '')) ? 'Custom Comments' : 'Default',
+      active
+    });
+  });
+  if (noPlatform.length) {
+    showToast(noPlatform.length + ' selected service(s) have no detectable platform. Choose a Platform in the dropdown.', true);
+    return;
+  }
+  const btn = document.getElementById('browseAddBtn');
+  btn.disabled = true;
+  let added = 0, skipped = 0; const errors = [];
+  try {
+    for (let i = 0; i < items.length; i += 200) {
+      const r = await api('/api/admin/services/bulk', { method: 'POST', body: { items: items.slice(i, i + 200) } });
+      added += r.added; skipped += r.skipped; errors.push(...(r.errors || []));
+    }
+    showToast('Added ' + added + (skipped ? ', skipped ' + skipped + ' already added' : '') + (errors.length ? ', ' + errors.length + ' failed (' + errors[0].error + ')' : '') + '.', !!errors.length && !added);
+    browseSel.clear(); updateBrowseCount();
+    await loadServices();
+    await loadProviders();
+    renderBrowse();
+  } catch (e) { showToast(e.message, true); }
+  btn.disabled = false;
+}
+
+// ── DOWNLOAD ADDED SERVICES ─────────────────────────────────────────────────
+function downloadServices(fmt) {
+  if (!servicesCache.length) { showToast('No services to download yet.', true); return; }
+  const rows = servicesCache.map(s => {
+    const prov = providersCache.find(p => p.id === s.providerId);
+    return { id: s.id, platform: s.platform, name: s.name, rate_per_1k: s.rate, min: s.min, max: s.max,
+      status: s.active !== false ? 'Active' : 'Hidden', type: s.type || 'Default', start: s.start || '', speed: s.speed || '',
+      refill: s.refill || '', drop: s.drop || '', quality: s.quality || '',
+      provider: prov ? prov.name : '', provider_service_id: s.providerServiceId };
+  });
+  let text, mime;
+  if (fmt === 'json') { text = JSON.stringify(rows, null, 2); mime = 'application/json'; }
+  else {
+    const cols = Object.keys(rows[0]);
+    const q = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    text = '\ufeff' + [cols.join(','), ...rows.map(r => cols.map(c => q(r[c])).join(','))].join('\r\n');
+    mime = 'text/csv;charset=utf-8';
+  }
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: mime }));
+  a.download = 'astropulse-services-' + new Date().toISOString().slice(0, 10) + '.' + (fmt === 'json' ? 'json' : 'csv');
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  showToast('Downloaded ' + rows.length + ' services.');
+}
+
 async function lookupProviderService() {
   const providerId = document.getElementById('serviceProviderId').value;
   const sid = document.getElementById('serviceProviderServiceId').value.trim();
-  if (!providerId) { showToast('Add and select an API first.', true); return; }
+  if (!providerId) { showToast('Add and select an API provider first.', true); return; }
   if (!sid) { showToast('Enter the provider service ID.', true); return; }
   showToast('Fetching from provider…');
   try {
@@ -829,7 +1100,7 @@ function clearServiceForm() {
   document.getElementById('serviceType').value = 'Default';
   document.getElementById('serviceActive').value = 'true';
   document.getElementById('providerRateHint').textContent = '';
-  document.getElementById('serviceSubmitLabel').textContent = 'Add Service';
+  document.getElementById('serviceSubmitLabel').textContent = 'Add Manually';
   document.getElementById('cancelEditService').style.display = 'none';
 }
 
@@ -853,40 +1124,22 @@ async function removeServiceIdFromAdmin() {
 // fixed Platform dropdown options, so Instagram, Facebook, etc. stay available.
 async function removeAllServicesFromAdmin() {
   const btn = document.getElementById('removeAllServicesBtn');
-  try {
-    await loadServices();                       // make sure the list is fresh
-  } catch (e) { showToast(e.message, true); return; }
-
-  const ids = servicesCache.map(s => s.id);
-  if (!ids.length) { showToast('There are no services to remove.', true); return; }
-
-  if (!confirm('Remove ALL ' + ids.length + ' services from the storefront?\n\nPlatforms will NOT be deleted. This cannot be undone.')) return;
-  const typed = prompt('Type DELETE to confirm removing all ' + ids.length + ' services:');
+  try { await loadServices(); } catch (e) { showToast(e.message, true); return; }
+  const n = servicesCache.length;
+  if (!n) { showToast('There are no services to remove.', true); return; }
+  if (!confirm('Remove ALL ' + n + ' services from the storefront?\n\nThis cannot be undone.')) return;
+  const typed = prompt('Type DELETE to confirm removing all ' + n + ' services:');
   if (typed === null) return;
   if (typed.trim() !== 'DELETE') { showToast('Cancelled. You must type DELETE exactly.', true); return; }
-
   if (btn) btn.disabled = true;
-  let removed = 0, failed = 0, lastError = '';
-  const BATCH = 5;                              // a few at a time so the backend is not flooded
-
-  for (let i = 0; i < ids.length; i += BATCH) {
-    const chunk = ids.slice(i, i + BATCH);
-    const results = await Promise.allSettled(
-      chunk.map(id => api('/api/admin/services/' + encodeURIComponent(id), { method: 'DELETE' }))
-    );
-    results.forEach(r => {
-      if (r.status === 'fulfilled') removed++;
-      else { failed++; lastError = (r.reason && r.reason.message) || 'Unknown error'; }
-    });
-    showToast('Removing services… ' + Math.min(i + BATCH, ids.length) + '/' + ids.length);
-  }
-
-  clearServiceForm();
-  try { await loadServices(); } catch (e) {}
+  try {
+    const r = await api('/api/admin/services', { method: 'DELETE' });
+    showToast('All ' + (r.removed ?? n) + ' services removed.');
+    clearServiceForm();
+    await loadServices();
+    await loadProviders();
+  } catch (e) { showToast(e.message, true); }
   if (btn) btn.disabled = false;
-
-  if (failed) showToast('Removed ' + removed + ', failed ' + failed + (lastError ? ' (' + lastError + ')' : '') + '. Click again to retry the rest.', true);
-  else showToast('All ' + removed + ' services removed. Platforms are untouched.');
 }
 
 // ── SEND ORDERS TO THE PROVIDER ─────────────────────────────────────────────
