@@ -32,6 +32,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="wallet.js"></script>
 <script src="site-config.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
@@ -1388,6 +1389,10 @@ body.auth-pending #navLoginBtn,body.auth-pending #sbLoginLink{visibility:hidden}
           <div id="sbUserEmail" style="font-size:0.7rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">user@example.com</div>
         </div>
       </div>
+      <div id="sbWalletRow" style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px">
+        <div><div style="font-size:.62rem;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em">Wallet Balance</div><div id="sbWalletBal" style="font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:1rem;color:var(--pulse)">—</div></div>
+        <a href="payment.html" style="text-decoration:none;background:var(--pulse);color:#fff;font-size:.72rem;font-weight:700;padding:7px 11px;border-radius:8px;display:inline-flex;align-items:center;gap:5px"><i class="fas fa-plus"></i> Add</a>
+      </div>
       <div style="display:flex;gap:6px;margin-top:10px">
         <a href="admin.html" class="sidebar-item" id="sbAdminLink" style="display:none;padding:7px 10px;margin-bottom:0;font-size:0.75rem;background:#ffe4e6;color:#e11d48;border-radius:8px;font-weight:700">
           <i class="fas fa-shield-alt" style="width:24px;height:24px;font-size:0.75rem;background:#fff"></i> Admin
@@ -1403,6 +1408,10 @@ body.auth-pending #navLoginBtn,body.auth-pending #sbLoginLink{visibility:hidden}
     </a>
 
     <div class="sidebar-section-title">Quick Links</div>
+    <a href="payment.html" class="sidebar-item" style="background:#fff0f0;color:var(--pulse);font-weight:700">
+      <i class="fas fa-wallet" style="background:var(--pulse);color:#fff"></i>
+      <span>Add Funds</span>
+    </a>
     <a href="#order" class="sidebar-item" onclick="closeSidebar()">
       <i class="fas fa-shopping-cart"></i>
       <span>Order Services</span>
@@ -1523,8 +1532,8 @@ body.auth-pending #navLoginBtn,body.auth-pending #sbLoginLink{visibility:hidden}
     <div class="about-pt">
       <div class="about-pt-icon"><i class="fas fa-qrcode"></i></div>
       <div class="about-pt-text">
-        <div class="about-pt-title">Easy UPI Payments</div>
-        <div class="about-pt-sub">Pay via any UPI app — instant QR scan</div>
+        <div class="about-pt-title">Wallet &amp; UPI Payments</div>
+        <div class="about-pt-sub">Add funds once via UPI — order anytime</div>
       </div>
     </div>
     <div class="about-pt">
@@ -1779,15 +1788,15 @@ document.getElementById('refillModal').addEventListener('click', function(event)
     <div class="hiw-step">
       <div class="hiw-num">2</div>
       <div class="hiw-text">
-        <h3>Pay via UPI QR</h3>
-        <p>Scan the QR code with any UPI app (GPay, PhonePe, Paytm) and pay the exact amount.</p>
+        <h3>Add Funds to Your Wallet</h3>
+        <p>Open Menu → Add Funds, pay once via UPI QR and enter the transaction ID. Funds are added after approval.</p>
       </div>
     </div>
     <div class="hiw-step">
       <div class="hiw-num">3</div>
       <div class="hiw-text">
-        <h3>Enter Transaction ID</h3>
-        <p>Enter your UTR / transaction ID after payment for instant order confirmation.</p>
+        <h3>Order From Your Wallet</h3>
+        <p>Place orders instantly using your wallet balance. If funds run out you will see "Insufficient fund".</p>
       </div>
     </div>
     <div class="hiw-step">
@@ -1877,11 +1886,11 @@ document.getElementById('refillModal').addEventListener('click', function(event)
 <div class="modal-overlay" id="payModal">
   <div class="modal-sheet" id="modalSheet">
 
-    <!-- STEP: ORDER SUMMARY + PAY -->
+    <!-- STEP: ORDER SUMMARY + PAY FROM WALLET -->
     <div id="payStep">
       <div class="modal-handle"></div>
       <div class="modal-title">Order Summary</div>
-      <div class="modal-sub">Review your order, then pay via any UPI app</div>
+      <div class="modal-sub">Review your order — it is paid from your wallet balance</div>
 
       <div class="modal-order-info">
         <div class="modal-order-row"><span class="mor-key">Platform</span><span class="mor-val" id="moPlatform">—</span></div>
@@ -1890,43 +1899,15 @@ document.getElementById('refillModal').addEventListener('click', function(event)
         <div class="modal-order-row"><span class="mor-key">Link</span><span class="mor-val" id="moLink" style="font-size:0.72rem;word-break:break-all">—</span></div>
         <div class="modal-order-row" id="moCommentTypeRow" style="display:none"><span class="mor-key">Comment Type</span><span class="mor-val" id="moCommentType">—</span></div>
         <div class="modal-order-row"><span class="mor-key">Total Amount</span><span class="mor-val" id="moTotal" style="color:#E8000D;font-size:1rem">₹0.00</span></div>
+        <div class="modal-order-row"><span class="mor-key">Wallet Balance</span><span class="mor-val" id="moBalance">—</span></div>
+        <div class="modal-order-row" id="moAfterRow"><span class="mor-key">Balance After Order</span><span class="mor-val" id="moAfter">—</span></div>
       </div>
 
-      <button class="modal-btn upi-pay-btn" onclick="payViaUpi()"><i class="fas fa-mobile-screen-button"></i> Pay via UPI App</button>
-      <button class="modal-btn" onclick="closeModalAndOpenQr()" style="background:linear-gradient(120deg,#1a5276,#2874a6);margin-top:0"><i class="fas fa-qrcode"></i> Generate QR Code</button>
+      <div class="verify-error" id="orderError"></div>
 
-      <button class="verify-link-btn" onclick="showVerifyStep()"><i class="fas fa-receipt"></i> Already paid? Enter transaction details</button>
-      <button class="modal-btn secondary" onclick="closeModal()" style="margin-top:10px">Cancel</button>
-    </div>
-
-    <!-- STEP: PAYMENT VERIFICATION -->
-    <div id="verifyStep" style="display:none">
-      <div class="modal-handle"></div>
-      <div class="verify-icon-wrap"><i class="fas fa-shield-halved"></i></div>
-      <div class="modal-title">Verify Your Payment</div>
-      <div class="modal-sub">Enter your transaction details so we can confirm and process your order</div>
-
-      <div class="verify-error" id="verifyError"></div>
-
-      <div class="verify-field">
-        <label>Order ID</label>
-        <input type="text" class="f-input" id="verifyOrderId" readonly>
-      </div>
-      <div class="verify-field">
-        <label>Amount Paid (₹)</label>
-        <input type="text" class="f-input" id="verifyAmount" readonly>
-      </div>
-      <div class="verify-field">
-        <label>Your Email (for Order Status Updates)</label>
-        <input type="email" class="f-input" id="verifyCustomerEmail" placeholder="yourname@gmail.com">
-      </div>
-      <div class="verify-field">
-        <label>UTR / Transaction ID</label>
-        <input type="text" class="f-input" id="verifyTxn" placeholder="e.g. 412345678901">
-      </div>
-
-      <button class="verify-submit-btn" id="verifySubmitBtn" onclick="submitVerification()"><i class="fas fa-paper-plane"></i> Submit & Confirm Order</button>
-      <button class="modal-btn secondary" onclick="backToPayStep()">Back</button>
+      <button class="modal-btn" id="placeOrderBtn" onclick="placeOrder()"><i class="fas fa-wallet"></i> Place Order</button>
+      <a class="modal-btn upi-pay-btn" id="addFundsBtn" href="payment.html" style="display:none;text-decoration:none"><i class="fas fa-plus"></i> Add Funds</a>
+      <button class="modal-btn secondary" onclick="closeModal()" style="margin-top:0">Cancel</button>
     </div>
 
     <!-- STEP: CONFIRMATION -->
@@ -1942,7 +1923,8 @@ document.getElementById('refillModal').addEventListener('click', function(event)
         <div class="conf-row"><span class="conf-key">Quantity</span><span class="conf-val" id="confQty">—</span></div>
         <div class="conf-row"><span class="conf-key">Link</span><span class="conf-val" id="confLink">—</span></div>
         <div class="conf-row"><span class="conf-key">Amount Paid</span><span class="conf-val" style="color:#E8000D" id="confAmount">—</span></div>
-        <div class="conf-row"><span class="conf-key">Txn ID</span><span class="conf-val" id="confTxn">—</span></div>
+        <div class="conf-row"><span class="conf-key">Paid From</span><span class="conf-val" id="confTxn">Wallet</span></div>
+        <div class="conf-row"><span class="conf-key">Wallet Balance</span><span class="conf-val" id="confBalance">—</span></div>
         <div class="conf-row"><span class="conf-key">Status</span><span class="conf-val"><span class="status-badge"><i class="fas fa-circle" style="font-size:0.5rem"></i>Processed</span></span></div>
       </div>
       <p style="font-size:0.78rem;color:#9aa3bf;margin-bottom:16px;line-height:1.6">Your order will start within <strong style="color:#fff">5–15 minutes</strong>. For any issues contact our support.</p>
@@ -2029,225 +2011,7 @@ document.getElementById('refillModal').addEventListener('click', function(event)
   </div>
 </div>
 
-<!-- QR CODE MODAL -->
-<div class="qr-modal-overlay" id="qrModal">
-  <div class="qr-modal-sheet">
 
-    <!-- Step 1: Show QR -->
-    <div id="qrStep1">
-      <div class="qr-handle"></div>
-      <div class="qr-modal-title">Scan & Pay via UPI</div>
-      <div class="qr-modal-sub">Open any UPI app, scan the QR code and complete payment</div>
-      <div class="qr-box">
-        <div id="qrCodeBox" style="width:200px;height:200px;border-radius:10px;background:#fff;padding:6px;display:flex;align-items:center;justify-content:center"></div>
-        <div class="qr-amount-label">Amount to Pay</div>
-        <div class="qr-amount-val" id="qrAmountDisplay">₹0.00</div>
-        <div class="qr-upi-id"><i class="fas fa-wallet" style="margin-right:5px;color:#0a7cff"></i><span id="qrUpiIdText">8707210511@fam</span><button class="qr-upi-copy" onclick="copyChipText('qrUpiIdText')" title="Copy UPI ID"><i class="fas fa-copy"></i></button></div>
-      </div>
-      <div class="qr-step-note"><i class="fas fa-circle-info" style="color:#0a7cff;margin-right:5px"></i>After completing payment in your UPI app, tap <strong style="color:#fff">"I've Paid"</strong> below and enter your Transaction / UTR ID to confirm your order.</div>
-      <button class="qr-confirm-btn" onclick="showQrTxnStep()"><i class="fas fa-check-circle"></i> I've Paid — Enter Transaction ID</button>
-      <button class="qr-cancel-btn" onclick="closeQrModal()"><i class="fas fa-arrow-left"></i> Back to Payment Options</button>
-    </div>
-
-    <!-- Step 2: Enter Transaction ID -->
-    <div id="qrStep2" style="display:none">
-      <div class="qr-handle"></div>
-      <div class="qr-verify-icon"><i class="fas fa-shield-halved"></i></div>
-      <div class="qr-modal-title">Verify Your Payment</div>
-      <div class="qr-modal-sub">Enter your transaction details so we can confirm and process your order</div>
-
-      <div class="qr-txn-error" id="qrTxnError"><i class="fas fa-circle-exclamation" style="margin-right:5px"></i><span id="qrTxnErrorMsg"></span></div>
-
-      <div class="qr-field">
-        <label>Order ID</label>
-        <input type="text" id="qrVerifyOrderId" readonly>
-      </div>
-      <div class="qr-field">
-        <label>Amount Paid (₹)</label>
-        <input type="text" id="qrVerifyAmount" readonly>
-      </div>
-      <div class="qr-field">
-        <label>Your Email (for Order Status Updates) <span style="color:#E8000D">*</span></label>
-        <input type="email" id="qrVerifyCustomerEmail" placeholder="yourname@gmail.com">
-      </div>
-      <div class="qr-field">
-        <label>UTR / Transaction ID <span style="color:#E8000D">*</span></label>
-        <input type="text" id="qrVerifyTxn" placeholder="e.g. 412345678901">
-      </div>
-
-      <button class="qr-confirm-btn" id="qrSubmitBtn" onclick="submitQrVerification()"><i class="fas fa-paper-plane"></i> Submit & Confirm Order</button>
-      <button class="qr-cancel-btn" onclick="backToQrStep1()"><i class="fas fa-arrow-left"></i> Back to QR Code</button>
-    </div>
-
-  </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>
-// ─── QR CODE FLOW ─────────────────────────────────────────────────────────────
-
-function closeModalAndOpenQr(){
-  document.getElementById('payModal').classList.remove('open');
-  openQrModal();
-}
-
-let qrCodeInstance = null;
-
-function renderQrCode(){
-  const box = document.getElementById('qrCodeBox');
-  box.innerHTML = ''; // clear any previously rendered QR before drawing the new one
-
-  // Build the UPI deep link with the exact order amount baked in as "am",
-  // so any UPI app auto-fills that amount the moment it scans this code.
-  const upiLink = generateUpiLink(currentOrderAmount);
-
-  qrCodeInstance = new QRCode(box, {
-    text: upiLink,
-    width: 188,
-    height: 188,
-    colorDark: '#000000',
-    colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.M
-  });
-}
-
-function openQrModal(){
-  const amount = currentOrderAmount.toFixed(2);
-  document.getElementById('qrUpiIdText').textContent = UPI_ID;
-  document.getElementById('qrAmountDisplay').textContent = '₹' + amount;
-  document.getElementById('qrVerifyOrderId').value = currentOrderId;
-  document.getElementById('qrVerifyAmount').value  = '₹' + amount;
-  document.getElementById('qrVerifyTxn').value     = '';
-  document.getElementById('qrTxnError').style.display = 'none';
-
-  const user = (typeof auth !== 'undefined' && auth) ? auth.currentUser : null;
-  const emailInput = document.getElementById('qrVerifyCustomerEmail');
-  if (emailInput) {
-    if (user && user.email) {
-      emailInput.value = user.email;
-      emailInput.readOnly = true;
-    } else {
-      emailInput.readOnly = false;
-    }
-  }
-
-  document.getElementById('qrStep1').style.display = 'block';
-  document.getElementById('qrStep2').style.display = 'none';
-  document.getElementById('qrModal').classList.add('open');
-  renderQrCode(); // (re)generate the QR fresh for this order's exact amount
-}
-
-function closeQrModal(){
-  document.getElementById('qrModal').classList.remove('open');
-  document.getElementById('payModal').classList.add('open');
-}
-
-function showQrTxnStep(){
-  document.getElementById('qrStep1').style.display = 'none';
-  document.getElementById('qrStep2').style.display = 'block';
-  setTimeout(()=>{ document.getElementById('qrVerifyTxn').focus(); }, 150);
-}
-
-function backToQrStep1(){
-  document.getElementById('qrStep2').style.display = 'none';
-  document.getElementById('qrStep1').style.display = 'block';
-}
-
-function submitQrVerification(){
-  const txn   = document.getElementById('qrVerifyTxn').value.trim();
-  const errEl = document.getElementById('qrTxnError');
-  const errMsg= document.getElementById('qrTxnErrorMsg');
-
-  const user = (typeof auth !== 'undefined' && auth) ? auth.currentUser : null;
-  const emailInput = document.getElementById('qrVerifyCustomerEmail');
-  const userEmail = (user && user.email) ? user.email : (emailInput ? emailInput.value.trim() : '');
-
-  if(!userEmail){ errMsg.textContent='Please enter your email address for order updates.'; errEl.style.display='block'; return; }
-  if(!txn){ errMsg.textContent='Please enter your Transaction / UTR ID.'; errEl.style.display='block'; return; }
-  if(!window.emailjs){ errMsg.textContent='Email service failed to load. Please refresh and try again.'; errEl.style.display='block'; return; }
-  errEl.style.display='none';
-
-  const link  = document.getElementById('linkInput').value.trim();
-  const qty   = parseInt(document.getElementById('qtyInput').value) || 0;
-  const price = currentOrderAmount.toFixed(2);
-  const btn   = document.getElementById('qrSubmitBtn');
-
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
-
-  const commentTypeText = /comment/i.test(curService.name)
-    ? (curCommentType==='custom' ? `Custom — "${curCustomComment}"` : (COMMENT_TYPE_LABELS[curCommentType]||'—'))
-    : '';
-
-  // Save order to Cloud Firestore (Free Tier)
-  const orderDoc = {
-    orderId:          currentOrderId,
-    userId:           user.uid,
-    userEmail:        userEmail,
-    userName:         user ? (user.displayName || user.email.split('@')[0]) : userEmail.split('@')[0],
-    platform:         curPlatform.charAt(0).toUpperCase() + curPlatform.slice(1),
-    service:          curService.name,
-    serviceId:        curService.id,
-    refill:           curService.refill || '',
-    quantity:         qty,
-    link:             link,
-    amountPaid:       '₹' + price,
-    utrTransactionId: txn,
-    commentType:      commentTypeText,
-    status:           'pending'
-  };
-
-  if (typeof saveOrderToFirestore === 'function') {
-    saveOrderToFirestore(orderDoc).catch(e => console.warn("Firestore error:", e));
-  }
-
-  // TemplateParams for EmailJS
-  const templateParams = {
-    order_id:          currentOrderId,
-    platform:          curPlatform.charAt(0).toUpperCase() + curPlatform.slice(1),
-    service:           curService.name.split('|')[0].trim(),
-    quantity:          qty.toLocaleString(),
-    link:              link,
-    amount_paid:       '₹' + price,
-    utr_transaction_id: txn,
-    comment_type:      commentTypeText,
-    customer_email:    userEmail
-  };
-
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-  .then(() => {
-    // Close QR popup
-    document.getElementById('qrModal').classList.remove('open');
-
-    // Populate confirmation screen (same as UPI flow)
-    document.getElementById('confOrderId').textContent  = currentOrderId;
-    document.getElementById('confPlatform').textContent = curPlatform.charAt(0).toUpperCase() + curPlatform.slice(1);
-    document.getElementById('confService').textContent  = curService.name.split('|')[0].trim();
-    document.getElementById('confQty').textContent      = qty.toLocaleString();
-    document.getElementById('confLink').textContent     = link;
-    document.getElementById('confAmount').textContent   = '₹' + price;
-    document.getElementById('confTxn').textContent      = txn;
-
-    // Show pay modal at confirmation step
-    document.getElementById('payStep').style.display    = 'none';
-    document.getElementById('verifyStep').style.display = 'none';
-    document.getElementById('confirmStep').className    = 'confirm-screen active';
-    document.getElementById('payModal').classList.add('open');
-  })
-  .catch(() => {
-    errMsg.textContent = 'Could not submit. Please check your connection and try again.';
-    errEl.style.display = 'block';
-  })
-  .finally(() => {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit & Confirm Order';
-  });
-}
-
-document.getElementById('qrModal').addEventListener('click', function(e){
-  if(e.target === this) closeQrModal();
-});
-</script>
 
 
 <script>
@@ -2589,21 +2353,53 @@ if (window.emailjs) { emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); }
 let currentOrderAmount = 0;   // numeric ₹ amount for the active order
 let currentOrderId     = '';  // ASTR-prefixed order id for the active order
 
-// ─── OPEN PAYMENT (ORDER SUMMARY) ─────────────────────────────────────────────
+// ─── WALLET STATE ─────────────────────────────────────────────────────────────
+let walletBalance = null;        // integer paise, null until loaded
+let stopWalletListener = null;
+let placingOrder = false;
+let currentOrderAmountPaise = 0;
+
+function updateWalletUI(){
+  const el = document.getElementById('sbWalletBal');
+  if (el) el.textContent = walletBalance == null ? '—' : Wallet.formatINR(walletBalance);
+}
+function startWallet(user){
+  if (stopWalletListener) { stopWalletListener(); stopWalletListener = null; }
+  walletBalance = null; updateWalletUI();
+  if (!user || !window.Wallet) return;
+  try {
+    stopWalletListener = Wallet.listenBalance(user.uid, p => { walletBalance = p; updateWalletUI(); refreshOrderFunds(); },
+      err => console.warn('Wallet balance unavailable:', err));
+  } catch (e) { console.warn('Wallet listener failed:', e); }
+}
+
+// Shows balance / shortfall in the order popup and enables the right button
+function refreshOrderFunds(){
+  const modal = document.getElementById('payModal');
+  if (!modal || !modal.classList.contains('open') || document.getElementById('payStep').style.display === 'none') return;
+  const f = Wallet.checkFunds(walletBalance || 0, currentOrderAmountPaise);
+  const err = document.getElementById('orderError');
+  document.getElementById('moBalance').textContent = Wallet.formatINR(f.balance);
+  document.getElementById('moBalance').style.color = f.ok ? '#fff' : '#ff9a9a';
+  document.getElementById('moAfter').textContent = f.ok ? Wallet.formatINR(f.after) : '—';
+  document.getElementById('placeOrderBtn').style.display = f.ok ? 'flex' : 'none';
+  const add = document.getElementById('addFundsBtn');
+  add.style.display = f.ok ? 'none' : 'flex';
+  add.href = 'payment.html?amount=' + Math.ceil(f.shortfall / 100);
+  if (f.ok) { err.style.display = 'none'; }
+  else {
+    err.innerHTML = '<i class="fas fa-circle-exclamation" style="margin-right:5px"></i><strong>Insufficient fund.</strong> You need ' + Wallet.formatINR(f.shortfall) + ' more to place this order.';
+    err.style.display = 'block';
+  }
+}
+
+// ─── OPEN ORDER SUMMARY ───────────────────────────────────────────────────────
 async function openPaymentModal(){
   const signedInUser = typeof getAuthUser === 'function' ? await getAuthUser() : null;
   if (!signedInUser) {
     alert('Please sign in before placing an order.');
     window.location.href = 'login.html?redirect=index.html#order';
     return;
-  }
-  if (typeof getStoreSettings === 'function') {
-    try {
-      const settings = await getStoreSettings();
-      if (settings.upiId) UPI_ID = settings.upiId.trim();
-    } catch (error) {
-      console.warn('Could not refresh UPI settings:', error);
-    }
   }
   if(!curService){alert('Please select a service.');return;}
   const isCommentService = /comment/i.test(curService.name);
@@ -2626,11 +2422,12 @@ async function openPaymentModal(){
     alert(`Quantity must be between ${curService.min.toLocaleString()} and ${curService.max.toLocaleString()}.`);return;
   }
 
-  const price=((qty/1000)*curService.rate).toFixed(2);
-  currentOrderAmount = parseFloat(price);
+  currentOrderAmountPaise = Wallet.priceInPaise(qty, curService.rate);
+  if (!Number.isSafeInteger(currentOrderAmountPaise) || currentOrderAmountPaise <= 0) { alert('This service has no valid price. Please choose another.'); return; }
+  currentOrderAmount = currentOrderAmountPaise / 100;
   currentOrderId = 'ASTR'+Date.now().toString().slice(-8);
 
-  document.getElementById('moTotal').textContent='₹'+price;
+  document.getElementById('moTotal').textContent=Wallet.formatINR(currentOrderAmountPaise);
   document.getElementById('moPlatform').textContent=curPlatform.charAt(0).toUpperCase()+curPlatform.slice(1);
   document.getElementById('moService').textContent=curService.id+' - '+curService.name.split('|')[0].trim();
   document.getElementById('moQty').textContent=qty.toLocaleString();
@@ -2646,26 +2443,23 @@ async function openPaymentModal(){
     document.getElementById('moCommentTypeRow').style.display='none';
   }
 
-  document.getElementById('verifyError').style.display='none';
-  document.getElementById('verifyTxn').value='';
-  document.getElementById('verifyOrderId').value=currentOrderId;
-  document.getElementById('verifyAmount').value=price;
-
-  const user = signedInUser;
-  const emailInput = document.getElementById('verifyCustomerEmail');
-  if (emailInput) {
-    if (user && user.email) {
-      emailInput.value = user.email;
-      emailInput.readOnly = true;
-    } else {
-      emailInput.readOnly = false;
-    }
+  // make sure we know the balance (the live listener normally has it already)
+  if (walletBalance == null && typeof db !== 'undefined' && db) {
+    try {
+      const snap = await db.collection('users').doc(signedInUser.uid).get();
+      walletBalance = snap.exists ? (Number((snap.data() || {}).balance) || 0) : 0;
+      updateWalletUI();
+    } catch (e) { walletBalance = 0; }
   }
 
+  placingOrder = false;
   document.getElementById('payStep').style.display='block';
-  document.getElementById('verifyStep').style.display='none';
   document.getElementById('confirmStep').className='confirm-screen';
+  document.getElementById('orderError').style.display='none';
+  const pb = document.getElementById('placeOrderBtn');
+  pb.disabled = false; pb.innerHTML = '<i class="fas fa-wallet"></i> Place Order';
   document.getElementById('payModal').classList.add('open');
+  refreshOrderFunds();
 }
 function closeModal(){
   document.getElementById('payModal').classList.remove('open');
@@ -2674,125 +2468,82 @@ document.getElementById('payModal').addEventListener('click',function(e){
   if(e.target===document.getElementById('payModal')) closeModal();
 });
 
-// ─── DYNAMIC UPI DEEP LINK GENERATOR ──────────────────────────────────────────
-function generateUpiLink(amount){
-  const params = new URLSearchParams({
-    pa: UPI_ID,
-    pn: 'Astropulse',
-    am: Number(amount).toFixed(2),
-    cu: 'INR',
-    tn: 'Astropulse Order ' + currentOrderId
-  });
-  return 'upi://pay?' + params.toString();
-}
-
-// Opens the user's default UPI app via a generic deep link, then surfaces
-// the verification form so they can submit their UTR after paying
-function payViaUpi(){
-  const link = generateUpiLink(currentOrderAmount);
-
-  // Attempt to launch whichever UPI app is installed (works on supported
-  // Android/iOS devices — the OS shows its own app chooser if more than
-  // one UPI app is installed)
-  window.location.href = link;
-
-  // We can't programmatically detect a completed payment without a gateway,
-  // so we bring the user to the verification form automatically a moment
-  // after the redirect attempt — they fill in the UTR once payment is done.
-  setTimeout(showVerifyStep, 1200);
-}
-
-// ─── VERIFICATION STEP ────────────────────────────────────────────────────────
-function showVerifyStep(){
-  document.getElementById('payStep').style.display='none';
-  document.getElementById('verifyStep').style.display='block';
-}
-function backToPayStep(){
-  document.getElementById('verifyStep').style.display='none';
-  document.getElementById('payStep').style.display='block';
-}
-
-// ─── SUBMIT VERIFICATION → EMAILJS → SHOW CONFIRMATION ──────────────────────
-function submitVerification(){
-  const txn  = document.getElementById('verifyTxn').value.trim();
-  const errEl = document.getElementById('verifyError');
-
+// ─── PLACE ORDER (pays from wallet, atomic) ───────────────────────────────────
+async function placeOrder(){
+  if (placingOrder) return;
+  const errEl = document.getElementById('orderError');
   const user = (typeof auth !== 'undefined' && auth) ? auth.currentUser : null;
-  const emailInput = document.getElementById('verifyCustomerEmail');
-  const userEmail = (user && user.email) ? user.email : (emailInput ? emailInput.value.trim() : '');
+  if (!user) { window.location.href = 'login.html?redirect=index.html#order'; return; }
 
-  if(!userEmail){errEl.textContent='Please enter your email address for order updates.';errEl.style.display='block';return;}
-  if(!txn){errEl.textContent='Please enter your Transaction / UTR ID.';errEl.style.display='block';return;}
-  if(!window.emailjs){errEl.textContent='Email service failed to load. Please refresh and try again.';errEl.style.display='block';return;}
-  errEl.style.display='none';
+  const f = Wallet.checkFunds(walletBalance || 0, currentOrderAmountPaise);
+  if (!f.ok) { refreshOrderFunds(); return; }
 
-  const link=document.getElementById('linkInput').value.trim();
-  const qty=parseInt(document.getElementById('qtyInput').value)||0;
-  const price=currentOrderAmount.toFixed(2);
-
-  const btn = document.getElementById('verifySubmitBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
-
-  // Order + payment details are only sent now, after verification submission
+  const link = document.getElementById('linkInput').value.trim();
+  const qty  = parseInt(document.getElementById('qtyInput').value) || 0;
+  const platformName = curPlatform.charAt(0).toUpperCase() + curPlatform.slice(1);
   const commentTypeText = /comment/i.test(curService.name)
     ? (curCommentType==='custom' ? `Custom — "${curCustomComment}"` : (COMMENT_TYPE_LABELS[curCommentType]||'—'))
     : '';
 
-  // Save order to Cloud Firestore (Free Tier)
-  const orderDoc = {
-    orderId:          currentOrderId,
-    userId:           user.uid,
-    userEmail:        userEmail,
-    userName:         user ? (user.displayName || user.email.split('@')[0]) : userEmail.split('@')[0],
-    platform:         curPlatform.charAt(0).toUpperCase() + curPlatform.slice(1),
-    service:          curService.name,
-    serviceId:        curService.id,
-    refill:           curService.refill || '',
-    quantity:         qty,
-    link:             link,
-    amountPaid:       '₹' + price,
-    utrTransactionId: txn,
-    commentType:      commentTypeText,
-    status:           'pending'
-  };
+  placingOrder = true;
+  const btn = document.getElementById('placeOrderBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing order…';
+  errEl.style.display = 'none';
 
-  if (typeof saveOrderToFirestore === 'function') {
-    saveOrderToFirestore(orderDoc).catch(e => console.warn("Firestore error:", e));
+  try {
+    const res = await Wallet.placeWalletOrder({
+      user,
+      amountPaise: currentOrderAmountPaise,
+      orderData: {
+        orderId:     currentOrderId,
+        userEmail:   user.email || '',
+        userName:    user.displayName || (user.email ? user.email.split('@')[0] : 'User'),
+        platform:    platformName,
+        service:     curService.name,
+        serviceId:   curService.id,
+        refill:      curService.refill || '',
+        quantity:    qty,
+        link:        link,
+        commentType: commentTypeText
+      }
+    });
+
+    const price = Wallet.formatINR(currentOrderAmountPaise);
+    document.getElementById('confOrderId').textContent  = currentOrderId;
+    document.getElementById('confPlatform').textContent = platformName;
+    document.getElementById('confService').textContent  = curService.name.split('|')[0].trim();
+    document.getElementById('confQty').textContent      = qty.toLocaleString();
+    document.getElementById('confLink').textContent     = link;
+    document.getElementById('confAmount').textContent   = price;
+    document.getElementById('confTxn').textContent      = 'Wallet';
+    const after = res.balanceAfter != null ? res.balanceAfter : walletBalance;
+    document.getElementById('confBalance').textContent  = after == null ? '—' : Wallet.formatINR(after);
+    document.getElementById('payStep').style.display    = 'none';
+    document.getElementById('confirmStep').className    = 'confirm-screen active';
+
+    // Owner notification email — a failure here never affects the order
+    if (window.emailjs) {
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        order_id: currentOrderId, platform: platformName,
+        service: curService.name.split('|')[0].trim(), quantity: qty.toLocaleString(),
+        link: link, amount_paid: price, utr_transaction_id: 'PAID FROM WALLET',
+        comment_type: commentTypeText, customer_email: user.email || ''
+      }).catch(e => console.warn('Order email not sent:', e));
+    }
+  } catch (e) {
+    console.error('Order failed:', e);
+    placingOrder = false;
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-wallet"></i> Place Order';
+    if (e.code === 'insufficient') {
+      walletBalance = e.balance != null ? e.balance : walletBalance;
+      refreshOrderFunds();
+    } else {
+      errEl.textContent = e.code === 'permission-denied'
+        ? 'Order could not be saved. Please contact support (wallet rules not deployed).'
+        : (e.message || 'Could not place the order. Please try again.');
+      errEl.style.display = 'block';
+    }
   }
-
-  const templateParams = {
-    order_id: currentOrderId,
-    platform: curPlatform.charAt(0).toUpperCase()+curPlatform.slice(1),
-    service: curService.name.split('|')[0].trim(),
-    quantity: qty.toLocaleString(),
-    link: link,
-    amount_paid: '₹'+price,
-    utr_transaction_id: txn,
-    comment_type: commentTypeText,
-    customer_email: userEmail
-  };
-
-  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
-  .then(() => {
-    document.getElementById('confOrderId').textContent=currentOrderId;
-    document.getElementById('confPlatform').textContent=curPlatform.charAt(0).toUpperCase()+curPlatform.slice(1);
-    document.getElementById('confService').textContent=curService.name.split('|')[0].trim();
-    document.getElementById('confQty').textContent=qty.toLocaleString();
-    document.getElementById('confLink').textContent=link;
-    document.getElementById('confAmount').textContent='₹'+price;
-    document.getElementById('confTxn').textContent=txn;
-    document.getElementById('verifyStep').style.display='none';
-    document.getElementById('confirmStep').className='confirm-screen active';
-  })
-  .catch(() => {
-    errEl.textContent='Could not submit your verification. Please check your connection and try again.';
-    errEl.style.display='block';
-  })
-  .finally(() => {
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit & Confirm Order';
-  });
 }
 
 // ─── TRACK ORDER ─────────────────────────────────────────────────────────────
@@ -2890,7 +2641,6 @@ async function trackOrder(){
 
 function resetAll(){
   closeModal();
-  document.getElementById('verifyStep').style.display='none';
   curService=null;
   document.getElementById('selId').textContent='—';
   document.getElementById('selName').textContent='Select a service...'; document.getElementById('selName').classList.add('is-placeholder');
@@ -3364,6 +3114,7 @@ if (typeof auth !== 'undefined' && auth) {
     document.body.classList.remove('auth-pending');
     renderAuthUI(user);                       // UI first, so a data error can never leave it half-updated
     try { startOrderHistory(user); } catch (e) { console.warn('Order history failed:', e); }
+    try { startWallet(user); } catch (e) { console.warn('Wallet failed:', e); }
   });
 }
 
