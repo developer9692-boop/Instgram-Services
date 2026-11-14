@@ -7,6 +7,7 @@
 <title>ASTROPULSE SMM PANEL</title>
 <meta name="description" content="Astropulse is India's trusted SMM panel — fast, safe and affordable Instagram, YouTube, Telegram and Facebook growth services. Pay with UPI, track every order, refill on eligible services.">
 <meta name="theme-color" content="#E8000D">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="format-detection" content="telephone=no, email=no, address=no">
 <link rel="canonical" href="https://astropulsesmm.vercel.app/">
 <link rel="apple-touch-icon" href="favicon.png">
@@ -1412,6 +1413,10 @@ body.auth-pending #navLoginBtn,body.auth-pending #sbLoginLink{visibility:hidden}
       <i class="fas fa-wallet"></i>
       <span>Add Funds</span>
     </a>
+    <button class="sidebar-item" onclick="openApiModal()">
+      <i class="fas fa-code"></i>
+      <span>API</span>
+    </button>
     <a href="#order" class="sidebar-item" onclick="closeSidebar()">
       <i class="fas fa-shopping-cart"></i>
       <span>Order Services</span>
@@ -1766,6 +1771,118 @@ document.getElementById('refillModal').addEventListener('click', function(event)
 });
 </script>
 
+<!-- RESELLER API MODAL -->
+<div class="modal-overlay" id="apiModal">
+  <div class="modal-sheet history-modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="history-modal-title"><i class="fas fa-code"></i> Astropulse API</div>
+    <div class="history-modal-sub">Connect your own SMM panel to Astropulse. Orders are paid from your wallet and sent to us automatically.</div>
+    <div class="txn-section">
+      <div class="txn-label">API URL</div>
+      <div style="display:flex;gap:8px"><input type="text" class="f-input" id="apiUrlField" readonly><button type="button" class="modal-btn secondary" style="width:48px;margin:0;padding:0" onclick="copyApiField('apiUrlField')" aria-label="Copy API URL"><i class="fas fa-copy"></i></button></div>
+    </div>
+    <div class="txn-section">
+      <div class="txn-label">Your API Key</div>
+      <div style="display:flex;gap:8px"><input type="text" class="f-input" id="apiKeyField" readonly autocomplete="off" spellcheck="false" placeholder="Loading…"><button type="button" class="modal-btn secondary" id="apiCopyBtn" style="width:48px;margin:0;padding:0;display:none" onclick="copyApiField('apiKeyField')" aria-label="Copy API key"><i class="fas fa-copy"></i></button></div>
+      <div id="apiKeyNote" style="font-size:.75rem;color:#9aa3bf;margin-top:8px;line-height:1.5"></div>
+      <div id="apiError" style="color:#ff8a8a;font-size:.75rem;margin-top:8px;display:none"></div>
+    </div>
+    <button class="modal-btn" id="apiGenBtn" type="button" onclick="generateApiKey()"><i class="fas fa-key"></i> Create API Key</button>
+    <button class="modal-btn secondary" id="apiRevokeBtn" type="button" style="display:none" onclick="revokeApiKey()"><i class="fas fa-ban"></i> Delete API Key</button>
+    <div style="background:#252d45;border:1px solid #3a4060;border-radius:10px;padding:11px 13px;margin:6px 0 14px;font-size:.76rem;color:#9aa3bf;line-height:1.7">
+      <strong style="color:#fff">How to connect</strong><br>
+      1. Create your API key above and copy it.<br>
+      2. In your SMM panel, add a new provider with the API URL and key.<br>
+      3. Import our services and set your own prices.<br>
+      Each order is paid from your Astropulse wallet. With enough balance it goes straight through; otherwise it fails and nothing is charged. Keep your key private: it works like a password.
+    </div>
+    <button class="modal-btn secondary" type="button" onclick="closeApiModal()">Close</button>
+  </div>
+</div>
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  let base = null, busy = false;
+
+  const siteOrigin = () => /^https?:$/.test(location.protocol) ? location.origin : 'https://astropulsesmm.vercel.app';
+  async function apiBase(){
+    if (base !== null) return base;
+    let u = (window.ASTRO_API_BASE || '').replace(/\/+$/, '');
+    if (typeof db !== 'undefined' && db) {
+      try {
+        const c = await db.collection('settings').doc('backendConfig').get();
+        const x = c.exists ? String((c.data() || {}).url || '').trim().replace(/\/+$/, '') : '';
+        if (x) u = x;
+      } catch (e) {}
+    }
+    return base = u || siteOrigin();
+  }
+  async function call(method){
+    const user = (typeof auth !== 'undefined' && auth) ? auth.currentUser : null;
+    if (!user) throw new Error('Please sign in first.');
+    const token = await user.getIdToken();
+    const r = await fetch((await apiBase()) + '/api/user/api-key', { method, headers: { Authorization: 'Bearer ' + token } });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || 'Something went wrong. Please try again.');
+    return d;
+  }
+  function showErr(m){ const e = $('apiError'); e.textContent = m || ''; e.style.display = m ? 'block' : 'none'; }
+  function view(state, fresh){
+    const has = !!(state && state.exists);
+    const f = $('apiKeyField');
+    f.value = fresh ? fresh : (has ? 'ap_' + '•'.repeat(20) + (state.hint || '') : '');
+    f.placeholder = 'No API key yet';
+    $('apiCopyBtn').style.display = fresh ? 'flex' : 'none';
+    $('apiGenBtn').innerHTML = has ? '<i class="fas fa-rotate"></i> Generate New Key' : '<i class="fas fa-key"></i> Create API Key';
+    $('apiRevokeBtn').style.display = has ? 'flex' : 'none';
+    $('apiKeyNote').innerHTML = fresh
+      ? '<span style="color:#f5b041"><i class="fas fa-triangle-exclamation"></i> Copy this key now. For your security it is shown only once and cannot be viewed again.</span>'
+      : has ? 'Your key is hidden for security.' + (state.lastUsedAt ? ' Last used ' + new Date(state.lastUsedAt).toLocaleString('en-IN') + '.' : ' Not used yet.') + ' Lost it? Generate a new one; the old key stops working immediately.'
+            : 'Create a key to connect your SMM panel.';
+  }
+  window.getAstroApiBase = apiBase;
+  window.openApiModal = async function(){
+    closeSidebar();
+    if (typeof auth === 'undefined' || !auth || !auth.currentUser) {
+      alert('Please sign in to create your API key.');
+      window.location.href = 'login.html?redirect=index.html';
+      return;
+    }
+    showErr(''); view(null); $('apiKeyField').placeholder = 'Loading…';
+    $('apiUrlField').value = siteOrigin() + '/api/v2';
+    $('apiModal').classList.add('open');
+    try { view(await call('GET')); } catch (e) { view(null); showErr(e.message); }
+  };
+  window.closeApiModal = function(){
+    $('apiModal').classList.remove('open');
+    $('apiKeyField').value = '';                 // a freshly created key never stays in the page
+  };
+  window.generateApiKey = async function(){
+    if (busy) return;
+    if ($('apiRevokeBtn').style.display !== 'none' && !confirm('Generate a new key? Your current key will stop working immediately.')) return;
+    busy = true; showErr('');
+    const b = $('apiGenBtn'), old = b.innerHTML; b.disabled = true; b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating…';
+    try { const d = await call('POST'); view({ exists: true, hint: d.hint }, d.key); }
+    catch (e) { showErr(e.message); b.innerHTML = old; }
+    finally { busy = false; b.disabled = false; }
+  };
+  window.revokeApiKey = async function(){
+    if (busy || !confirm('Delete your API key? Panels using it will stop working.')) return;
+    busy = true; showErr('');
+    try { await call('DELETE'); view({ exists: false }); }
+    catch (e) { showErr(e.message); }
+    finally { busy = false; }
+  };
+  window.copyApiField = function(id){
+    const v = $(id).value; if (!v) return;
+    const done = () => { const n = $('apiKeyNote'); if (id === 'apiKeyField') n.innerHTML = '<span style="color:#2ecc71"><i class="fas fa-check"></i> Key copied. Paste it into your SMM panel now.</span>'; };
+    if (navigator.clipboard) navigator.clipboard.writeText(v).then(done).catch(() => { $(id).select(); document.execCommand('copy'); done(); });
+    else { $(id).select(); document.execCommand('copy'); done(); }
+  };
+  $('apiModal').addEventListener('click', e => { if (e.target === $('apiModal')) closeApiModal(); });
+})();
+</script>
+
 <!-- TESTIMONIALS -->
 <div class="testi-section">
   <h2><i class="fas fa-quote-left" style="color:#E8000D;font-size:0.85rem"></i> What Customers Say</h2>
@@ -1865,6 +1982,189 @@ document.getElementById('refillModal').addEventListener('click', function(event)
   <div id="faqList"></div>
 </div>
 
+<!-- API DOCUMENTATION -->
+<style>
+.doc-card{margin:12px;background:#1e2438;border-radius:16px;padding:18px 16px;color:#b4bcd6;font-size:.82rem;line-height:1.7}
+.doc-card h2{font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.doc-card h3{font-size:.86rem;font-weight:700;color:#fff;margin:16px 0 4px}
+.doc-card p,.doc-card li{color:#b4bcd6}.doc-card ul{margin:4px 0 4px 18px}.doc-card a{color:#7db4ff}
+.doc-card .doc-meta{font-size:.72rem;color:#8791ad;margin-bottom:10px}
+.doc-code{background:#151a2c;border:1px solid #2f3652;border-radius:10px;padding:10px 12px;margin:6px 0;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.74rem;color:#e7ecff;overflow-x:auto;white-space:pre;word-break:normal}
+.doc-tbl{width:100%;border-collapse:collapse;margin:6px 0;font-size:.76rem}
+.doc-tbl th,.doc-tbl td{border-bottom:1px solid #2a3050;padding:6px 8px;text-align:left;vertical-align:top}
+.doc-tbl th{color:#fff;font-weight:600}.doc-tbl code,.doc-card code{color:#ffb3b8;font-family:ui-monospace,Menlo,Consolas,monospace}
+.doc-scroll{overflow-x:auto}
+.doc-pill{display:inline-block;background:#252d45;border:1px solid #3a4060;border-radius:999px;padding:2px 10px;font-size:.7rem;color:#fff;margin-right:4px}
+.cookie-bar{position:fixed;left:12px;right:12px;bottom:12px;max-width:520px;margin:auto;z-index:9000;background:#1e2438;color:#d6dcf0;border:1px solid #3a4060;border-radius:14px;padding:12px 14px;font-size:.76rem;line-height:1.5;display:none;gap:12px;align-items:center;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.cookie-bar.show{display:flex}.cookie-bar a{color:#7db4ff}
+.cookie-bar button{background:#E8000D;color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:700;font-size:.78rem;cursor:pointer;flex-shrink:0;font-family:inherit}
+</style>
+
+<section class="doc-card" id="api" aria-labelledby="apiDocTitle">
+  <h2 id="apiDocTitle"><i class="fas fa-code" style="color:#E8000D"></i> Astropulse API for Resellers</h2>
+  <div class="doc-meta">Standard SMM panel API v2 · INR · Pay from your wallet</div>
+  <p>Run your own SMM panel? Add Astropulse as a provider and resell our services. Create your personal key from <strong>Menu → API</strong> (sign-in required). The key is shown only once, so keep it private like a password.</p>
+
+  <h3>Endpoint</h3>
+  <div class="doc-code">POST <span id="apiDocUrl">/api/v2</span>
+Content-Type: application/x-www-form-urlencoded</div>
+  <p>Every request needs <code>key</code> (your API key) and <code>action</code>. Responses are JSON. Send the key in the request body only, never in a URL.</p>
+
+  <h3>Actions</h3>
+  <div class="doc-scroll"><table class="doc-tbl">
+    <tr><th>action</th><th>Parameters</th><th>Returns</th></tr>
+    <tr><td><code>services</code></td><td>none</td><td>List of services: <code>service, name, type, category, rate, min, max</code>. <code>rate</code> is ₹ per 1000.</td></tr>
+    <tr><td><code>balance</code></td><td>none</td><td><code>{"balance":"250.00","currency":"INR"}</code></td></tr>
+    <tr><td><code>add</code></td><td><code>service</code>, <code>link</code>, <code>quantity</code> (or <code>comments</code>, one per line)</td><td><code>{"order":"ASTR12345678"}</code></td></tr>
+    <tr><td><code>status</code></td><td><code>order</code>, or <code>orders</code> (comma-separated, max 100)</td><td><code>charge, start_count, status, remains, currency</code></td></tr>
+  </table></div>
+
+  <h3>Example</h3>
+  <div class="doc-code">curl -X POST "<span class="apiDocUrlCopy">/api/v2</span>" \
+  -d "key=YOUR_API_KEY" -d "action=add" \
+  -d "service=1001" -d "link=https://example.com/your-link" -d "quantity=1000"</div>
+  <div class="doc-code">{"order":"ASTR12345678"}</div>
+
+  <h3>How orders are paid</h3>
+  <ul>
+    <li>The price is charged from your Astropulse wallet when the order is placed. <a href="payment.html">Add funds</a> first.</li>
+    <li>Enough balance: the order is accepted and processed right away.</li>
+    <li>Not enough balance: the order fails with <code>Not enough funds</code> and nothing is charged.</li>
+    <li>If we cannot place an order, your wallet is refunded automatically. Cancelled and partial orders are refunded when you check their status.</li>
+  </ul>
+
+  <h3>Errors</h3>
+  <div class="doc-code">{"error":"Invalid API key"}
+{"error":"Not enough funds. Add funds to your Astropulse wallet."}
+{"error":"Quantity must be between 100 and 10000"}</div>
+
+  <h3>Limits and rules</h3>
+  <ul>
+    <li><span class="doc-pill">60</span> requests per minute and <span class="doc-pill">30</span> orders per minute per key.</li>
+    <li>You can only see your own orders.</li>
+    <li>You are responsible for everything ordered with your key and for what your own customers order. Delete or regenerate the key at once if you think it has leaked.</li>
+    <li>Orders for unlawful content or links are not allowed (see Terms of Service). We may suspend keys that break the rules.</li>
+  </ul>
+</section>
+
+<!-- PRIVACY POLICY -->
+<section class="doc-card" id="privacy" aria-labelledby="privTitle">
+  <h2 id="privTitle"><i class="fas fa-shield-halved" style="color:#E8000D"></i> Privacy Policy</h2>
+  <div class="doc-meta">Last updated: 14 November 2026 · Applies to astropulsesmm and the Astropulse API</div>
+  <p>Astropulse ("we", "us") runs an online social media growth service for customers in India. This policy explains what personal data we collect, why, and the choices you have. It is written to follow the Digital Personal Data Protection Act, 2023, the Information Technology Act, 2000 and the rules under it. By creating an account or placing an order you agree to this policy.</p>
+
+  <h3>1. Data we collect</h3>
+  <ul>
+    <li><strong>Account:</strong> your name and email address (from email sign-up or Google sign-in).</li>
+    <li><strong>Orders:</strong> the service, the link or username you submit, quantity, price, order ID and status.</li>
+    <li><strong>Wallet and payments:</strong> top-up amount, payment ID, UPI transaction (UTR) number, wallet balance and ledger entries. Payments are made in your own UPI app. We never see or store your UPI PIN, card numbers or bank passwords.</li>
+    <li><strong>API use:</strong> if you create an API key we store a one-way hash of it, its last 4 characters and when it was last used. We cannot read your key.</li>
+    <li><strong>Technical data:</strong> device, browser, operating system and IP address, used for security and fraud prevention.</li>
+    <li><strong>Messages:</strong> what you send to our support or chatbot.</li>
+  </ul>
+
+  <h3>2. Why we use it</h3>
+  <ul>
+    <li>To create your account, run your wallet, deliver and track orders and give refunds.</li>
+    <li>To verify payments and prevent fraud, abuse and duplicate payments.</li>
+    <li>To answer support requests and send order notifications.</li>
+    <li>To follow Indian law, including tax, accounting and lawful requests from authorities.</li>
+  </ul>
+  <p>We use your data only for these purposes and on the basis of your consent or a legitimate legal use. We do not sell your personal data and we do not send marketing messages without your permission.</p>
+
+  <h3>3. Who we share it with</h3>
+  <ul>
+    <li><strong>Service providers</strong> that run the site for us: Google Firebase (sign-in and database), our web hosting provider, and EmailJS (order notification emails). They process data only on our instructions.</li>
+    <li><strong>Fulfilment suppliers:</strong> to deliver an order we pass on only the link, service and quantity. Your name, email and payment details are not shared.</li>
+    <li><strong>Authorities:</strong> when the law requires it, or to protect rights and safety, for example a valid order from a court or government agency.</li>
+  </ul>
+
+  <h3>4. Cookies and local storage</h3>
+  <p>We use only essential browser storage to keep you signed in, remember your cart and settings, and keep the site secure. We do not use advertising or cross-site tracking cookies.</p>
+
+  <h3>5. Security</h3>
+  <p>The site uses HTTPS. Access to data is limited, API keys are stored only as hashes, wallet changes are recorded in a protected ledger, and requests are rate-limited. No system is perfectly secure. Please use a strong password, keep your API key private and tell us at once if you notice anything suspicious.</p>
+
+  <h3>6. How long we keep data</h3>
+  <p>We keep account and order data while your account is active. Payment and wallet records are kept for as long as accounting, tax and other laws require, and as needed to settle disputes. After that we delete or anonymise them.</p>
+
+  <h3>7. Your rights</h3>
+  <p>Under the DPDP Act you may ask us to show what data we hold about you, correct it, erase it (except where the law requires us to keep it), withdraw your consent, and nominate someone to exercise these rights for you. Write to the Grievance Officer below. If you are not satisfied with our reply you may complain to the Data Protection Board of India.</p>
+
+  <h3>8. Children</h3>
+  <p>Our service is for people aged 18 and over. We do not knowingly collect data from children. If you believe a child has given us data, contact us and we will delete it.</p>
+
+  <h3>9. Data stored outside India</h3>
+  <p>Our service providers may store or process data on servers outside India. We use providers that apply strong security safeguards and we follow the rules that apply to such transfers.</p>
+
+  <h3>10. Changes</h3>
+  <p>We may update this policy. The date at the top shows the latest version. If a change is significant we will show a notice on the site.</p>
+
+  <h3>11. Grievance Officer and contact</h3>
+  <p>Grievance Officer: Astropulse Support<br>
+  Email: <a href="mailto:astropulsesmmpanel@gmail.com">astropulsesmmpanel@gmail.com</a><br>
+  <span id="legalBizLine"></span>
+  We acknowledge complaints within 48 hours and aim to resolve them within one month.</p>
+</section>
+
+<!-- TERMS OF SERVICE -->
+<section class="doc-card" id="terms" aria-labelledby="termsTitle">
+  <h2 id="termsTitle"><i class="fas fa-file-contract" style="color:#E8000D"></i> Terms of Service</h2>
+  <div class="doc-meta">Last updated: 14 November 2026</div>
+
+  <h3>1. Using Astropulse</h3>
+  <p>You must be 18 or older and legally able to enter a contract in India. You are responsible for your account, your password and your API key, and for all activity under them. Give us true information.</p>
+
+  <h3>2. Orders and delivery</h3>
+  <p>Start times, speed and results shown for a service are estimates, not guarantees. Make sure your profile or post is public and the link is correct before ordering. Orders cannot be changed after they start. Wallet money, refunds and refills are handled as described in the Refund &amp; Refill Policy on this page.</p>
+
+  <h3>3. What you must not do</h3>
+  <ul>
+    <li>Order for, or link to, content that is illegal in India or that breaks the Information Technology Act, 2000 or its rules. This includes content that threatens the sovereignty or security of India, incites violence or hatred, terrorism, child sexual abuse material, obscene material, defamation, harassment, impersonation, fraud, illegal betting or gambling, and counterfeit or banned goods.</li>
+    <li>Use the service for money laundering, scams or any other unlawful activity.</li>
+    <li>Attack, probe, overload or reverse-engineer the site or the API, or share your API key.</li>
+    <li>Use another person's payment details or account.</li>
+  </ul>
+  <p>We may refuse or cancel any order, suspend or close an account or API key, and report unlawful activity to the authorities. Where an order is cancelled for breaking these rules, we may keep amounts needed to cover our costs, as far as the law allows.</p>
+
+  <h3>4. API use</h3>
+  <p>API resellers must follow these Terms, are responsible for their own customers' orders, and must respect the rate limits. We may change or stop API features with notice where reasonably possible.</p>
+
+  <h3>5. Third-party platforms</h3>
+  <p>Astropulse is an independent service. We are not affiliated with, endorsed by or sponsored by Instagram, Meta, YouTube, Google, Telegram or any other platform. Using growth services may go against a platform's own rules and could lead to action on your account. You use the service at your own risk.</p>
+
+  <h3>6. Liability</h3>
+  <p>We provide the service with reasonable care but cannot promise it will always be available or error free. To the extent the law allows, our liability for any claim is limited to the amount you paid for the order concerned. Nothing here limits rights you have under Indian consumer law that cannot be waived.</p>
+
+  <h3>7. Changes, law and disputes</h3>
+  <p>We may update these Terms and will show the new date above. Continued use means you accept them. These Terms are governed by the laws of India, and courts in India have jurisdiction. Please contact our Grievance Officer first so we can try to resolve your concern.</p>
+</section>
+
+<div class="cookie-bar" id="cookieBar" role="dialog" aria-label="Privacy notice">
+  <span>We use only essential storage to keep you signed in and the site secure. See our <a href="#privacy">Privacy Policy</a>.</span>
+  <button type="button" id="cookieOk">Got it</button>
+</div>
+<script>
+(function(){
+  // Optional business details for the Privacy Policy. Fill these in (legal name, registered address) when you have them.
+  var LEGAL = { name: '', address: '' };
+  var line = document.getElementById('legalBizLine');
+  if (line && (LEGAL.name || LEGAL.address)) line.innerHTML = [LEGAL.name, LEGAL.address].filter(Boolean).join(', ') + '<br>';
+  var bar = document.getElementById('cookieBar'), seen = false;
+  try { seen = localStorage.getItem('astroNoticeSeen') === '1'; } catch (e) {}
+  if (!seen && bar) bar.classList.add('show');
+  var ok = document.getElementById('cookieOk');
+  if (ok) ok.addEventListener('click', function(){ bar.classList.remove('show'); try { localStorage.setItem('astroNoticeSeen', '1'); } catch (e) {} });
+  // show the real API URL in the docs
+  var fill = function(base){
+    var u = (/^https?:$/.test(location.protocol) ? location.origin : 'https://astropulsesmm.vercel.app') + '/api/v2';
+    var a = document.getElementById('apiDocUrl'); if (a) a.textContent = u;
+    document.querySelectorAll('.apiDocUrlCopy').forEach(function(n){ n.textContent = u; });
+  };
+  fill();
+})();
+</script>
+
 <!-- FOOTER -->
 <div class="footer">
   <div class="footer-logo">
@@ -1873,7 +2173,10 @@ document.getElementById('refillModal').addEventListener('click', function(event)
   <div class="footer-links">
     <a href="#about" class="footer-link">About</a>
     <a href="#order" class="footer-link">Order</a>
-    <a href="https://t.me/astropulsesmmsupport" target="_blank" class="footer-link">Telegram</a>
+    <a href="#api" class="footer-link">API</a>
+    <a href="#privacy" class="footer-link">Privacy Policy</a>
+    <a href="#terms" class="footer-link">Terms</a>
+    <a href="https://t.me/astropulsesmmsupport" target="_blank" rel="noopener noreferrer" class="footer-link">Telegram</a>
     <button type="button" class="footer-link" onclick="window.location.href='chatbot.html';return false" style="background:none;border:none;cursor:pointer;font-family:inherit">AI Chatbot</button>
     <a href="mailto:astropulsesmmpanel@gmail.com" class="footer-link">Email</a>
   </div>
