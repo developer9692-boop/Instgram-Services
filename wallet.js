@@ -142,22 +142,28 @@
     const E = env();
     const cleanUtr = normalizeUtr(utr);
 
-    // Same user sending the same UTR twice while one is open
-    const mine = await E.db.collection('fundRequests').where('userId', '==', user.uid).get();
-    if (mine.docs.some(d => { const r = d.data(); return r.utr === cleanUtr && r.status !== 'rejected'; })) {
-      throw fail('duplicate', 'You already submitted this Transaction ID.');
-    }
-    const ref = await E.db.collection('fundRequests').add({
-      userId: user.uid,
-      userEmail: user.email || '',
-      userName: user.displayName || (user.email ? user.email.split('@')[0] : 'User'),
-      amount: amountPaise,
-      paymentId: paymentId,
-      utr: cleanUtr,
-      status: 'pending',
-      createdAt: E.now()
+    // A Transaction ID can be used for ONE payment only. The claim document is created together with
+    // the request in one atomic step, so two people (or two tabs) can never use the same UTR.
+    const claimRef = E.db.collection('utrClaims').doc(cleanUtr);
+    const reqRef = E.db.collection('fundRequests').doc();
+    await E.db.runTransaction(async (tx) => {
+      const claim = await tx.get(claimRef);
+      if (claim.exists) {
+        throw fail('utr-used', 'This Transaction ID is already used. Please make another payment to process your request.');
+      }
+      tx.set(claimRef, { userId: user.uid, requestId: reqRef.id, createdAt: E.now() });
+      tx.set(reqRef, {
+        userId: user.uid,
+        userEmail: user.email || '',
+        userName: user.displayName || (user.email ? user.email.split('@')[0] : 'User'),
+        amount: amountPaise,
+        paymentId: paymentId,
+        utr: cleanUtr,
+        status: 'pending',
+        createdAt: E.now()
+      });
     });
-    return { id: ref.id };
+    return { id: reqRef.id };
   }
 
   // ── Admin: approve a fund request (credits the wallet, once) ────────────────
@@ -203,6 +209,10 @@
       const snap = await tx.get(reqRef);
       if (!snap.exists) throw fail('missing', 'Request not found.');
       if (snap.data().status !== 'pending') throw fail('state', 'This request was already ' + snap.data().status + '.');
+      // free the Transaction ID so the customer can resubmit it correctly
+      const claimRef = E.db.collection('utrClaims').doc(normalizeUtr(snap.data().utr));
+      const claim = await tx.get(claimRef);
+      if (claim.exists && claim.data().requestId === requestId) tx.delete(claimRef);
       tx.update(reqRef, { status: 'rejected', reviewedBy: adminEmail || 'admin', reviewedAt: E.now(), rejectReason: String(reason || '').slice(0, 200) });
       return true;
     });
