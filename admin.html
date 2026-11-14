@@ -274,6 +274,21 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
 .brow .brate{text-align:right;font-size:.74rem;white-space:nowrap}.brow .brate b{color:var(--pulse)}
 .bmodal-foot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--line);background:var(--surface)}
 .bmodal-foot .manage-submit{margin-top:0}
+
+/* admin sub-pages */
+.nav-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.nav-card{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:14px;text-decoration:none;color:var(--text);position:relative;transition:transform .15s,box-shadow .15s,border-color .15s}
+.nav-card:hover{transform:translateY(-2px);border-color:var(--pulse);box-shadow:0 8px 20px -10px rgba(232,0,13,.25)}
+.nav-icon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0;box-shadow:0 6px 14px -6px rgba(232,0,13,.55)}
+.nav-text{display:flex;flex-direction:column;min-width:0;flex:1}.nav-text strong{font-family:'Space Grotesk',sans-serif;font-size:.95rem}.nav-text small{font-size:.7rem;color:var(--text-dim)}
+.nav-count{min-width:26px;height:26px;padding:0 8px;border-radius:13px;background:var(--surface-2);color:var(--text-dim);font-weight:800;font-size:.78rem;display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+.nav-count.has{background:var(--pulse);color:#fff;border-color:var(--pulse)}
+.page-head{margin-bottom:16px}
+.back-link{display:inline-flex;align-items:center;gap:7px;color:var(--pulse);font-weight:700;font-size:.8rem;text-decoration:none;background:var(--surface-2);border:1.5px solid var(--line);padding:7px 12px;border-radius:10px;margin-bottom:12px;transition:.15s}
+.back-link:hover{border-color:var(--pulse)}
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:800;display:flex;align-items:center;gap:10px}.page-title i{color:var(--pulse)}
+.page-sub{font-size:.8rem;color:var(--text-dim);margin-top:3px}
+@media(max-width:760px){.nav-grid{grid-template-columns:1fr}}
 @keyframes toastIn{
   from{transform:translateY(20px);opacity:0}
   to{transform:translateY(0);opacity:1}
@@ -320,6 +335,7 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
   <!-- 2. ADMIN MAIN DASHBOARD (Shown only to authorized admin) -->
   <div id="adminDashboard" style="display:none">
 
+    <div class="admin-page" id="viewHome">
     <!-- STATS -->
     <div class="stats-grid">
       <div class="stat-card">
@@ -439,11 +455,48 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
       <div class="service-list" id="serviceList"></div>
     </section>
 
-    <section class="refill-card">
-      <h3><i class="fas fa-arrows-rotate" style="color:var(--pulse)"></i> Refill Requests</h3>
-      <div class="refill-list" id="refillRequestsList"><p style="color:var(--text-dim);font-size:.82rem">No refill requests.</p></div>
-    </section>
+    <!-- QUICK PAGES -->
+    <div class="nav-grid">
+      <a href="#paymentrequest" class="nav-card" onclick="showView('paymentrequest');return false">
+        <span class="nav-icon"><i class="fas fa-wallet"></i></span>
+        <span class="nav-text"><strong>Fund Requests</strong><small>Wallet payments to approve</small></span>
+        <span class="nav-count" id="navFundCount">0</span>
+      </a>
+      <a href="#orderrequest" class="nav-card" onclick="showView('orderrequest');return false">
+        <span class="nav-icon"><i class="fas fa-cart-shopping"></i></span>
+        <span class="nav-text"><strong>Order Requests</strong><small>Customer orders &amp; status</small></span>
+        <span class="nav-count" id="navOrderCount">0</span>
+      </a>
+      <a href="#refillrequest" class="nav-card" onclick="showView('refillrequest');return false">
+        <span class="nav-icon"><i class="fas fa-arrows-rotate"></i></span>
+        <span class="nav-text"><strong>Refill Requests</strong><small>Refills waiting for review</small></span>
+        <span class="nav-count" id="navRefillCount">0</span>
+      </a>
+    </div>
+    </div><!-- /home -->
 
+    <!-- PAGE: Fund Requests -->
+    <div class="admin-page" id="viewPayment" style="display:none">
+      <div class="page-head">
+        <a href="#" class="back-link" onclick="showView('home');return false"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <div class="page-title"><i class="fas fa-wallet"></i> Fund Requests</div>
+        <div class="page-sub">Approve wallet top-ups after checking the UTR in your bank / UPI app.</div>
+      </div>
+    <section class="refill-card page-card">
+      <h3><i class="fas fa-wallet" style="color:var(--pulse)"></i> Fund Requests <span class="pill off" id="fundPendingPill" style="display:none">0 pending</span></h3>
+      <div class="refill-list" id="fundRequestsList"><p style="color:var(--text-dim);font-size:.82rem">No fund requests.</p></div>
+      <p class="hint" style="margin-top:10px;font-size:.72rem;color:var(--text-dim)">Check the UTR and amount in your bank/UPI app before approving. Approving adds the amount to the customer's wallet once; the same UTR can never be credited twice.</p>
+      <div id="fundHistoryWrap" style="display:none;margin-top:12px"><div style="font-size:.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Recently reviewed</div><div class="refill-list" id="fundHistoryList"></div></div>
+    </section>
+    </div>
+
+    <!-- PAGE: Order Requests -->
+    <div class="admin-page" id="viewOrders" style="display:none">
+      <div class="page-head">
+        <a href="#" class="back-link" onclick="showView('home');return false"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <div class="page-title"><i class="fas fa-cart-shopping"></i> Order Requests</div>
+        <div class="page-sub">All customer orders. Send to provider, complete or decline (wallet orders are refunded on decline).</div>
+      </div>
     <!-- SEARCH & FILTER BAR -->
     <div class="controls-card">
       <div class="search-wrap">
@@ -484,6 +537,21 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
         <h4 style="font-weight:700;margin-bottom:4px">No Orders Found</h4>
         <p style="font-size:0.78rem">No orders match the selected status or search term.</p>
       </div>
+    </div>
+
+    </div>
+
+    <!-- PAGE: Refill Requests -->
+    <div class="admin-page" id="viewRefill" style="display:none">
+      <div class="page-head">
+        <a href="#" class="back-link" onclick="showView('home');return false"><i class="fas fa-arrow-left"></i> Dashboard</a>
+        <div class="page-title"><i class="fas fa-arrows-rotate"></i> Refill Requests</div>
+        <div class="page-sub">Refill requests from customers with completed orders.</div>
+      </div>
+    <section class="refill-card">
+      <h3><i class="fas fa-arrows-rotate" style="color:var(--pulse)"></i> Refill Requests</h3>
+      <div class="refill-list" id="refillRequestsList"><p style="color:var(--text-dim);font-size:.82rem">No refill requests.</p></div>
+    </section>
     </div>
 
   </div><!-- /adminDashboard -->
@@ -531,6 +599,7 @@ table.admin-table tr:hover td{background:rgba(255,255,255,0.7)}
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
+<script src="wallet.js"></script>
 
 <script>
 let allOrders = [];
@@ -538,6 +607,7 @@ let activeFilter = 'all';
 let currentAdminUser = null;
 let unsubscribeOrders = null;
 let unsubscribeRefillRequests = null;
+let unsubscribeFundRequests = null;
 
 // Initialize EmailJS
 if (typeof emailjs !== 'undefined' && EMAILJS_CONFIG.publicKey) {
@@ -584,12 +654,105 @@ if (auth) {
 
     // Start listening to real-time orders from Cloud Firestore
     startOrdersListener();
+    routeFromHash();
     startRefillRequestsListener();
+    startFundRequestsListener();
     loadStoreManagement();
   });
 } else {
   document.getElementById('lockScreen').style.display = 'block';
   document.getElementById('lockMessage').textContent = 'Firebase SDK not initialized. Please configure firebase-config.js.';
+}
+
+
+// ── PAGE ROUTING (admin.html#paymentrequest / #orderrequest / #refillrequest) ──
+const VIEWS = { home: 'viewHome', paymentrequest: 'viewPayment', orderrequest: 'viewOrders', refillrequest: 'viewRefill' };
+function showView(name, fromHash) {
+  if (!VIEWS[name]) name = 'home';
+  Object.keys(VIEWS).forEach(k => { const el = document.getElementById(VIEWS[k]); if (el) el.style.display = k === name ? 'block' : 'none'; });
+  if (!fromHash) {
+    const h = name === 'home' ? location.pathname + location.search : '#' + name;
+    try { history.pushState(null, '', h); } catch (e) { location.hash = name === 'home' ? '' : name; }
+  }
+  window.scrollTo({ top: 0, behavior: 'auto' });
+}
+function routeFromHash() { showView((location.hash || '').replace('#', '').replace(/^\//, '').toLowerCase() || 'home', true); }
+window.addEventListener('hashchange', routeFromHash);
+window.addEventListener('popstate', routeFromHash);
+function setNavCount(id, n) { const el = document.getElementById(id); if (!el) return; el.textContent = n; el.classList.toggle('has', n > 0); }
+
+// ── FUND REQUESTS (wallet top-ups waiting for approval) ─────────────────────
+function startFundRequestsListener() {
+  if (!db) return;
+  if (unsubscribeFundRequests) unsubscribeFundRequests();
+  unsubscribeFundRequests = db.collection('fundRequests')
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(snapshot => {
+      renderFundRequests(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    }, error => {
+      console.error('Fund requests listener error:', error);
+      showToast('Error loading fund requests (deploy firestore.rules)', true);
+    });
+}
+
+function fmtWhen(ts) {
+  return ts && ts.toDate ? ts.toDate().toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : 'Just now';
+}
+
+function renderFundRequests(rows) {
+  const list = document.getElementById('fundRequestsList');
+  const pending = rows.filter(r => (r.status || 'pending') === 'pending');
+  const done = rows.filter(r => r.status === 'approved' || r.status === 'rejected').slice(0, 8);
+
+  const pill = document.getElementById('fundPendingPill');
+  pill.style.display = pending.length ? 'inline-block' : 'none';
+  pill.textContent = pending.length + ' pending';
+  setNavCount('navFundCount', pending.length);
+
+  // how many pending requests share the same UTR (possible fraud / duplicate)
+  const utrCount = {};
+  rows.forEach(r => { if (r.status !== 'rejected') utrCount[r.utr] = (utrCount[r.utr] || 0) + 1; });
+
+  list.innerHTML = pending.length ? pending.map(r => `
+    <div class="refill-row">
+      <div><strong>${Wallet.formatINR(r.amount)}</strong> <span style="font-family:monospace;font-size:.78rem;background:var(--surface-2);padding:1px 6px;border-radius:5px">UTR ${escapeHtml(r.utr)}</span>
+        ${utrCount[r.utr] > 1 ? '<span class="pill off">duplicate UTR</span>' : ''}
+        <small>${escapeHtml(r.userEmail || 'Customer')} · Payment ID ${escapeHtml(r.paymentId || '—')} · ${fmtWhen(r.createdAt)}</small>
+      </div>
+      <div class="refill-actions">
+        <button class="refill-complete" onclick="approveFund('${escapeHtml(r.id)}')"><i class="fas fa-check"></i> Approve</button>
+        <button class="refill-decline" onclick="rejectFund('${escapeHtml(r.id)}')"><i class="fas fa-times"></i> Reject</button>
+      </div>
+    </div>`).join('') : '<p style="color:var(--text-dim);font-size:.82rem">No pending fund requests.</p>';
+
+  const wrap = document.getElementById('fundHistoryWrap');
+  wrap.style.display = done.length ? 'block' : 'none';
+  document.getElementById('fundHistoryList').innerHTML = done.map(r => `
+    <div class="refill-row" style="opacity:.85">
+      <div><strong>${Wallet.formatINR(r.amount)}</strong> <span class="pill ${r.status === 'approved' ? 'on' : 'off'}">${escapeHtml(r.status)}</span>
+        <small>${escapeHtml(r.userEmail || '')} · UTR ${escapeHtml(r.utr)} · by ${escapeHtml(r.reviewedBy || '—')}</small>
+      </div><div></div>
+    </div>`).join('');
+}
+
+async function approveFund(id) {
+  if (!confirm('Approve this payment? The amount will be added to the customer\'s wallet.')) return;
+  try {
+    const r = await Wallet.approveFundRequest(id, currentAdminUser ? currentAdminUser.email : 'admin');
+    showToast('Approved. ' + Wallet.formatINR(r.amount) + ' added. New balance ' + Wallet.formatINR(r.balanceAfter) + '.');
+  } catch (e) {
+    console.error(e);
+    showToast(e.code === 'permission-denied' ? 'Permission denied — deploy the latest firestore.rules.' : e.message, true);
+  }
+}
+
+async function rejectFund(id) {
+  const reason = prompt('Reject this payment request? (optional reason shown only to admins)', '');
+  if (reason === null) return;
+  try {
+    await Wallet.rejectFundRequest(id, currentAdminUser ? currentAdminUser.email : 'admin', reason);
+    showToast('Request rejected.');
+  } catch (e) { showToast(e.message, true); }
 }
 
 function startRefillRequestsListener() {
@@ -610,6 +773,7 @@ function renderRefillRequests(requests) {
   const list = document.getElementById('refillRequestsList');
   if (!list) return;
   const pending = requests.filter(request => (request.status || 'pending') === 'pending');
+  setNavCount('navRefillCount', pending.length);
   if (!pending.length) {
     list.innerHTML = '<p style="color:var(--text-dim);font-size:.82rem">No pending refill requests.</p>';
     return;
@@ -1161,6 +1325,11 @@ async function sendToProvider(docId) {
       if (!svc) { showToast('Service ' + serviceId + ' does not exist.', true); return; }
     }
     if (!order.link || !order.quantity) { showToast('Order has no link or quantity.', true); return; }
+    if (order.paymentMethod === 'wallet' && Number.isSafeInteger(order.amountPaise)) {
+      const expected = Wallet.priceInPaise(Number(order.quantity), svc.rate);
+      if (Number.isFinite(expected) && order.amountPaise < expected &&
+          !confirm('PRICE MISMATCH: customer paid ' + Wallet.formatINR(order.amountPaise) + ' but ' + Number(order.quantity).toLocaleString() + ' x ' + svc.name + ' costs ' + Wallet.formatINR(expected) + '.\nSend anyway?')) return;
+    }
     const prov = providersCache.find(p => p.id === svc.providerId);
     if (!confirm('Send order ' + order.orderId + ' (' + Number(order.quantity).toLocaleString() + ' qty) to ' + (prov ? prov.name : 'provider') + '?\nThis spends provider balance.')) return;
 
@@ -1231,6 +1400,7 @@ function updateStats() {
   document.getElementById('statDeclined').textContent = declined;
   document.getElementById('statRevenue').textContent = '₹' + revenue.toFixed(2);
 
+  setNavCount('navOrderCount', pending);
   document.getElementById('countAll').textContent = total;
   document.getElementById('countPending').textContent = pending;
   document.getElementById('countCompleted').textContent = completed;
@@ -1325,7 +1495,7 @@ function renderOrderRow(o) {
           </div>
         ` : '<span style="color:var(--text-faint)">—</span>'}
       </td>
-      <td>${statusBadge}${o.providerOrderId ? `<div style="font-size:0.68rem;color:var(--text-dim);margin-top:4px">Provider #${escapeHtml(o.providerOrderId)}</div>` : ''}</td>
+      <td>${statusBadge}${o.paymentMethod === 'wallet' ? `<div style="font-size:0.66rem;color:var(--green);font-weight:700;margin-top:4px"><i class="fas fa-wallet"></i> Paid from wallet${o.refunded ? ' · refunded' : ''}</div>` : ''}${o.providerOrderId ? `<div style="font-size:0.68rem;color:var(--text-dim);margin-top:4px">Provider #${escapeHtml(o.providerOrderId)}</div>` : ''}</td>
       <td style="text-align:right">
         ${isCompleted ? `
           <span class="done-label"><i class="fas fa-check-double"></i> Done</span>
@@ -1357,7 +1527,11 @@ async function changeOrderStatus(docId, newStatus) {
 
   const isComplete = newStatus === 'completed';
   const actionName = isComplete ? 'COMPLETE' : 'DECLINE';
-  const confirmMsg = `Are you sure you want to mark order ${order.orderId} as ${actionName}?\n\nAn automated notification email will be sent to:\n${order.userEmail || 'Customer'}`;
+  const willRefund = !isComplete && order.paymentMethod === 'wallet' && !order.refunded;
+  const confirmMsg = `Are you sure you want to mark order ${order.orderId} as ${actionName}?` +
+    (willRefund ? `\n\n${Wallet.formatINR(order.amountPaise)} will be refunded to the customer's wallet automatically.` : '') +
+    (willRefund && order.providerOrderId ? `\n\nWARNING: this order was already sent to the provider (#${order.providerOrderId}).` : '') +
+    `\n\nAn automated notification email will be sent to:\n${order.userEmail || 'Customer'}`;
 
   if (!confirm(confirmMsg)) return;
 
@@ -1366,9 +1540,16 @@ async function changeOrderStatus(docId, newStatus) {
   try {
     // 1. Update status in Cloud Firestore
     const adminEmail = currentAdminUser ? currentAdminUser.email : 'admin';
-    const updateRes = await updateOrderStatusInFirestore(docId, newStatus, adminEmail);
-    if (!updateRes.success) {
-      throw new Error(updateRes.error || "Failed to update status in database");
+    let refundNote = '';
+    if (!isComplete && order.paymentMethod === 'wallet') {
+      // one atomic step: mark declined + refund the wallet (never refunds twice)
+      const rr = await Wallet.declineOrderWithRefund(docId, adminEmail);
+      if (rr.refunded) refundNote = ` ${Wallet.formatINR(rr.amount)} refunded to wallet.`;
+    } else {
+      const updateRes = await updateOrderStatusInFirestore(docId, newStatus, adminEmail);
+      if (!updateRes.success) {
+        throw new Error(updateRes.error || "Failed to update status in database");
+      }
     }
 
     // 2. Dispatch automated email to customer via EmailJS
@@ -1385,7 +1566,7 @@ async function changeOrderStatus(docId, newStatus) {
       emailStatusNote = ' (No customer email attached to order)';
     }
 
-    showToast(`✓ Order ${order.orderId} marked as ${actionName}!${emailStatusNote}`);
+    showToast(`✓ Order ${order.orderId} marked as ${actionName}!${refundNote}${emailStatusNote}`);
   } catch (err) {
     console.error("Error modifying order:", err);
     showToast(`Failed to update order: ${err.message}`, true);
