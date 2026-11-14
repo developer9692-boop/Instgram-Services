@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ADD FUNDS | ASTROPULSE SMM PANEL</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{
+  --bg:#ffffff;--surface:#fff5f5;--surface-2:#ffe8e8;--line:rgba(220,30,30,0.13);
+  --pulse:#E8000D;--pulse-2:#ff3333;--text:#1a0505;--text-dim:#6b3333;--text-faint:#b07070;
+  --green:#16a34a;--amber:#d97706;--red:#dc2626;
+}
+body{
+  font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
+  line-height:1.5;overflow-x:hidden;font-size:15px;min-height:100vh;position:relative;
+  display:flex;flex-direction:column;align-items:center;padding:20px 14px 60px;
+}
+h1,h2,.card-title{font-family:'Space Grotesk',sans-serif}
+.bg-orb{position:fixed;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0;opacity:.55}
+.bg-orb.o1{width:480px;height:480px;top:-220px;left:-160px;background:radial-gradient(circle,rgba(232,0,13,.16),transparent 70%)}
+.bg-orb.o2{width:420px;height:420px;top:-120px;right:-180px;background:radial-gradient(circle,rgba(255,61,110,.13),transparent 70%)}
+.top-bar,.card{position:relative;z-index:1}
+.top-bar{width:100%;max-width:480px;display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.back-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:var(--surface-2);border:1.5px solid var(--line);color:var(--pulse);text-decoration:none;flex-shrink:0;transition:.15s}
+.back-btn:hover{border-color:var(--pulse);transform:translateX(-3px)}
+.top-title{font-size:1.05rem;font-weight:800}.top-sub{font-size:.72rem;color:var(--text-dim)}
+.card{width:100%;max-width:480px;background:var(--surface);border:1.5px solid var(--line);border-radius:22px;padding:22px 20px;box-shadow:0 20px 40px -20px rgba(232,0,13,.18);margin-bottom:16px}
+
+.wallet-card{background:linear-gradient(120deg,#E8000D 0%,#c0000a 52%,#8b0000 100%);color:#fff;border:none;box-shadow:0 14px 30px -10px rgba(232,0,13,.5)}
+.wallet-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.85;display:flex;align-items:center;gap:7px}
+.wallet-bal{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;margin-top:4px}
+.wallet-note{font-size:.74rem;opacity:.85;margin-top:2px}
+
+.f-label{font-size:.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.form-field{margin-bottom:16px}
+.f-input{width:100%;background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;color:var(--text);outline:none;transition:border-color .18s,box-shadow .18s}
+.f-input:focus{border-color:var(--pulse);box-shadow:0 0 0 4px rgba(232,0,13,.12)}
+.f-input[readonly]{color:var(--text-dim);cursor:default}
+.amt-wrap{position:relative}.amt-wrap span{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-weight:800;color:var(--pulse);font-size:1.05rem}
+.amt-wrap .f-input{padding-left:32px;font-size:1.15rem;font-family:'Space Grotesk',sans-serif}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1.5px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:7px 13px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
+.chip:hover,.chip.on{border-color:var(--pulse);color:var(--pulse);background:#fff0f0}
+.f-hint{font-size:.72rem;color:var(--text-faint);margin-top:7px}
+.id-row{display:flex;gap:8px}.id-row .f-input{flex:1;font-family:monospace;letter-spacing:.04em}
+.copy-btn{border:1.5px solid var(--line);background:#fff;color:var(--pulse);border-radius:12px;width:46px;cursor:pointer;font-size:.95rem}
+.copy-btn:hover{border-color:var(--pulse)}
+
+.error-box{display:none;background:#fff0f0;border:1px solid rgba(232,0,13,.35);color:var(--pulse);font-size:.8rem;border-radius:12px;padding:11px 13px;margin-bottom:14px;align-items:center;gap:8px}
+.error-box.show{display:flex}
+.pay-btn{width:100%;background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);color:#fff;border:none;border-radius:13px;padding:14px;font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 10px 24px -10px rgba(232,0,13,.55);transition:.15s;font-family:'Inter',sans-serif}
+.pay-btn:hover{transform:translateY(-2px)}.pay-btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+
+.hist-title{font-size:.95rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.hist-item{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.hist-item strong{font-size:.9rem}.hist-item small{display:block;color:var(--text-dim);font-size:.7rem;margin-top:2px;word-break:break-all}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;padding:4px 9px;border-radius:8px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.badge.pending{background:#fffbeb;color:var(--amber);border:1px solid rgba(217,119,6,.3)}
+.badge.approved{background:#f0fdf4;color:var(--green);border:1px solid rgba(22,163,74,.3)}
+.badge.rejected{background:#fef2f2;color:var(--red);border:1px solid rgba(220,38,38,.3)}
+.hist-empty{color:var(--text-dim);font-size:.82rem;text-align:center;padding:14px 0}
+
+/* ── DARK SHEETS (same look as the order QR popup on the storefront) ── */
+.sheet-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);align-items:flex-end;justify-content:center}
+.sheet-overlay.open{display:flex}
+.sheet-overlay.open .sheet{animation:slideUp .34s cubic-bezier(.34,1.1,.64,1)}
+@keyframes slideUp{from{transform:translateY(48px);opacity:0}to{transform:translateY(0);opacity:1}}
+.sheet{background:#1e2438;border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;color:#fff}
+.handle{width:40px;height:4px;background:#3a4060;border-radius:2px;margin:0 auto 20px}
+.s-title{font-size:1.05rem;font-weight:700;margin-bottom:6px;text-align:center;color:#fff;font-family:'Space Grotesk',sans-serif}
+.s-sub{font-size:.78rem;color:#b4bcd6;text-align:center;margin-bottom:20px}
+.qr-box{background:#252d45;border:1px solid #3a4060;border-radius:14px;padding:18px 16px;margin-bottom:16px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.qr-amount-label{font-size:.68rem;color:#9aa3bf;text-transform:uppercase;letter-spacing:.09em;font-weight:700}
+.qr-amount-val{font-size:1.5rem;font-weight:800;color:#E8000D;font-family:'Space Grotesk',sans-serif}
+.qr-upi-id{font-size:.75rem;color:#fff;background:#1a2038;border:1px solid #3a4060;padding:6px 14px;border-radius:8px;font-weight:600;display:flex;align-items:center;gap:6px}
+.qr-upi-id button{background:none;border:none;color:#9aa3bf;cursor:pointer;font-size:.8rem}
+.qr-pid{font-size:.72rem;color:#9aa3bf}.qr-pid b{color:#fff;font-family:monospace;letter-spacing:.04em}
+.step-note{font-size:.78rem;color:#9aa3bf;margin-bottom:16px;line-height:1.6;background:#252d45;border:1px solid #3a4060;border-radius:10px;padding:10px 13px;text-align:left}
+.btn-blue{width:100%;padding:14px;background:#0a7cff;color:#fff;border:none;font-size:.92rem;font-weight:700;border-radius:12px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;transition:.15s;box-shadow:0 8px 20px -6px rgba(10,124,255,.55)}
+.btn-blue:hover{background:#0066dd}.btn-blue:disabled{opacity:.6;cursor:not-allowed}
+.btn-upi{background:linear-gradient(120deg,#0a7cff,#0057c8)}
+.btn-grey{width:100%;padding:14px;background:#252d45;color:#9aa3bf;border:none;font-size:.88rem;font-weight:600;border-radius:12px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+.btn-grey:hover{background:#2d3555;color:#fff}
+.verify-icon{width:64px;height:64px;background:#1a2a4a;border:2px solid #0a7cff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:#0a7cff;margin:0 auto 14px}
+.q-field{margin-bottom:14px}
+.q-field label{display:block;font-size:.72rem;font-weight:600;color:#9aa3bf;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
+.q-field input{width:100%;background:#252d45;border:1.5px solid #3a4060;border-radius:12px;padding:13px 15px;color:#fff;font-size:16px;font-weight:600;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
+.q-field input:focus{border-color:#0a7cff}
+.q-field input[readonly]{background:#1a2038;color:#9aa3bf;cursor:not-allowed;border-color:#2a3050}
+.q-field input::placeholder{color:#5a6480}
+.q-error{display:none;background:#3a1a1a;border:1px solid #E8000D;color:#ff9a9a;font-size:.78rem;padding:10px 12px;border-radius:10px;margin-bottom:14px}
+.done{text-align:center;padding:6px 0}
+.done-icon{width:72px;height:72px;border-radius:50%;background:#1a2e1a;border:2px solid #2ecc71;color:#2ecc71;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 14px}
+.done h3{font-size:1.2rem;font-weight:800;margin-bottom:6px;color:#fff;font-family:'Space Grotesk',sans-serif}
+.done p{font-size:.82rem;color:#b4bcd6;line-height:1.6;margin-bottom:16px}
+.conf-card{background:#252d45;border:1px solid #3a4060;border-radius:14px;padding:14px 16px;margin-bottom:18px;text-align:left}
+.conf-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #2a3050;font-size:.82rem}
+.conf-row:last-child{border-bottom:none}.conf-key{color:#9aa3bf}.conf-val{font-weight:600;color:#fff;text-align:right;word-break:break-all}
+@media(min-width:640px){.sheet-overlay{align-items:center}.sheet{border-radius:22px;max-width:520px}}
+</style>
+</head>
+<body>
+<div class="bg-orb o1"></div><div class="bg-orb o2"></div>
+
+<div class="top-bar">
+  <a href="index.html" class="back-btn" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+  <div><div class="top-title">Add Funds</div><div class="top-sub">Astropulse SMM Panel</div></div>
+</div>
+
+<div class="card wallet-card">
+  <div class="wallet-label"><i class="fas fa-wallet"></i> Wallet Balance</div>
+  <div class="wallet-bal" id="walletBal">₹0.00</div>
+  <div class="wallet-note" id="walletUser">Loading your account…</div>
+</div>
+
+<div class="card">
+  <div class="error-box" id="topError"><i class="fas fa-circle-exclamation"></i><span id="topErrorText"></span></div>
+
+  <div class="form-field">
+    <div class="f-label"><i class="fas fa-indian-rupee-sign"></i> Amount to Pay</div>
+    <div class="amt-wrap"><span>₹</span><input type="text" inputmode="decimal" class="f-input" id="amountInput" placeholder="0.00" autocomplete="off"></div>
+    <div class="chips" id="chips">
+      <button class="chip" data-v="50">₹50</button><button class="chip" data-v="100">₹100</button>
+      <button class="chip" data-v="200">₹200</button><button class="chip" data-v="500">₹500</button>
+      <button class="chip" data-v="1000">₹1000</button><button class="chip" data-v="2000">₹2000</button>
+    </div>
+    <div class="f-hint">Minimum ₹10 · Maximum ₹50,000</div>
+  </div>
+
+  <div class="form-field">
+    <div class="f-label"><i class="fas fa-hashtag"></i> Payment ID (auto-generated)</div>
+    <div class="id-row"><input class="f-input" id="paymentIdInput" readonly><button class="copy-btn" onclick="copyText(document.getElementById('paymentIdInput').value)" title="Copy"><i class="fas fa-copy"></i></button></div>
+    <div class="f-hint">A new ID is generated for every payment.</div>
+  </div>
+
+  <button class="pay-btn" id="payBtn" onclick="startPay()"><i class="fas fa-qrcode"></i> Pay</button>
+</div>
+
+<div class="card">
+  <div class="hist-title"><i class="fas fa-clock-rotate-left" style="color:var(--pulse)"></i> Your Fund Requests</div>
+  <div id="histList"><div class="hist-empty">Sign in to see your requests.</div></div>
+</div>
+
+<!-- PAYMENT SHEET: QR → TXN ID → DONE -->
+<div class="sheet-overlay" id="paySheet">
+  <div class="sheet">
+
+    <div id="stepQr">
+      <div class="handle"></div>
+      <div class="s-title">Scan & Pay via UPI</div>
+      <div class="s-sub">Open any UPI app, scan the QR code and complete payment</div>
+      <div class="qr-box">
+        <div id="qrCodeBox" style="width:200px;height:200px;border-radius:10px;background:#fff;padding:6px;display:flex;align-items:center;justify-content:center"></div>
+        <div class="qr-amount-label">Amount to Pay</div>
+        <div class="qr-amount-val" id="qrAmount">₹0.00</div>
+        <div class="qr-upi-id"><i class="fas fa-wallet" style="color:#0a7cff"></i><span id="qrUpi">—</span><button onclick="copyText(UPI_ID)" title="Copy UPI ID"><i class="fas fa-copy"></i></button></div>
+        <div class="qr-pid">Payment ID: <b id="qrPid">—</b></div>
+      </div>
+      <div class="step-note"><i class="fas fa-circle-info" style="color:#0a7cff;margin-right:5px"></i>After paying, tap <strong style="color:#fff">I've Paid</strong> and enter the UTR / Transaction ID from your UPI app. Funds are added once our team approves it.</div>
+      <button class="btn-blue btn-upi" onclick="openUpiApp()"><i class="fas fa-mobile-screen-button"></i> Pay via UPI App</button>
+      <button class="btn-blue" onclick="showTxnStep()"><i class="fas fa-check-circle"></i> I've Paid — Enter Transaction ID</button>
+      <button class="btn-grey" onclick="closeSheet()"><i class="fas fa-xmark"></i> Cancel</button>
+    </div>
+
+    <div id="stepTxn" style="display:none">
+      <div class="handle"></div>
+      <div class="verify-icon"><i class="fas fa-shield-halved"></i></div>
+      <div class="s-title">Verify Your Payment</div>
+      <div class="s-sub">Enter your transaction details so we can confirm and add the funds</div>
+      <div class="q-error" id="qError"></div>
+      <div class="q-field"><label>Payment ID</label><input id="vPid" readonly></div>
+      <div class="q-field"><label>Amount Paid (₹)</label><input id="vAmount" readonly></div>
+      <div class="q-field"><label>UTR / Transaction ID</label><input id="vUtr" placeholder="e.g. 412345678901" autocomplete="off" autocapitalize="characters"></div>
+      <button class="btn-blue" id="submitBtn" onclick="submitRequest()"><i class="fas fa-paper-plane"></i> Submit for Approval</button>
+      <button class="btn-grey" onclick="backToQr()"><i class="fas fa-arrow-left"></i> Back</button>
+    </div>
+
+    <div id="stepDone" style="display:none" class="done">
+      <div class="done-icon"><i class="fas fa-check"></i></div>
+      <h3>Request Sent!</h3>
+      <p>Your payment is waiting for admin approval. The amount will be added to your wallet as soon as it is approved.</p>
+      <div class="conf-card">
+        <div class="conf-row"><span class="conf-key">Payment ID</span><span class="conf-val" id="dPid">—</span></div>
+        <div class="conf-row"><span class="conf-key">Amount</span><span class="conf-val" id="dAmount">—</span></div>
+        <div class="conf-row"><span class="conf-key">Txn ID</span><span class="conf-val" id="dUtr">—</span></div>
+        <div class="conf-row"><span class="conf-key">Status</span><span class="conf-val" style="color:#f5b041">Pending approval</span></div>
+      </div>
+      <button class="btn-blue" onclick="closeSheet(true)"><i class="fas fa-check"></i> Done</button>
+      <a href="index.html" class="btn-grey" style="text-decoration:none"><i class="fas fa-house"></i> Back to Home</a>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="wallet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+let UPI_ID = '8707210511@fam';   // overridden by the UPI ID saved in admin → Store Settings
+let me = null;
+let paymentId = Wallet.generatePaymentId();
+let payAmount = 0;               // paise of the payment in progress
+let stopBal = null, stopHist = null;
+const $ = id => document.getElementById(id);
+
+function showErr(msg){ $('topErrorText').textContent = msg; $('topError').classList.add('show'); }
+function hideErr(){ $('topError').classList.remove('show'); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
+function copyText(t){
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).catch(()=>{});
+  else { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try{document.execCommand('copy')}catch(e){} a.remove(); }
+}
+
+// ── amount input ─────────────────────────────────────────────────────────────
+$('amountInput').addEventListener('input', e => {
+  let v = e.target.value.replace(/[^\d.]/g, '');
+  const i = v.indexOf('.');
+  if (i !== -1) v = v.slice(0, i + 1) + v.slice(i + 1).replace(/\./g, '').slice(0, 2);
+  e.target.value = v;
+  syncChips();
+});
+function syncChips(){
+  const p = Wallet.toPaise($('amountInput').value);
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', Wallet.toPaise(c.dataset.v) === p));
+}
+$('chips').addEventListener('click', e => {
+  const c = e.target.closest('.chip'); if (!c) return;
+  $('amountInput').value = c.dataset.v; syncChips(); hideErr();
+});
+
+function newPaymentId(){ paymentId = Wallet.generatePaymentId(); $('paymentIdInput').value = paymentId; }
+newPaymentId();
+
+// prefill from ?amount= (sent by the storefront when funds are short)
+(function(){
+  const a = new URLSearchParams(location.search).get('amount');
+  const p = Wallet.toPaise(a);
+  if (!isNaN(p) && p >= Wallet.MIN_TOPUP_PAISE) {
+    $('amountInput').value = (Math.ceil(p / 100)).toString(); syncChips();
+  }
+})();
+
+// ── auth + live data ─────────────────────────────────────────────────────────
+if (typeof auth !== 'undefined' && auth) {
+  auth.onAuthStateChanged(async user => {
+    if (!user) { location.replace('login.html?redirect=payment.html'); return; }
+    me = user;
+    $('walletUser').textContent = user.email || '';
+    try { const s = await getStoreSettings(); if (s.upiId) UPI_ID = String(s.upiId).trim(); } catch(e){}
+    if (stopBal) stopBal(); if (stopHist) stopHist();
+    stopBal = Wallet.listenBalance(user.uid, p => { $('walletBal').textContent = Wallet.formatINR(p); },
+      () => { $('walletBal').textContent = '—'; });
+    stopHist = Wallet.listenUserFundRequests(user.uid, renderHist,
+      () => { $('histList').innerHTML = '<div class="hist-empty">Requests are temporarily unavailable.</div>'; });
+  });
+} else {
+  showErr('Firebase is not configured. Please check firebase-config.js.');
+}
+
+function renderHist(rows){
+  if (!rows.length) { $('histList').innerHTML = '<div class="hist-empty">No fund requests yet.</div>'; return; }
+  $('histList').innerHTML = rows.slice(0, 20).map(r => {
+    const st = ['approved','rejected'].includes(r.status) ? r.status : 'pending';
+    const when = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate().toLocaleString('en-IN', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : 'Just now';
+    return `<div class="hist-item"><div><strong>${Wallet.formatINR(r.amount)}</strong><small>${esc(r.paymentId)} · ${esc(r.utr)}</small><small>${when}</small></div><span class="badge ${st}">${st}</span></div>`;
+  }).join('');
+}
+
+// ── pay flow ─────────────────────────────────────────────────────────────────
+function upiLink(){
+  const p = new URLSearchParams({ pa: UPI_ID, pn: 'Astropulse', am: (payAmount / 100).toFixed(2), cu: 'INR', tn: 'Astropulse ' + paymentId });
+  return 'upi://pay?' + p.toString();
+}
+function startPay(){
+  hideErr();
+  if (!me) { location.href = 'login.html?redirect=payment.html'; return; }
+  const p = Wallet.toPaise($('amountInput').value);
+  if (isNaN(p) || p < Wallet.MIN_TOPUP_PAISE) { showErr('Minimum amount is ' + Wallet.formatINR(Wallet.MIN_TOPUP_PAISE) + '.'); return; }
+  if (p > Wallet.MAX_TOPUP_PAISE) { showErr('Maximum amount per payment is ' + Wallet.formatINR(Wallet.MAX_TOPUP_PAISE) + '.'); return; }
+  payAmount = p;
+  $('qrAmount').textContent = Wallet.formatINR(p);
+  $('qrUpi').textContent = UPI_ID;
+  $('qrPid').textContent = paymentId;
+  $('vPid').value = paymentId;
+  $('vAmount').value = Wallet.formatINR(p);
+  $('vUtr').value = '';
+  $('qError').style.display = 'none';
+  const box = $('qrCodeBox'); box.innerHTML = '';
+  new QRCode(box, { text: upiLink(), width: 188, height: 188, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  show('stepQr');
+  $('paySheet').classList.add('open');
+}
+function show(step){ ['stepQr','stepTxn','stepDone'].forEach(s => $(s).style.display = s === step ? 'block' : 'none'); }
+function openUpiApp(){ window.location.href = upiLink(); setTimeout(showTxnStep, 1200); }
+function showTxnStep(){ show('stepTxn'); setTimeout(() => $('vUtr').focus(), 150); }
+function backToQr(){ show('stepQr'); }
+function closeSheet(reset){
+  $('paySheet').classList.remove('open');
+  if (reset) { $('amountInput').value = ''; syncChips(); newPaymentId(); }
+}
+$('paySheet').addEventListener('click', e => { if (e.target === $('paySheet') && $('stepDone').style.display !== 'block') closeSheet(); });
+
+async function submitRequest(){
+  const err = $('qError'); err.style.display = 'none';
+  const utr = $('vUtr').value;
+  if (!Wallet.isValidUtr(utr)) { err.textContent = 'Please enter a valid Transaction / UTR ID (10–35 letters or digits).'; err.style.display = 'block'; return; }
+  const btn = $('submitBtn'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+  try {
+    await Wallet.createFundRequest({ user: me, amountPaise: payAmount, paymentId, utr });
+    $('dPid').textContent = paymentId; $('dAmount').textContent = Wallet.formatINR(payAmount); $('dUtr').textContent = Wallet.normalizeUtr(utr);
+    show('stepDone');
+  } catch (e) {
+    console.error(e);
+    err.textContent = (e.code === 'permission-denied')
+      ? 'Could not submit. Deploy the latest firestore.rules and try again.'
+      : (e.message || 'Could not submit. Please try again.');
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit for Approval';
+  }
+}
+</script>
+</body>
+</html>
