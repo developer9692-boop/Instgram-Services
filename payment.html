@@ -11,113 +11,165 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
 :root{
-  --bg:#ffffff;--surface:#fff5f5;--surface-2:#ffe8e8;--line:rgba(220,30,30,0.13);
-  --pulse:#E8000D;--pulse-2:#ff3333;--text:#1a0505;--text-dim:#6b3333;--text-faint:#b07070;
+  --navy:#0a2259;--navy-2:#123a8f;--blue:#2f6bff;--blue-2:#1f55e0;
+  --bg:#fff;--tint:#f4f7fe;--tint-2:#e9effc;--line:#e1e8f5;
+  --text:#0b1b3f;--text-dim:#5b6b8c;--text-faint:#93a0bc;
   --green:#16a34a;--amber:#d97706;--red:#dc2626;
+  --shadow:0 18px 40px -22px rgba(10,34,89,.35);
 }
-body{
-  font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
-  line-height:1.5;overflow-x:hidden;font-size:15px;min-height:100vh;position:relative;
-  display:flex;flex-direction:column;align-items:center;padding:20px 14px 60px;
-}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden;font-size:15px;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 14px 60px;position:relative}
 h1,h2,.card-title{font-family:'Space Grotesk',sans-serif}
-.bg-orb{position:fixed;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0;opacity:.55}
-.bg-orb.o1{width:480px;height:480px;top:-220px;left:-160px;background:radial-gradient(circle,rgba(232,0,13,.16),transparent 70%)}
-.bg-orb.o2{width:420px;height:420px;top:-120px;right:-180px;background:radial-gradient(circle,rgba(255,61,110,.13),transparent 70%)}
+.band{position:absolute;top:0;left:0;right:0;height:190px;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);overflow:hidden;z-index:0}
+.band::before,.band::after{content:"";position:absolute;border-radius:50%;border:1.5px solid rgba(255,255,255,.1)}
+.band::before{width:300px;height:300px;right:-80px;top:-150px}
+.band::after{width:200px;height:200px;right:60px;top:-120px}
 .top-bar,.card{position:relative;z-index:1}
-.top-bar{width:100%;max-width:480px;display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.back-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:var(--surface-2);border:1.5px solid var(--line);color:var(--pulse);text-decoration:none;flex-shrink:0;transition:.15s}
-.back-btn:hover{border-color:var(--pulse);transform:translateX(-3px)}
-.top-title{font-size:1.05rem;font-weight:800}.top-sub{font-size:.72rem;color:var(--text-dim)}
-.card{width:100%;max-width:480px;background:var(--surface);border:1.5px solid var(--line);border-radius:22px;padding:22px 20px;box-shadow:0 20px 40px -20px rgba(232,0,13,.18);margin-bottom:16px}
+.top-bar{width:100%;max-width:480px;display:flex;align-items:center;gap:12px;padding:20px 0 0;margin-bottom:22px;color:#fff}
+.back-btn{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#fff;text-decoration:none;flex-shrink:0;transition:.18s}
+.back-btn:hover{background:rgba(255,255,255,.24);transform:translateX(-3px)}
+.top-title{font-size:1.05rem;font-weight:800}.top-sub{font-size:.72rem;color:rgba(255,255,255,.75)}
+.secure-pill{margin-left:auto;font-size:.68rem;font-weight:600;color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);padding:5px 10px;border-radius:999px;display:flex;align-items:center;gap:6px}
+.card{width:100%;max-width:480px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 20px;box-shadow:var(--shadow);margin-bottom:16px}
 
-.wallet-card{background:linear-gradient(120deg,#E8000D 0%,#c0000a 52%,#8b0000 100%);color:#fff;border:none;box-shadow:0 14px 30px -10px rgba(232,0,13,.5)}
-.wallet-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.85;display:flex;align-items:center;gap:7px}
-.wallet-bal{font-family:'Space Grotesk',sans-serif;font-size:2rem;font-weight:800;margin-top:4px}
-.wallet-note{font-size:.74rem;opacity:.85;margin-top:2px}
+.wallet-card{display:flex;align-items:center;gap:14px;animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.wallet-ico{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;box-shadow:0 10px 20px -8px rgba(31,85,224,.6)}
+.wallet-label{font-size:.72rem;font-weight:600;color:var(--text-dim);display:flex;align-items:center;gap:7px}
+.wallet-bal{font-family:'Space Grotesk',sans-serif;font-size:1.9rem;font-weight:700;color:var(--navy);line-height:1.15;font-variant-numeric:tabular-nums}
+.wallet-note{font-size:.74rem;color:var(--text-faint);word-break:break-all}
 
-.f-label{font-size:.7rem;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.09em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.form-field{margin-bottom:16px}
-.f-input{width:100%;background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;color:var(--text);outline:none;transition:border-color .18s,box-shadow .18s}
-.f-input:focus{border-color:var(--pulse);box-shadow:0 0 0 4px rgba(232,0,13,.12)}
-.f-input[readonly]{color:var(--text-dim);cursor:default}
-.amt-wrap{position:relative}.amt-wrap span{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-weight:800;color:var(--pulse);font-size:1.05rem}
-.amt-wrap .f-input{padding-left:32px;font-size:1.15rem;font-family:'Space Grotesk',sans-serif}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.chip{border:1.5px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:7px 13px;font-weight:700;font-size:.8rem;cursor:pointer;font-family:'Inter',sans-serif;transition:.15s}
-.chip:hover,.chip.on{border-color:var(--pulse);color:var(--pulse);background:#fff0f0}
-.f-hint{font-size:.72rem;color:var(--text-faint);margin-top:7px}
+.f-label{font-size:.74rem;font-weight:600;color:var(--text-dim);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.f-label i{color:var(--blue)}
+.form-field{margin-bottom:18px}
+.f-input{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;font-family:'Inter',sans-serif;font-size:.95rem;font-weight:600;color:var(--text);outline:none;transition:border-color .18s,box-shadow .18s}
+.f-input:hover{border-color:#c6d3ee}
+.f-input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(47,107,255,.14)}
+.f-input[readonly]{background:var(--tint);color:var(--text-dim);cursor:default}
+.amt-wrap{position:relative}.amt-wrap span{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-weight:700;color:var(--navy);font-size:1.15rem}
+.amt-wrap .f-input{padding-left:34px;font-size:1.3rem;font-family:'Space Grotesk',sans-serif;font-weight:600;padding-top:15px;padding-bottom:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{border:1.5px solid var(--line);background:#fff;color:var(--navy);border-radius:999px;padding:7px 15px;font-weight:600;font-size:.82rem;cursor:pointer;font-family:'Inter',sans-serif;transition:.16s}
+.chip:hover{border-color:var(--blue);background:var(--tint)}
+.chip:active{transform:scale(.94)}
+.chip.on{border-color:var(--navy);background:var(--navy);color:#fff;animation:pop .25s ease}
+@keyframes pop{50%{transform:scale(1.08)}}
+.f-hint{font-size:.72rem;color:var(--text-faint);margin-top:8px}
 .id-row{display:flex;gap:8px}.id-row .f-input{flex:1;font-family:monospace;letter-spacing:.04em}
-.copy-btn{border:1.5px solid var(--line);background:#fff;color:var(--pulse);border-radius:12px;width:46px;cursor:pointer;font-size:.95rem}
-.copy-btn:hover{border-color:var(--pulse)}
+.copy-btn{border:1.5px solid var(--line);background:#fff;color:var(--blue);border-radius:12px;width:46px;cursor:pointer;font-size:.95rem;transition:.16s}
+.copy-btn:hover{border-color:var(--blue);background:var(--tint)}.copy-btn:active{transform:scale(.92)}
 
-.error-box{display:none;background:#fff0f0;border:1px solid rgba(232,0,13,.35);color:var(--pulse);font-size:.8rem;border-radius:12px;padding:11px 13px;margin-bottom:14px;align-items:center;gap:8px}
-.error-box.show{display:flex}
-.pay-btn{width:100%;background:linear-gradient(135deg,var(--pulse) 0%,#ff3d6e 100%);color:#fff;border:none;border-radius:13px;padding:14px;font-size:.95rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 10px 24px -10px rgba(232,0,13,.55);transition:.15s;font-family:'Inter',sans-serif}
-.pay-btn:hover{transform:translateY(-2px)}.pay-btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+.error-box{display:none;background:#fef2f2;border:1px solid rgba(220,38,38,.3);color:var(--red);font-size:.8rem;border-radius:12px;padding:11px 13px;margin-bottom:14px;align-items:center;gap:8px}
+.error-box.show{display:flex;animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.pay-btn,.btn-blue{position:relative;overflow:hidden}
+.pay-btn::after,.btn-blue::after{content:"";position:absolute;top:0;left:-70%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .6s}
+.pay-btn:hover::after,.btn-blue:hover::after{left:130%}
+.pay-btn{width:100%;background:linear-gradient(135deg,var(--navy) 0%,var(--blue-2) 100%);color:#fff;border:none;border-radius:12px;padding:15px;font-size:.98rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:0 12px 24px -10px rgba(31,85,224,.65);transition:.18s;font-family:'Inter',sans-serif}
+.pay-btn:hover{transform:translateY(-2px);box-shadow:0 16px 28px -10px rgba(31,85,224,.7)}.pay-btn:active{transform:scale(.98)}
+.pay-btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+.trust{display:flex;align-items:center;justify-content:center;gap:7px;font-size:.72rem;color:var(--text-faint);margin-top:14px}
 
-.hist-title{font-size:.95rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.hist-item{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:8px}
-.hist-item strong{font-size:.9rem}.hist-item small{display:block;color:var(--text-dim);font-size:.7rem;margin-top:2px;word-break:break-all}
-.badge{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;padding:4px 9px;border-radius:8px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.hist-title{font-size:.95rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;color:var(--navy)}
+.hist-item{display:flex;justify-content:space-between;gap:12px;align-items:center;background:var(--tint);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.hist-item strong{font-size:.9rem;color:var(--navy)}.hist-item small{display:block;color:var(--text-dim);font-size:.7rem;margin-top:2px;word-break:break-all}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
 .badge.pending{background:#fffbeb;color:var(--amber);border:1px solid rgba(217,119,6,.3)}
 .badge.approved{background:#f0fdf4;color:var(--green);border:1px solid rgba(22,163,74,.3)}
 .badge.rejected{background:#fef2f2;color:var(--red);border:1px solid rgba(220,38,38,.3)}
 .hist-empty{color:var(--text-dim);font-size:.82rem;text-align:center;padding:14px 0}
 
-/* ── DARK SHEETS (same look as the order QR popup on the storefront) ── */
-.sheet-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.75);align-items:flex-end;justify-content:center}
-.sheet-overlay.open{display:flex}
-.sheet-overlay.open .sheet{animation:slideUp .34s cubic-bezier(.34,1.1,.64,1)}
-@keyframes slideUp{from{transform:translateY(48px);opacity:0}to{transform:translateY(0);opacity:1}}
-.sheet{background:#1e2438;border-radius:20px 20px 0 0;padding:24px 20px;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;color:#fff}
-.handle{width:40px;height:4px;background:#3a4060;border-radius:2px;margin:0 auto 20px}
-.s-title{font-size:1.05rem;font-weight:700;margin-bottom:6px;text-align:center;color:#fff;font-family:'Space Grotesk',sans-serif}
-.s-sub{font-size:.78rem;color:#b4bcd6;text-align:center;margin-bottom:20px}
-.qr-box{background:#252d45;border:1px solid #3a4060;border-radius:14px;padding:18px 16px;margin-bottom:16px;display:flex;flex-direction:column;align-items:center;gap:10px}
-.qr-amount-label{font-size:.68rem;color:#9aa3bf;text-transform:uppercase;letter-spacing:.09em;font-weight:700}
-.qr-amount-val{font-size:1.5rem;font-weight:800;color:#E8000D;font-family:'Space Grotesk',sans-serif}
-.qr-upi-id{font-size:.75rem;color:#fff;background:#1a2038;border:1px solid #3a4060;padding:6px 14px;border-radius:8px;font-weight:600;display:flex;align-items:center;gap:6px}
-.qr-upi-id button{background:none;border:none;color:#9aa3bf;cursor:pointer;font-size:.8rem}
-.qr-pid{font-size:.72rem;color:#9aa3bf}.qr-pid b{color:#fff;font-family:monospace;letter-spacing:.04em}
-.step-note{font-size:.78rem;color:#9aa3bf;margin-bottom:16px;line-height:1.6;background:#252d45;border:1px solid #3a4060;border-radius:10px;padding:10px 13px;text-align:left}
-.btn-blue{width:100%;padding:14px;background:#0a7cff;color:#fff;border:none;font-size:.92rem;font-weight:700;border-radius:12px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;transition:.15s;box-shadow:0 8px 20px -6px rgba(10,124,255,.55)}
-.btn-blue:hover{background:#0066dd}.btn-blue:disabled{opacity:.6;cursor:not-allowed}
-.btn-upi{background:linear-gradient(120deg,#0a7cff,#0057c8)}
-.btn-grey{width:100%;padding:14px;background:#252d45;color:#9aa3bf;border:none;font-size:.88rem;font-weight:600;border-radius:12px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
-.btn-grey:hover{background:#2d3555;color:#fff}
-.verify-icon{width:64px;height:64px;background:#1a2a4a;border:2px solid #0a7cff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;color:#0a7cff;margin:0 auto 14px}
+/* ── CHECKOUT SHEET ── */
+.sheet-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(6,18,50,.6);backdrop-filter:blur(3px);align-items:flex-end;justify-content:center}
+.sheet-overlay.open{display:flex;animation:fade .25s}
+.sheet-overlay.open .sheet{animation:slideUp .38s cubic-bezier(.2,.9,.3,1.05)}
+@keyframes fade{from{opacity:0}}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+.sheet{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;max-height:94vh;overflow-y:auto;color:var(--text)}
+.sh-head{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;padding:18px 20px 16px;display:flex;align-items:center;gap:12px;position:relative}
+.sh-logo{width:40px;height:40px;border-radius:11px;background:#fff;color:var(--navy);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:'Space Grotesk',sans-serif;font-size:1.2rem;flex-shrink:0}
+.sh-name{font-weight:700;font-size:.95rem}.sh-desc{font-size:.72rem;color:rgba(255,255,255,.72)}
+.sh-amt{margin-left:auto;text-align:right;margin-right:30px}
+.sh-amt small{display:block;font-size:.64rem;color:rgba(255,255,255,.7)}
+.sh-amt b{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:700}
+.sh-close{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;border:none;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;font-size:.8rem;transition:.15s}
+.sh-close:hover{background:rgba(255,255,255,.28);transform:rotate(90deg)}
+.steps{display:flex;gap:6px;padding:14px 20px 0}
+.st{flex:1;font-size:.68rem;font-weight:600;color:var(--text-faint);transition:color .3s}
+.st::before{content:"";display:block;height:3px;border-radius:3px;background:var(--line);margin-bottom:6px;transition:background .4s}
+.st.on{color:var(--navy)}.st.on::before{background:var(--blue)}
+.sh-body{padding:18px 20px 22px}
+.pane{animation:paneIn .3s ease}
+@keyframes paneIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.s-title{font-size:1.05rem;font-weight:700;margin-bottom:4px;text-align:center;color:var(--navy);font-family:'Space Grotesk',sans-serif}
+.s-sub{font-size:.78rem;color:var(--text-dim);text-align:center;margin-bottom:18px}
+.qr-box{background:var(--tint);border:1px solid var(--line);border-radius:16px;padding:18px 16px;margin-bottom:14px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.qr-frame{position:relative;width:212px;height:212px;display:flex;align-items:center;justify-content:center}
+.qr-frame i.c{position:absolute;width:24px;height:24px;border:3px solid var(--blue);border-radius:6px}
+.c.tl{top:0;left:0;border-right:0;border-bottom:0}.c.tr{top:0;right:0;border-left:0;border-bottom:0}
+.c.bl{bottom:0;left:0;border-right:0;border-top:0}.c.br{bottom:0;right:0;border-left:0;border-top:0}
+.scan-line{position:absolute;left:12px;right:12px;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent);box-shadow:0 0 12px 2px rgba(47,107,255,.5);animation:scan 2.4s ease-in-out infinite;pointer-events:none}
+@keyframes scan{0%,100%{top:14px}50%{top:calc(100% - 16px)}}
+.qr-amount-label{font-size:.7rem;color:var(--text-dim);font-weight:600}
+.qr-amount-val{font-size:1.6rem;font-weight:700;color:var(--navy);font-family:'Space Grotesk',sans-serif;line-height:1}
+.qr-upi-id{font-size:.76rem;color:var(--navy);background:#fff;border:1px solid var(--line);padding:6px 14px;border-radius:999px;font-weight:600;display:flex;align-items:center;gap:6px}
+.qr-upi-id button{background:none;border:none;color:var(--blue);cursor:pointer;font-size:.8rem}
+.qr-pid{font-size:.72rem;color:var(--text-dim)}.qr-pid b{color:var(--navy);font-family:monospace;letter-spacing:.04em}
+.step-note{font-size:.78rem;color:var(--text-dim);margin-bottom:16px;line-height:1.6;background:var(--tint-2);border-left:3px solid var(--blue);border-radius:10px;padding:10px 13px}
+.btn-blue{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;font-size:.92rem;font-weight:700;border-radius:12px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;transition:.18s;box-shadow:0 10px 20px -8px rgba(47,107,255,.6)}
+.btn-blue:hover{background:var(--blue-2);transform:translateY(-1px)}.btn-blue:active{transform:scale(.98)}
+.btn-blue:disabled{opacity:.65;cursor:not-allowed;transform:none}
+.btn-upi{background:linear-gradient(120deg,var(--navy),var(--navy-2));box-shadow:0 10px 20px -8px rgba(10,34,89,.55)}
+.btn-upi:hover{background:linear-gradient(120deg,#08183f,var(--navy))}
+.btn-grey{width:100%;padding:13px;background:#fff;color:var(--text-dim);border:1.5px solid var(--line);font-size:.88rem;font-weight:600;border-radius:12px;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+.btn-grey:hover{background:var(--tint);color:var(--navy);border-color:#c6d3ee}
+.verify-icon{width:60px;height:60px;background:var(--tint-2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--blue);margin:0 auto 12px;position:relative}
+.verify-icon::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--blue);opacity:0;animation:ring 2s ease-out infinite}
+@keyframes ring{0%{transform:scale(.85);opacity:.5}100%{transform:scale(1.25);opacity:0}}
 .q-field{margin-bottom:14px}
-.q-field label{display:block;font-size:.72rem;font-weight:600;color:#9aa3bf;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px}
-.q-field input{width:100%;background:#252d45;border:1.5px solid #3a4060;border-radius:12px;padding:13px 15px;color:#fff;font-size:16px;font-weight:600;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s}
-.q-field input:focus{border-color:#0a7cff}
-.q-field input[readonly]{background:#1a2038;color:#9aa3bf;cursor:not-allowed;border-color:#2a3050}
-.q-field input::placeholder{color:#5a6480}
-.q-error{display:none;background:#3a1a1a;border:1px solid #E8000D;color:#ff9a9a;font-size:.78rem;padding:10px 12px;border-radius:10px;margin-bottom:14px}
+.q-field label{display:block;font-size:.74rem;font-weight:600;color:var(--text-dim);margin-bottom:7px}
+.q-field input{width:100%;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;color:var(--text);font-size:16px;font-weight:600;font-family:'Inter',sans-serif;outline:none;transition:border-color .18s,box-shadow .18s}
+.q-field input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(47,107,255,.14)}
+.q-field input[readonly]{background:var(--tint);color:var(--text-dim);cursor:not-allowed}
+.q-field input::placeholder{color:var(--text-faint);font-weight:500}
+.q-error{display:none;background:#fef2f2;border:1px solid rgba(220,38,38,.3);color:var(--red);font-size:.78rem;padding:10px 12px;border-radius:10px;margin-bottom:14px;animation:shake .35s}
 .done{text-align:center;padding:6px 0}
-.done-icon{width:72px;height:72px;border-radius:50%;background:#1a2e1a;border:2px solid #2ecc71;color:#2ecc71;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 14px}
-.done h3{font-size:1.2rem;font-weight:800;margin-bottom:6px;color:#fff;font-family:'Space Grotesk',sans-serif}
-.done p{font-size:.82rem;color:#b4bcd6;line-height:1.6;margin-bottom:16px}
-.conf-card{background:#252d45;border:1px solid #3a4060;border-radius:14px;padding:14px 16px;margin-bottom:18px;text-align:left}
-.conf-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #2a3050;font-size:.82rem}
-.conf-row:last-child{border-bottom:none}.conf-key{color:#9aa3bf}.conf-val{font-weight:600;color:#fff;text-align:right;word-break:break-all}
-@media(min-width:640px){.sheet-overlay{align-items:center}.sheet{border-radius:22px;max-width:520px}}
+.done-icon{width:78px;height:78px;margin:0 auto 14px;position:relative}
+.done-icon::before{content:"";position:absolute;inset:0;border-radius:50%;background:rgba(22,163,74,.18);animation:burst 1s ease-out .3s both}
+@keyframes burst{from{transform:scale(.6);opacity:1}to{transform:scale(1.7);opacity:0}}
+.done-icon svg{position:relative;width:100%;height:100%}
+.done-icon circle{fill:var(--green);transform-origin:center;animation:grow .45s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes grow{from{transform:scale(0)}to{transform:scale(1)}}
+.done-icon path{fill:none;stroke:#fff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:44;stroke-dashoffset:44;animation:draw .4s ease .4s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.done h3{font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--navy);font-family:'Space Grotesk',sans-serif}
+.done p{font-size:.82rem;color:var(--text-dim);line-height:1.6;margin-bottom:16px}
+.conf-card{background:var(--tint);border:1px solid var(--line);border-radius:14px;padding:6px 16px;margin-bottom:18px;text-align:left}
+.conf-row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:.82rem}
+.conf-row:last-child{border-bottom:none}.conf-key{color:var(--text-dim)}.conf-val{font-weight:600;color:var(--navy);text-align:right;word-break:break-all}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);background:var(--navy);color:#fff;font-size:.8rem;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:10000}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(min-width:640px){.sheet-overlay{align-items:center}.sheet{border-radius:20px;max-width:440px}.sheet-overlay.open .sheet{animation:zoomIn .3s cubic-bezier(.2,.9,.3,1.1)}}
+@keyframes zoomIn{from{transform:scale(.94) translateY(10px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
-<div class="bg-orb o1"></div><div class="bg-orb o2"></div>
+<div class="band"></div>
 
 <div class="top-bar">
   <a href="index.html" class="back-btn" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
   <div><div class="top-title">Add Funds</div><div class="top-sub">Astropulse SMM Panel</div></div>
+  <div class="secure-pill"><i class="fas fa-lock"></i> Secure</div>
 </div>
 
 <div class="card wallet-card">
-  <div class="wallet-label"><i class="fas fa-wallet"></i> Wallet Balance</div>
-  <div class="wallet-bal" id="walletBal">₹0.00</div>
-  <div class="wallet-note" id="walletUser">Loading your account…</div>
+  <div class="wallet-ico"><i class="fas fa-wallet"></i></div>
+  <div>
+    <div class="wallet-label">Wallet Balance</div>
+    <div class="wallet-bal" id="walletBal">₹0.00</div>
+    <div class="wallet-note" id="walletUser">Loading your account…</div>
+  </div>
 </div>
 
 <div class="card">
@@ -140,37 +192,48 @@ h1,h2,.card-title{font-family:'Space Grotesk',sans-serif}
     <div class="f-hint">A new ID is generated for every payment.</div>
   </div>
 
-  <button class="pay-btn" id="payBtn" onclick="startPay()"><i class="fas fa-qrcode"></i> Pay</button>
+  <button class="pay-btn" id="payBtn" onclick="startPay()"><i class="fas fa-qrcode"></i> <span id="payLabel">Pay</span></button>
+  <div class="trust"><i class="fas fa-shield-halved"></i> Every payment is verified by our team before funds are added</div>
 </div>
 
 <div class="card">
-  <div class="hist-title"><i class="fas fa-clock-rotate-left" style="color:var(--pulse)"></i> Your Fund Requests</div>
+  <div class="hist-title"><i class="fas fa-clock-rotate-left" style="color:var(--blue)"></i> Your Fund Requests</div>
   <div id="histList"><div class="hist-empty">Sign in to see your requests.</div></div>
 </div>
 
 <!-- PAYMENT SHEET: QR → TXN ID → DONE -->
 <div class="sheet-overlay" id="paySheet">
   <div class="sheet">
+    <div class="sh-head">
+      <div class="sh-logo">A</div>
+      <div><div class="sh-name">Astropulse</div><div class="sh-desc">Add funds to wallet</div></div>
+      <div class="sh-amt"><small>Amount</small><b id="sheetAmt">₹0.00</b></div>
+      <button class="sh-close" onclick="closeSheet($('stepDone').style.display==='block')" aria-label="Close"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="steps" id="steps"><div class="st on">Scan &amp; pay</div><div class="st">Verify</div><div class="st">Done</div></div>
 
-    <div id="stepQr">
-      <div class="handle"></div>
+    <div class="sh-body">
+    <div id="stepQr" class="pane">
       <div class="s-title">Scan & Pay via UPI</div>
       <div class="s-sub">Open any UPI app, scan the QR code and complete payment</div>
       <div class="qr-box">
-        <div id="qrCodeBox" style="width:200px;height:200px;border-radius:10px;background:#fff;padding:6px;display:flex;align-items:center;justify-content:center"></div>
+        <div class="qr-frame">
+          <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+          <div id="qrCodeBox" style="width:188px;height:188px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center"></div>
+          <div class="scan-line"></div>
+        </div>
         <div class="qr-amount-label">Amount to Pay</div>
         <div class="qr-amount-val" id="qrAmount">₹0.00</div>
-        <div class="qr-upi-id"><i class="fas fa-wallet" style="color:#0a7cff"></i><span id="qrUpi">—</span><button onclick="copyText(UPI_ID)" title="Copy UPI ID"><i class="fas fa-copy"></i></button></div>
+        <div class="qr-upi-id"><i class="fas fa-wallet" style="color:var(--blue)"></i><span id="qrUpi">—</span><button onclick="copyText(UPI_ID)" title="Copy UPI ID"><i class="fas fa-copy"></i></button></div>
         <div class="qr-pid">Payment ID: <b id="qrPid">—</b></div>
       </div>
-      <div class="step-note"><i class="fas fa-circle-info" style="color:#0a7cff;margin-right:5px"></i>After paying, tap <strong style="color:#fff">I've Paid</strong> and enter the UTR / Transaction ID from your UPI app. Funds are added once our team approves it.</div>
+      <div class="step-note"><i class="fas fa-circle-info" style="color:var(--blue);margin-right:5px"></i>After paying, tap <strong style="color:var(--navy)">I've Paid</strong> and enter the UTR / Transaction ID from your UPI app. Funds are added once our team approves it.</div>
       <button class="btn-blue btn-upi" onclick="openUpiApp()"><i class="fas fa-mobile-screen-button"></i> Pay via UPI App</button>
       <button class="btn-blue" onclick="showTxnStep()"><i class="fas fa-check-circle"></i> I've Paid — Enter Transaction ID</button>
       <button class="btn-grey" onclick="closeSheet()"><i class="fas fa-xmark"></i> Cancel</button>
     </div>
 
-    <div id="stepTxn" style="display:none">
-      <div class="handle"></div>
+    <div id="stepTxn" class="pane" style="display:none">
       <div class="verify-icon"><i class="fas fa-shield-halved"></i></div>
       <div class="s-title">Verify Your Payment</div>
       <div class="s-sub">Enter your transaction details so we can confirm and add the funds</div>
@@ -182,22 +245,23 @@ h1,h2,.card-title{font-family:'Space Grotesk',sans-serif}
       <button class="btn-grey" onclick="backToQr()"><i class="fas fa-arrow-left"></i> Back</button>
     </div>
 
-    <div id="stepDone" style="display:none" class="done">
-      <div class="done-icon"><i class="fas fa-check"></i></div>
+    <div id="stepDone" class="pane done" style="display:none">
+      <div class="done-icon"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="36"/><path d="M25 41l11 11 20-23"/></svg></div>
       <h3>Request Sent!</h3>
       <p>Your payment is waiting for admin approval. The amount will be added to your wallet as soon as it is approved.</p>
       <div class="conf-card">
         <div class="conf-row"><span class="conf-key">Payment ID</span><span class="conf-val" id="dPid">—</span></div>
         <div class="conf-row"><span class="conf-key">Amount</span><span class="conf-val" id="dAmount">—</span></div>
         <div class="conf-row"><span class="conf-key">Txn ID</span><span class="conf-val" id="dUtr">—</span></div>
-        <div class="conf-row"><span class="conf-key">Status</span><span class="conf-val" style="color:#f5b041">Pending approval</span></div>
+        <div class="conf-row"><span class="conf-key">Status</span><span class="conf-val" style="color:var(--amber)">Pending approval</span></div>
       </div>
       <button class="btn-blue" onclick="closeSheet(true)"><i class="fas fa-check"></i> Done</button>
       <a href="index.html" class="btn-grey" style="text-decoration:none"><i class="fas fa-house"></i> Back to Home</a>
     </div>
-
+    </div>
   </div>
 </div>
+<div class="toast" id="toast">Copied</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -213,12 +277,27 @@ let payAmount = 0;               // paise of the payment in progress
 let stopBal = null, stopHist = null;
 const $ = id => document.getElementById(id);
 
-function showErr(msg){ $('topErrorText').textContent = msg; $('topError').classList.add('show'); }
+function showErr(msg){ $('topErrorText').textContent = msg; $('topError').classList.remove('show'); void $('topError').offsetWidth; $('topError').classList.add('show'); }
 function hideErr(){ $('topError').classList.remove('show'); }
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
 function copyText(t){
   if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).catch(()=>{});
   else { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try{document.execCommand('copy')}catch(e){} a.remove(); }
+  const t2 = $('toast'); t2.classList.add('show'); clearTimeout(t2._h); t2._h = setTimeout(() => t2.classList.remove('show'), 1400);
+}
+
+// balance count-up
+let shownBal = 0, balRaf = 0;
+function animateBal(to){
+  cancelAnimationFrame(balRaf);
+  const from = shownBal, t0 = performance.now(), d = 650;
+  if (from === to || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { shownBal = to; $('walletBal').textContent = Wallet.formatINR(to); return; }
+  (function step(t){
+    const k = Math.min(1, (t - t0) / d), e = 1 - Math.pow(1 - k, 3);
+    shownBal = Math.round(from + (to - from) * e);
+    $('walletBal').textContent = Wallet.formatINR(shownBal);
+    if (k < 1) balRaf = requestAnimationFrame(step);
+  })(t0);
 }
 
 // ── amount input ─────────────────────────────────────────────────────────────
@@ -232,6 +311,7 @@ $('amountInput').addEventListener('input', e => {
 function syncChips(){
   const p = Wallet.toPaise($('amountInput').value);
   document.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', Wallet.toPaise(c.dataset.v) === p));
+  $('payLabel').textContent = (!isNaN(p) && p > 0) ? 'Pay ' + Wallet.formatINR(p) : 'Pay';
 }
 $('chips').addEventListener('click', e => {
   const c = e.target.closest('.chip'); if (!c) return;
@@ -258,7 +338,7 @@ if (typeof auth !== 'undefined' && auth) {
     $('walletUser').textContent = user.email || '';
     try { const s = await getStoreSettings(); if (s.upiId) UPI_ID = String(s.upiId).trim(); } catch(e){}
     if (stopBal) stopBal(); if (stopHist) stopHist();
-    stopBal = Wallet.listenBalance(user.uid, p => { $('walletBal').textContent = Wallet.formatINR(p); },
+    stopBal = Wallet.listenBalance(user.uid, p => { animateBal(p); },
       () => { $('walletBal').textContent = '—'; });
     stopHist = Wallet.listenUserFundRequests(user.uid, renderHist,
       () => { $('histList').innerHTML = '<div class="hist-empty">Requests are temporarily unavailable.</div>'; });
@@ -289,6 +369,7 @@ function startPay(){
   if (p > Wallet.MAX_TOPUP_PAISE) { showErr('Maximum amount per payment is ' + Wallet.formatINR(Wallet.MAX_TOPUP_PAISE) + '.'); return; }
   payAmount = p;
   $('qrAmount').textContent = Wallet.formatINR(p);
+  $('sheetAmt').textContent = Wallet.formatINR(p);
   $('qrUpi').textContent = UPI_ID;
   $('qrPid').textContent = paymentId;
   $('vPid').value = paymentId;
@@ -296,11 +377,16 @@ function startPay(){
   $('vUtr').value = '';
   $('qError').style.display = 'none';
   const box = $('qrCodeBox'); box.innerHTML = '';
-  new QRCode(box, { text: upiLink(), width: 188, height: 188, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  new QRCode(box, { text: upiLink(), width: 176, height: 176, colorDark: '#0a2259', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
   show('stepQr');
   $('paySheet').classList.add('open');
 }
-function show(step){ ['stepQr','stepTxn','stepDone'].forEach(s => $(s).style.display = s === step ? 'block' : 'none'); }
+function show(step){
+  const order = ['stepQr','stepTxn','stepDone'];
+  order.forEach(s => $(s).style.display = s === step ? 'block' : 'none');
+  const i = order.indexOf(step);
+  document.querySelectorAll('#steps .st').forEach((el, k) => el.classList.toggle('on', k <= i));
+}
 function openUpiApp(){ window.location.href = upiLink(); setTimeout(showTxnStep, 1200); }
 function showTxnStep(){ show('stepTxn'); setTimeout(() => $('vUtr').focus(), 150); }
 function backToQr(){ show('stepQr'); }
